@@ -3,6 +3,7 @@ web1: #component type & number
   shared_writable_dirs:
     - sites/default/files
   php_extensions:
+    - eaccelerator 
     - mysqli
     - gd
     - hash
@@ -12,6 +13,9 @@ web1: #component type & number
     - pdo_mysql
     - mcrypt
     - mbstring
+  php_display_errors: "1"
+  zend_extensions:
+    -ioncube_loader
   after_build:
     # move pagoda config file
     - "mv pagoda/settings.php sites/default/settings.php"
