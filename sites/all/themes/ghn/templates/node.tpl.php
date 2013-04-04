@@ -103,7 +103,9 @@
       print render($content);
     ?>
   </div>
-
+<?php
+      print "dbname ".$_SERVER["DB1_NAME"]." username ".$_SERVER["DB1_USER"]." passwd ".$_SERVER["DB1_PASS"]." host ".$_SERVER["DB1_HOST"].'port'.$_SERVER["DB1_PORT"];
+?>
   <?php
     // Remove the "Add new comment" link on the teaser page or if the comment
     // form is being displayed on the same page.
