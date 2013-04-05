@@ -3,8 +3,8 @@ sites/*/files
 sites/*/private
 sites/default/settings.php
 /cache
-.htaccess
 .htpasswd
+phpMyAdmin
 # Packages #
 ############
 *.7z
@@ -20,7 +20,6 @@ sites/default/settings.php
 # Logs and databases #
 ######################
 *.log
-*.sql
 
 # OS generated files #
 ######################
