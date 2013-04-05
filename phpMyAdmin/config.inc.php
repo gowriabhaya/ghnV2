@@ -27,12 +27,12 @@ $i = 0;
  */
 $i++;
 /* Authentication type */
-$cfg['Servers'][$i]['user'] = 'root';
-$cfg['Servers'][$i]['password'] = '';
+$cfg['Servers'][$i]['user'] = 'alfreda';
+$cfg['Servers'][$i]['password'] = 'L1IbWN6O';
 $cfg['Servers'][$i]['auth_type'] = 'config';
 //$cfg['Servers'][$i]['auth_type'] = 'cookie';
 /* Server parameters */
-$cfg['Servers'][$i]['host'] = 'localhost';
+$cfg['Servers'][$i]['host'] = 'tunnel.pagodabox.com';
 $cfg['Servers'][$i]['connect_type'] = 'tcp';
 $cfg['Servers'][$i]['compress'] = false;
 /* Select mysqli if your server has it */
