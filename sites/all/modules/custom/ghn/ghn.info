@@ -1,0 +1,4 @@
+name = GHN 
+description = "custom functions."
+core = 7.x
+files[] = remember_me.module
