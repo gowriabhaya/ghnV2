@@ -2,7 +2,8 @@
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  *
- * @package PhpMyAdmin
+ * @version $Id$
+ * @package phpMyAdmin
  */
 if (! defined('PHPMYADMIN')) {
     exit;
@@ -12,7 +13,7 @@ if (! defined('PHPMYADMIN')) {
  * Prepares the work and runs some other scripts if required
  */
 if (! empty($submit_mult)
- && $submit_mult != __('With selected:')
+ && $submit_mult != $strWithChecked
  && (! empty($selected_db)
   || ! empty($selected_tbl)
   || ! empty($selected_fld)
@@ -24,30 +25,43 @@ if (! empty($submit_mult)
         $what         = 'drop_db';
     } elseif (isset($selected_tbl) && !empty($selected_tbl)) {
         // coming from database structure view - do something with selected tables
-        if ($submit_mult == 'print') {
-            include './tbl_printview.php';
+        if ($submit_mult == $strPrintView) {
+            require './tbl_printview.php';
         } else {
            $selected = $selected_tbl;
            switch ($submit_mult) {
-               case 'add_prefix_tbl':
-               case 'replace_prefix_tbl':
-               case 'copy_tbl_change_prefix':
                case 'drop_db':
-               case 'drop_tbl':
-               case 'empty_tbl':
-                   $what = $submit_mult;
+                   $what = 'drop_db';
                    break;
-               case 'check_tbl':
-               case 'optimize_tbl':
-               case 'repair_tbl':
-               case 'analyze_tbl':
-                   $query_type = $submit_mult;
-                   unset($submit_mult);
-                   $mult_btn   = __('Yes');
+               case $strDrop:
+                   $what = 'drop_tbl';
                    break;
-               case 'export':
+               case $strEmpty:
+                   $what = 'empty_tbl';
+                   break;
+               case $strCheckTable:
                    unset($submit_mult);
-                   include 'db_export.php';
+                   $query_type = 'check_tbl';
+                   $mult_btn   = $strYes;
+                   break;
+               case $strOptimizeTable:
+                   unset($submit_mult);
+                   $query_type = 'optimize_tbl';
+                   $mult_btn   = $strYes;
+                   break;
+               case $strRepairTable:
+                   unset($submit_mult);
+                   $query_type = 'repair_tbl';
+                   $mult_btn   = $strYes;
+                   break;
+               case $strAnalyzeTable:
+                   unset($submit_mult);
+                   $query_type = 'analyze_tbl';
+                   $mult_btn   = $strYes;
+                   break;
+               case $strExport:
+                   unset($submit_mult);
+                   require('db_export.php');
                    exit;
                    break;
            } // end switch
@@ -56,10 +70,10 @@ if (! empty($submit_mult)
         // coming from table structure view - do something with selected columns/fileds
         $selected     = $selected_fld;
         switch ($submit_mult) {
-            case 'drop':
+            case $strDrop:
                 $what     = 'drop_fld';
                 break;
-            case 'primary':
+            case $strPrimary:
                 // Gets table primary key
                 PMA_DBI_select_db($db);
                 $result      = PMA_DBI_query('SHOW KEYS FROM ' . PMA_backquote($table) . ';');
@@ -75,40 +89,35 @@ if (! empty($submit_mult)
                     // no primary key, so we can safely create new
                     unset($submit_mult);
                     $query_type = 'primary_fld';
-                    $mult_btn   = __('Yes');
+                    $mult_btn   = $strYes;
                 } else {
                     // primary key exists, so lets as user
                     $what = 'primary_fld';
                 }
                 break;
-            case 'index':
+            case $strIndex:
                 unset($submit_mult);
                 $query_type = 'index_fld';
-                $mult_btn   = __('Yes');
+                $mult_btn   = $strYes;
                 break;
-            case 'unique':
+            case $strUnique:
                 unset($submit_mult);
                 $query_type = 'unique_fld';
-                $mult_btn   = __('Yes');
+                $mult_btn   = $strYes;
                 break;
-            case 'spatial':
-                unset($submit_mult);
-                $query_type = 'spatial_fld';
-                $mult_btn   = __('Yes');
-                break;
-            case 'ftext':
+            case $strIdxFulltext:
                 unset($submit_mult);
                 $query_type = 'fulltext_fld';
-                $mult_btn   = __('Yes');
+                $mult_btn   = $strYes;
                 break;
-            case 'change':
-                include './tbl_alter.php';
+            case $strChange:
+                require './tbl_alter.php';
                 break;
-            case 'browse':
+            case $strBrowse:
                 // this should already be handled by tbl_structure.php
         }
     } else {
-        // coming from browsing - do something with selected rows
+        // coming from borwsing - do something with selected rows
         $what = 'row_delete';
         $selected = $rows_to_delete;
     }
@@ -119,20 +128,21 @@ if (! empty($submit_mult)
  * Displays the confirmation form if required
  */
 if (!empty($submit_mult) && !empty($what)) {
+    $GLOBALS['js_include'][] = 'functions.js';
     unset($message);
 
-    include_once './libraries/header.inc.php';
+    require_once './libraries/header.inc.php';
     if (strlen($table)) {
-        include './libraries/tbl_common.php';
+        require './libraries/tbl_common.php';
         $url_query .= '&amp;goto=tbl_sql.php&amp;back=tbl_sql.php';
-        include './libraries/tbl_info.inc.php';
-        include_once './libraries/tbl_links.inc.php';
+        require './libraries/tbl_info.inc.php';
+        require_once './libraries/tbl_links.inc.php';
     } elseif (strlen($db)) {
-        include './libraries/db_common.inc.php';
-        include './libraries/db_info.inc.php';
+        require './libraries/db_common.inc.php';
+        require './libraries/db_info.inc.php';
     } else {
-        include_once './libraries/server_common.inc.php';
-        include_once './libraries/server_links.inc.php';
+        require_once './libraries/server_common.inc.php';
+        require_once './libraries/server_links.inc.php';
     }
 
     // Builds the query
@@ -237,64 +247,33 @@ if (!empty($submit_mult) && !empty($what)) {
     }
     if ($what == 'row_delete') {
         $_url_params['original_sql_query'] = $original_sql_query;
-        if (! empty($original_url_query)) {
-            $_url_params['original_url_query'] = $original_url_query;
-        }
+        $_url_params['original_url_query'] = $original_url_query;
     }
     ?>
 <form action="<?php echo $action; ?>" method="post">
     <?php
     echo PMA_generate_common_hidden_inputs($_url_params);
     ?>
-<?php if ($what == 'replace_prefix_tbl' || $what == 'copy_tbl_change_prefix') { ?>
-        <fieldset class = "input">
-                <legend><?php echo ($what == 'replace_prefix_tbl' ? __('Replace table prefix') : __('Copy table with prefix')) ?>:</legend>
-                <table>
-                <tr>
-                <td><?php echo __('From'); ?></td><td><input type="text" name="from_prefix" id="initialPrefix"</td>
-                </tr>
-                <tr>
-                <td><?php echo __('To'); ?> </td><td><input type="text" name="to_prefix" id="newPrefix"</td>
-                </tr>
-                </table>
-        </fieldset>
-        <fieldset class="tblFooters">
-                <button type="submit" name="mult_btn" value="<?php echo __('Yes'); ?>" id="buttonYes"><?php echo __('Submit'); ?></button>
-        </fieldset>
+<fieldset class="confirmation">
+    <legend><?php echo ($what == 'drop_db' ? $strDropDatabaseStrongWarning . '&nbsp;' : '') . $strDoYouReally; ?>:</legend>
+    <tt><?php echo $full_query; ?></tt>
+</fieldset>
+<fieldset class="tblFooters">
+    <input type="submit" name="mult_btn" value="<?php echo $strYes; ?>" id="buttonYes" />
+    <input type="submit" name="mult_btn" value="<?php echo $strNo; ?>" id="buttonNo" />
+</fieldset>
     <?php
-        } elseif ($what == 'add_prefix_tbl') { ?>
-        <fieldset class = "input">
-                <legend><?php echo __('Add table prefix') ?>:</legend>
-                <table>
-                <tr>
-                <td><?php echo __('Add prefix'); ?></td>     <td><input type="text" name="add_prefix" id="txtPrefix"</td>
-                </tr>
-                </table>
-        </fieldset>
-        <fieldset class="tblFooters">
-                <button type="submit" name="mult_btn" value="<?php echo __('Yes'); ?>" id="buttonYes"><?php echo __('Submit'); ?></button>
-        </fieldset>
-    <?php
-        } else { ?>
-    <fieldset class="confirmation">
-        <legend><?php echo ($what == 'drop_db' ? __('You are about to DESTROY a complete database!') . '&nbsp;' : '') . __('Do you really want to '); ?>:</legend>
-        <tt><?php echo $full_query; ?></tt>
-    </fieldset>
-    <fieldset class="tblFooters">
-        <input type="submit" name="mult_btn" value="<?php echo __('Yes'); ?>" id="buttonYes" />
-        <input type="submit" name="mult_btn" value="<?php echo __('No'); ?>" id="buttonNo" />
-    </fieldset>
-    <?php
-    }
-    echo '</form>';
-    include './libraries/footer.inc.php';
+    require_once './libraries/footer.inc.php';
+} // end if
 
-} elseif ($mult_btn == __('Yes')) {
+
 /**
  * Executes the query - dropping rows, columns/fields, tables or dbs
  */
+elseif ($mult_btn == $strYes) {
+
     if ($query_type == 'drop_db' || $query_type == 'drop_tbl' || $query_type == 'drop_fld') {
-        include_once './libraries/relation_cleanup.lib.php';
+        require_once './libraries/relation_cleanup.lib.php';
     }
 
     $sql_query      = '';
@@ -302,8 +281,8 @@ if (!empty($submit_mult) && !empty($what)) {
         $sql_query_views = '';
     }
     $selected_cnt   = count($selected);
-    $run_parts      = false; // whether to run query after each pass
-    $use_sql        = false; // whether to include sql.php at the end (to display results)
+    $run_parts      = FALSE; // whether to run query after each pass
+    $use_sql        = FALSE; // whether to include sql.php at the end (to display results)
 
     if ($query_type == 'primary_fld') {
         // Gets table primary key
@@ -325,7 +304,7 @@ if (!empty($submit_mult) && !empty($what)) {
         switch ($query_type) {
             case 'row_delete':
                 $a_query = $selected[$i];
-                $run_parts = true;
+                $run_parts = TRUE;
                 break;
 
             case 'drop_db':
@@ -333,7 +312,7 @@ if (!empty($submit_mult) && !empty($what)) {
                 $a_query   = 'DROP DATABASE '
                            . PMA_backquote($selected[$i]);
                 $reload    = 1;
-                $run_parts = true;
+                $run_parts = TRUE;
                 $rebuild_database_list = true;
                 break;
 
@@ -353,31 +332,31 @@ if (!empty($submit_mult) && !empty($what)) {
             case 'check_tbl':
                 $sql_query .= (empty($sql_query) ? 'CHECK TABLE ' : ', ')
                            . PMA_backquote($selected[$i]);
-                $use_sql    = true;
+                $use_sql    = TRUE;
                 break;
 
             case 'optimize_tbl':
                 $sql_query .= (empty($sql_query) ? 'OPTIMIZE TABLE ' : ', ')
                            . PMA_backquote($selected[$i]);
-                $use_sql    = true;
+                $use_sql    = TRUE;
                 break;
 
             case 'analyze_tbl':
                 $sql_query .= (empty($sql_query) ? 'ANALYZE TABLE ' : ', ')
                            . PMA_backquote($selected[$i]);
-                $use_sql    = true;
+                $use_sql    = TRUE;
                 break;
 
             case 'repair_tbl':
                 $sql_query .= (empty($sql_query) ? 'REPAIR TABLE ' : ', ')
                            . PMA_backquote($selected[$i]);
-                $use_sql    = true;
+                $use_sql    = TRUE;
                 break;
 
             case 'empty_tbl':
                 $a_query = 'TRUNCATE ';
-                $a_query .= PMA_backquote($selected[$i]);
-                $run_parts = true;
+                $a_query .= PMA_backquote(htmlspecialchars($selected[$i]));
+                $run_parts = TRUE;
                 break;
 
             case 'drop_fld':
@@ -405,38 +384,11 @@ if (!empty($submit_mult) && !empty($what)) {
                            . (($i == $selected_cnt-1) ? ');' : '');
                 break;
 
-            case 'spatial_fld':
-                $sql_query .= (empty($sql_query) ? 'ALTER TABLE ' . PMA_backquote($table) . ' ADD SPATIAL( ' : ', ')
-                           . PMA_backquote($selected[$i])
-                           . (($i == $selected_cnt-1) ? ');' : '');
-                break;
-
             case 'fulltext_fld':
                 $sql_query .= (empty($sql_query) ? 'ALTER TABLE ' . PMA_backquote($table) . ' ADD FULLTEXT( ' : ', ')
                            . PMA_backquote($selected[$i])
                            . (($i == $selected_cnt-1) ? ');' : '');
                 break;
-
-        case 'add_prefix_tbl':
-                $newtablename = $add_prefix . $selected[$i];
-                $a_query = 'ALTER TABLE ' . PMA_backquote($selected[$i]) . ' RENAME ' . PMA_backquote($newtablename) ; // ADD PREFIX TO TABLE NAME
-                $run_parts = true;
-                break;
-
-            case 'replace_prefix_tbl':
-                $current = $selected[$i];
-                $newtablename = preg_replace("/^" . $from_prefix . "/", $to_prefix, $current);
-                $a_query = 'ALTER TABLE ' . PMA_backquote($selected[$i]) . ' RENAME ' . PMA_backquote($newtablename) ; // CHANGE PREFIX PATTERN
-                $run_parts = true;
-                break;
-
-            case 'copy_tbl_change_prefix':
-                $current = $selected[$i];
-                $newtablename = preg_replace("/^" . $from_prefix . "/", $to_prefix, $current);
-                $a_query = 'CREATE TABLE ' . PMA_backquote($newtablename) . ' SELECT * FROM ' . PMA_backquote($selected[$i]) ; // COPY TABLE AND CHANGE PREFIX PATTERN
-                $run_parts = true;
-                break;
-
         } // end switch
 
         // All "DROP TABLE", "DROP FIELD", "OPTIMIZE TABLE" and "REPAIR TABLE"
@@ -460,7 +412,7 @@ if (!empty($submit_mult) && !empty($what)) {
     }
 
     if ($use_sql) {
-        include './sql.php';
+        require './sql.php';
     } elseif (!$run_parts) {
         PMA_DBI_select_db($db);
         $result = PMA_DBI_try_query($sql_query);
@@ -480,6 +432,6 @@ if (!empty($submit_mult) && !empty($what)) {
         $GLOBALS['pma']->databases->build();
     }
 } else {
-    $message = PMA_Message::success(__('No change'));
+    $message = PMA_Message::success('strNoModification');
 }
 ?>

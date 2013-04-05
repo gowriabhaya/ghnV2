@@ -1,16 +1,25 @@
 <?php
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
- * Code for displaying server selection
+ * Code for displaying server selection written by nijel
  *
- * @package PhpMyAdmin
+ * @version $Id$
+ * @package phpMyAdmin
  */
 
 /**
  * display server selection in list or selectbox form, or option tags only
  *
- * @param boolean $not_only_options   whether to include form tags or not
- * @param boolean $ommit_fieldset     whether to ommit fieldset tag or not
+ * @uses    $GLOBALS['cfg']['DisplayServersList']
+ * @uses    $GLOBALS['strServer']
+ * @uses    $GLOBALS['cfg']['Servers']
+ * @uses    $GLOBALS['strGo']
+ * @uses    implode()
+ * @uses    htmlspecialchars()
+ * @uses    PMA_generate_common_hidden_inputs()
+ * @uses    PMA_generate_common_url()
+ * @param   boolean $not_only_options   whether to include form tags or not
+ * @param   boolean $ommit_fieldset     whether to ommit fieldset tag or not
  */
 function PMA_select_server($not_only_options, $ommit_fieldset)
 {
@@ -29,12 +38,13 @@ function PMA_select_server($not_only_options, $ommit_fieldset)
         if (! $ommit_fieldset) {
             echo '<fieldset>';
         }
-        echo '<label for="select_server">' . __('Current Server') . ':</label> ';
+        echo '<label for="select_server">' . $GLOBALS['strServer'] . ':</label> ';
 
-        echo '<select name="server" id="select_server" class="autosubmit">';
-        echo '<option value="">(' . __('Servers') . ') ...</option>' . "\n";
+        echo '<select name="server" id="select_server"'
+            . ' onchange="if (this.value != \'\') this.form.submit();">';
+        echo '<option value="">(' . $GLOBALS['strServers'] . ') ...</option>' . "\n";
     } elseif ($list) {
-        echo __('Current Server') . ':<br />';
+        echo $GLOBALS['strServer'] . ':<br />';
         echo '<ul id="list_server">';
     }
 
@@ -48,6 +58,7 @@ function PMA_select_server($not_only_options, $ommit_fieldset)
         } else {
             $selected = 0;
         }
+
         if (!empty($server['verbose'])) {
             $label = $server['verbose'];
         } else {
@@ -70,7 +81,7 @@ function PMA_select_server($not_only_options, $ommit_fieldset)
 
         if ($list) {
             echo '<li>';
-            if ($selected) {
+            if ($selected && !$ommit_fieldset) {
                 echo '<strong>' . htmlspecialchars($label) . '</strong>';
             } else {
 
@@ -90,7 +101,7 @@ function PMA_select_server($not_only_options, $ommit_fieldset)
         echo '</select>';
         // Show submit button if we have just one server (this happens with no default)
         echo '<noscript>';
-        echo '<input type="submit" value="' . __('Go') . '" />';
+        echo '<input type="submit" value="' . $GLOBALS['strGo'] . '" />';
         echo '</noscript>';
         if (! $ommit_fieldset) {
             echo '</fieldset>';

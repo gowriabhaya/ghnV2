@@ -3,7 +3,8 @@
 /**
  * Code for displaying language selection
  *
- * @package PhpMyAdmin
+ * @version $Id$
+ * @package phpMyAdmin
  */
 if (! defined('PHPMYADMIN')) {
     exit;
@@ -12,13 +13,12 @@ if (! defined('PHPMYADMIN')) {
 /**
  * Sorts available languages by their true english names
  *
- * @param array   the array to be sorted
- * @param mixed   a required parameter
+ * @param   array   the array to be sorted
+ * @param   mixed   a required parameter
  * @return  the sorted array
  * @access  private
  */
-function PMA_language_cmp(&$a, &$b)
-{
+function PMA_language_cmp(&$a, &$b) {
     return (strcmp($a[1], $b[1]));
 } // end of the 'PMA_language_cmp()' function
 
@@ -27,8 +27,7 @@ function PMA_language_cmp(&$a, &$b)
  *
  * @access  public
  */
-function PMA_select_language($use_fieldset = false, $show_doc = true)
-{
+function PMA_select_language($use_fieldset = FALSE, $show_doc = TRUE) {
     global $cfg, $lang;
     ?>
 
@@ -43,10 +42,13 @@ function PMA_select_language($use_fieldset = false, $show_doc = true)
     // For non-English, display "Language" with emphasis because it's
     // not a proper word in the current language; we show it to help
     // people recognize the dialog
-    $language_title = __('Language')
-        . (__('Language') != 'Language' ? ' - <em>Language</em>' : '');
+    $language_title = $GLOBALS['strLanguage']
+        . ($GLOBALS['strLanguage'] != 'Language' ? ' - <em>Language</em>' : '');
     if ($show_doc) {
-        $language_title .= PMA_showDocu('faq7_2');
+        $language_title .= ' <a href="./translators.html" target="documentation">' .
+            ($cfg['ReplaceHelpImg']
+                ? '<img class="icon" src="' . $GLOBALS['pmaThemeImage'] . 'b_info.png" width="11" height="11" alt="Info" />'
+                : '(*)') . '</a>';
     }
     if ($use_fieldset) {
         echo '<fieldset><legend xml:lang="en" dir="ltr">' . $language_title . '</legend>';
@@ -55,12 +57,18 @@ function PMA_select_language($use_fieldset = false, $show_doc = true)
     }
     ?>
 
-    <select name="lang" class="autosubmit" xml:lang="en" dir="ltr">
+    <select name="lang" onchange="this.form.submit();" xml:lang="en" dir="ltr">
     <?php
 
     uasort($GLOBALS['available_languages'], 'PMA_language_cmp');
     foreach ($GLOBALS['available_languages'] as $id => $tmplang) {
-        $lang_name = PMA_langName($tmplang);
+        $lang_name = ucfirst(substr(strrchr($tmplang[0], '|'), 1));
+
+        // Include native name if non empty
+        if (!empty($tmplang[3])) {
+            $lang_name = $tmplang[3] . ' - '
+                . $lang_name;
+        }
 
         //Is current one active?
         if ($lang == $id) {

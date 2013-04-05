@@ -2,7 +2,8 @@
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
 *
-* @package PhpMyAdmin
+* @version $Id$
+* @package phpMyAdmin
 */
 
 if (! defined('PHPMYADMIN')) {
@@ -11,21 +12,12 @@ if (! defined('PHPMYADMIN')) {
 
 $ID_KEY      = 'noplugin';
 
-/**
- * Returns upload status.
- *
- * This is implementation when no webserver support exists, so it returns just zeroes.
- *
- * @param string $id
- * @return array|null
- */
-function PMA_getUploadStatus($id)
-{
+function PMA_getUploadStatus($id) {
     global $SESSION_KEY;
     global $ID_KEY;
-
+  
     if (trim($id) == "") {
-        return null;
+        return;
     }
     if (! array_key_exists($id, $_SESSION[$SESSION_KEY])) {
         $_SESSION[$SESSION_KEY][$id] = array(
@@ -34,7 +26,7 @@ function PMA_getUploadStatus($id)
                     'percent'  => 0,
                     'total'    => 0,
                     'complete' => 0,
-                    'plugin'   => $ID_KEY
+	        	    'plugin'   => $ID_KEY
         );
     }
     $ret = $_SESSION[$SESSION_KEY][$id];

@@ -104,7 +104,8 @@
     ?>
   </div>
 <?php
-      print "dbname ".$_SERVER["DB1_NAME"]." username ".$_SERVER["DB1_USER"]." passwd ".$_SERVER["DB1_PASS"]." host ".$_SERVER["DB1_HOST"].'port'.$_SERVER["DB1_PORT"];
+// in case you need pagodabox db credentials
+      //print "dbname ".$_SERVER["DB1_NAME"]." username ".$_SERVER["DB1_USER"]." passwd ".$_SERVER["DB1_PASS"]." host ".$_SERVER["DB1_HOST"].'port'.$_SERVER["DB1_PORT"];
 ?>
   <?php
     // Remove the "Add new comment" link on the teaser page or if the comment

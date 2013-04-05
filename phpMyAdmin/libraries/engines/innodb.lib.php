@@ -1,36 +1,46 @@
 <?php
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
- * @package PhpMyAdmin-Engines
+ * @version $Id$
+ * @package phpMyAdmin-Engines
  */
 
 /**
  *
- * @package PhpMyAdmin-Engines
+ * @package phpMyAdmin-Engines
  */
 class PMA_StorageEngine_innodb extends PMA_StorageEngine
 {
     /**
+     * @uses    $GLOBALS['strInnoDBDataHomeDir']
+     * @uses    $GLOBALS['strInnoDBDataHomeDirDesc']
+     * @uses    $GLOBALS['strInnoDBDataFilePath']
+     * @uses    $GLOBALS['strInnoDBAutoextendIncrement']
+     * @uses    $GLOBALS['strInnoDBAutoextendIncrementDesc']
+     * @uses    $GLOBALS['strInnoDBBufferPoolSize']
+     * @uses    $GLOBALS['strInnoDBBufferPoolSizeDesc']
+     * @uses    PMA_ENGINE_DETAILS_TYPE_NUMERIC
+     * @uses    PMA_ENGINE_DETAILS_TYPE_SIZE
      * @return  array
      */
     function getVariables()
     {
         return array(
             'innodb_data_home_dir' => array(
-                'title' => __('Data home directory'),
-                'desc'  => __('The common part of the directory path for all InnoDB data files.'),
+                'title' => $GLOBALS['strInnoDBDataHomeDir'],
+                'desc'  => $GLOBALS['strInnoDBDataHomeDirDesc'],
             ),
             'innodb_data_file_path' => array(
-                'title' => __('Data files'),
+                'title' => $GLOBALS['strInnoDBDataFilePath'],
             ),
             'innodb_autoextend_increment' => array(
-                'title' => __('Autoextend increment'),
-                'desc'  => __('The increment size for extending the size of an autoextending tablespace when it becomes full.'),
+                'title' => $GLOBALS['strInnoDBAutoextendIncrement'],
+                'desc'  => $GLOBALS['strInnoDBAutoextendIncrementDesc'],
                 'type'  => PMA_ENGINE_DETAILS_TYPE_NUMERIC,
             ),
             'innodb_buffer_pool_size' => array(
-                'title' => __('Buffer pool size'),
-                'desc'  => __('The size of the memory buffer InnoDB uses to cache data and indexes of its tables.'),
+                'title' => $GLOBALS['strInnoDBBufferPoolSize'],
+                'desc'  => $GLOBALS['strInnoDBBufferPoolSizeDesc'],
                 'type'  => PMA_ENGINE_DETAILS_TYPE_SIZE,
             ),
             'innodb_additional_mem_pool_size' => array(
@@ -119,6 +129,10 @@ class PMA_StorageEngine_innodb extends PMA_StorageEngine
     }
 
     /**
+     * @uses    $this->support
+     * @uses    PMA_ENGINE_SUPPORT_YES
+     * @uses    $GLOBALS['strBufferPool']
+     * @uses    $GLOBALS['strInnodbStat']
      * @return  array   detail pages
      */
     function getInfoPages()
@@ -127,19 +141,41 @@ class PMA_StorageEngine_innodb extends PMA_StorageEngine
             return array();
         }
         $pages = array();
-        $pages['Bufferpool'] = __('Buffer Pool');
-        $pages['Status'] = __('InnoDB Status');
+        $pages['Bufferpool'] = $GLOBALS['strBufferPool'];
+        $pages['Status'] = $GLOBALS['strInnodbStat'];
         return $pages;
     }
 
     /**
      * returns html tables with stats over inno db buffer pool
      *
+     * @uses    PMA_DBI_fetch_result()
+     * @uses    PMA_formatNumber()
+     * @uses    PMA_formatByteDown()
+     * @uses    $GLOBALS['strBufferPoolUsage']
+     * @uses    $GLOBALS['strTotalUC']
+     * @uses    $GLOBALS['strInnoDBPages']
+     * @uses    $GLOBALS['strFreePages']
+     * @uses    $GLOBALS['strDirtyPages']
+     * @uses    $GLOBALS['strDataPages']
+     * @uses    $GLOBALS['strPagesToBeFlushed']
+     * @uses    $GLOBALS['strBusyPages']
+     * @uses    $GLOBALS['strLatchedPages']
+     * @uses    $GLOBALS['strBufferPoolActivity']
+     * @uses    $GLOBALS['strReadRequests']
+     * @uses    $GLOBALS['strWriteRequests']
+     * @uses    $GLOBALS['strBufferReadMisses']
+     * @uses    $GLOBALS['strBufferWriteWaits']
+     * @uses    $GLOBALS['strBufferReadMissesInPercent']
+     * @uses    $GLOBALS['strBufferWriteWaitsInPercent']
+     * @uses    join()
+     * @uses    htmlspecialchars()
+     * @uses    PMA_formatNumber()
      * @return  string  html table with stats
      */
     function getPageBufferpool()
     {
-        // The following query is only possible because we know
+        // rabus: The following query is only possible because we know
         // that we are on MySQL 5 here (checked above)!
         // side note: I love MySQL 5 for this. :-)
         $sql = '
@@ -150,15 +186,15 @@ class PMA_StorageEngine_innodb extends PMA_StorageEngine
 
         $output = '<table class="data" id="table_innodb_bufferpool_usage">' . "\n"
                 . '    <caption class="tblHeaders">' . "\n"
-                . '        ' . __('Buffer Pool Usage') . "\n"
+                . '        ' . $GLOBALS['strBufferPoolUsage'] . "\n"
                 . '    </caption>' . "\n"
                 . '    <tfoot>' . "\n"
                 . '        <tr>' . "\n"
                 . '            <th colspan="2">' . "\n"
-                . '                ' . __('Total') . "\n"
+                . '                ' . $GLOBALS['strTotalUC'] . "\n"
                 . '                : ' . PMA_formatNumber(
                         $status['Innodb_buffer_pool_pages_total'], 0)
-                . '&nbsp;' . __('pages')
+                . '&nbsp;' . $GLOBALS['strInnoDBPages']
                 . ' / '
                 . join('&nbsp;',
                     PMA_formatByteDown($status['Innodb_buffer_pool_pages_total'] * $status['Innodb_page_size'])) . "\n"
@@ -167,31 +203,31 @@ class PMA_StorageEngine_innodb extends PMA_StorageEngine
                 . '    </tfoot>' . "\n"
                 . '    <tbody>' . "\n"
                 . '        <tr class="odd">' . "\n"
-                . '            <th>' . __('Free pages') . '</th>' . "\n"
+                . '            <th>' . $GLOBALS['strFreePages'] . '</th>' . "\n"
                 . '            <td class="value">'
                 . PMA_formatNumber($status['Innodb_buffer_pool_pages_free'], 0)
                 . '</td>' . "\n"
                 . '        </tr>' . "\n"
                 . '        <tr class="even">' . "\n"
-                . '            <th>' . __('Dirty pages') . '</th>' . "\n"
+                . '            <th>' . $GLOBALS['strDirtyPages'] . '</th>' . "\n"
                 . '            <td class="value">'
                 . PMA_formatNumber($status['Innodb_buffer_pool_pages_dirty'], 0)
                 . '</td>' . "\n"
                 . '        </tr>' . "\n"
                 . '        <tr class="odd">' . "\n"
-                . '            <th>' . __('Pages containing data') . '</th>' . "\n"
+                . '            <th>' . $GLOBALS['strDataPages'] . '</th>' . "\n"
                 . '            <td class="value">'
                 . PMA_formatNumber($status['Innodb_buffer_pool_pages_data'], 0) . "\n"
                 . '</td>' . "\n"
                 . '        </tr>' . "\n"
                 . '        <tr class="even">' . "\n"
-                . '            <th>' . __('Pages to be flushed') . '</th>' . "\n"
+                . '            <th>' . $GLOBALS['strPagesToBeFlushed'] . '</th>' . "\n"
                 . '            <td class="value">'
                 . PMA_formatNumber($status['Innodb_buffer_pool_pages_flushed'], 0) . "\n"
                 . '</td>' . "\n"
                 . '        </tr>' . "\n"
                 . '        <tr class="odd">' . "\n"
-                . '            <th>' . __('Busy pages') . '</th>' . "\n"
+                . '            <th>' . $GLOBALS['strBusyPages'] . '</th>' . "\n"
                 . '            <td class="value">'
                 . PMA_formatNumber($status['Innodb_buffer_pool_pages_misc'], 0) . "\n"
                 . '</td>' . "\n"
@@ -200,7 +236,7 @@ class PMA_StorageEngine_innodb extends PMA_StorageEngine
             // not present at least since MySQL 5.1.40
             if (isset($status['Innodb_buffer_pool_pages_latched'])) {
                 $output .= '        <tr class="even">'
-                . '            <th>' . __('Latched pages') . '</th>'
+                . '            <th>' . $GLOBALS['strLatchedPages'] . '</th>'
                 . '            <td class="value">'
                 . PMA_formatNumber($status['Innodb_buffer_pool_pages_latched'], 0)
                 . '</td>'
@@ -211,35 +247,35 @@ class PMA_StorageEngine_innodb extends PMA_StorageEngine
                 . '</table>' . "\n\n"
                 . '<table class="data" id="table_innodb_bufferpool_activity">' . "\n"
                 . '    <caption class="tblHeaders">' . "\n"
-                . '        ' . __('Buffer Pool Activity') . "\n"
+                . '        ' . $GLOBALS['strBufferPoolActivity'] . "\n"
                 . '    </caption>' . "\n"
                 . '    <tbody>' . "\n"
                 . '        <tr class="odd">' . "\n"
-                . '            <th>' . __('Read requests') . '</th>' . "\n"
+                . '            <th>' . $GLOBALS['strReadRequests'] . '</th>' . "\n"
                 . '            <td class="value">'
                 . PMA_formatNumber($status['Innodb_buffer_pool_read_requests'], 0) . "\n"
                 . '</td>' . "\n"
                 . '        </tr>' . "\n"
                 . '        <tr class="even">' . "\n"
-                . '            <th>' . __('Write requests') . '</th>' . "\n"
+                . '            <th>' . $GLOBALS['strWriteRequests'] . '</th>' . "\n"
                 . '            <td class="value">'
                 . PMA_formatNumber($status['Innodb_buffer_pool_write_requests'], 0) . "\n"
                 . '</td>' . "\n"
                 . '        </tr>' . "\n"
                 . '        <tr class="odd">' . "\n"
-                . '            <th>' . __('Read misses') . '</th>' . "\n"
+                . '            <th>' . $GLOBALS['strBufferReadMisses'] . '</th>' . "\n"
                 . '            <td class="value">'
                 . PMA_formatNumber($status['Innodb_buffer_pool_reads'], 0) . "\n"
                 . '</td>' . "\n"
                 . '        </tr>' . "\n"
                 . '        <tr class="even">' . "\n"
-                . '            <th>' . __('Write waits') . '</th>' . "\n"
+                . '            <th>' . $GLOBALS['strBufferWriteWaits'] . '</th>' . "\n"
                 . '            <td class="value">'
                 . PMA_formatNumber($status['Innodb_buffer_pool_wait_free'], 0) . "\n"
                 . '</td>' . "\n"
                 . '        </tr>' . "\n"
                 . '        <tr class="odd">' . "\n"
-                . '            <th>' . __('Read misses in %') . '</th>' . "\n"
+                . '            <th>' . $GLOBALS['strBufferReadMissesInPercent'] . '</th>' . "\n"
                 . '            <td class="value">'
                 . ($status['Innodb_buffer_pool_read_requests'] == 0
                     ? '---'
@@ -247,7 +283,7 @@ class PMA_StorageEngine_innodb extends PMA_StorageEngine
                 . '</td>' . "\n"
                 . '        </tr>' . "\n"
                 . '        <tr class="even">' . "\n"
-                . '            <th>' . __('Write waits in %') . '</th>' . "\n"
+                . '            <th>' . $GLOBALS['strBufferWriteWaitsInPercent'] . '</th>' . "\n"
                 . '            <td class="value">'
                 . ($status['Innodb_buffer_pool_write_requests'] == 0
                     ? '---'
@@ -262,6 +298,8 @@ class PMA_StorageEngine_innodb extends PMA_StorageEngine
     /**
      * returns InnoDB status
      *
+     * @uses    htmlspecialchars()
+     * @uses    PMA_DBI_fetch_value()
      * @return  string  result of SHOW INNODB STATUS inside pre tags
      */
     function getPageStatus()
@@ -274,6 +312,8 @@ class PMA_StorageEngine_innodb extends PMA_StorageEngine
     /**
      * returns content for page $id
      *
+     * @uses    $this->getInfoPages()
+     * @uses    array_key_exists()
      * @param   string  $id page id
      * @return  string  html output
      */

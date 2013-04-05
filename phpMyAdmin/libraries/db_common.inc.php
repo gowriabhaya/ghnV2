@@ -2,7 +2,8 @@
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  *
- * @package PhpMyAdmin
+ * @version $Id$
+ * @package phpMyAdmin
  */
 if (! defined('PHPMYADMIN')) {
     exit;
@@ -18,9 +19,11 @@ PMA_checkParameters(array('db'));
 
 $is_show_stats = $cfg['ShowStats'];
 
-$db_is_information_schema = PMA_is_system_schema($db);
-if ($db_is_information_schema) {
+if ($db == 'information_schema') {
     $is_show_stats = false;
+    $db_is_information_schema = true;
+} else {
+    $db_is_information_schema = false;
 }
 
 /**
@@ -61,17 +64,9 @@ if (isset($submitcollation) && !empty($db_collation)) {
     $result           = PMA_DBI_query($sql_query);
     $message          = PMA_Message::success();
     unset($db_charset, $db_collation);
-
-    /**
-     * If we are in an Ajax request, let us stop the execution here. Necessary for
-     * db charset change action on db_operations.php.  If this causes a bug on
-     * other pages, we might have to move this to a different location.
-     */
-    if ( $GLOBALS['is_ajax_request'] == true) {
-        PMA_ajaxResponse($message, $message->isSuccess());
-    };
 }
 
+$GLOBALS['js_include'][] = 'functions.js';
 require_once './libraries/header.inc.php';
 
 /**

@@ -2,13 +2,15 @@
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  *
- * @package PhpMyAdmin
+ * @version $Id$
+ * @package phpMyAdmin
  */
 
 /**
  * Gets some core libraries
  */
 require_once './libraries/common.inc.php';
+require_once './libraries/Table.class.php';
 
 // Check parameters
 
@@ -41,19 +43,19 @@ if (empty($_REQUEST['target_db'])) {
 if (PMA_isValid($_REQUEST['new_name'])) {
     if ($db == $_REQUEST['target_db'] && $table == $_REQUEST['new_name']) {
         if (isset($_REQUEST['submit_move'])) {
-            $message = PMA_Message::error(__('Can\'t move table to same one!'));
+            $message = PMA_Message::error('strMoveTableSameNames');
         } else {
-            $message = PMA_Message::error(__('Can\'t copy table to same one!'));
+            $message = PMA_Message::error('strCopyTableSameNames');
         }
-        $result = false;
+        $goto = './tbl_operations.php';
     } else {
-        $result = PMA_Table::moveCopy($db, $table, $_REQUEST['target_db'], $_REQUEST['new_name'],
+        PMA_Table::moveCopy($db, $table, $_REQUEST['target_db'], $_REQUEST['new_name'],
             $_REQUEST['what'], isset($_REQUEST['submit_move']), 'one_table');
 
         if (isset($_REQUEST['submit_move'])) {
-            $message = PMA_Message::success(__('Table %s has been moved to %s.'));
+            $message = PMA_Message::success('strMoveTableOK');
         } else {
-            $message = PMA_Message::success(__('Table %s has been copied to %s.'));
+            $message = PMA_Message::success('strCopyTableOK');
         }
         $old = PMA_backquote($db) . '.' . PMA_backquote($table);
         $message->addParam($old);
@@ -65,26 +67,24 @@ if (PMA_isValid($_REQUEST['new_name'])) {
             $db        = $_REQUEST['target_db'];
             $table     = $_REQUEST['new_name'];
         }
-
-        if ( $_REQUEST['ajax_request'] == true) {
-            $extra_data['sql_query'] = PMA_showMessage(null, $sql_query);
-            $extra_data['db'] = $GLOBALS['db'];
-            PMA_ajaxResponse($message, $message->isSuccess(), $extra_data);
-        }
-
         $reload = 1;
+
+        $disp_query = $sql_query;
+        $disp_message = $message;
+        unset($sql_query, $message);
+
+        $goto = $cfg['DefaultTabTable'];
     }
 } else {
     /**
      * No new name for the table!
      */
-    $message = PMA_Message::error(__('The table name is empty!'));
-    $result = false;
+    $message = PMA_Message::error('strTableEmpty');
+    $goto = './tbl_operations.php';
 }
 
 /**
  * Back to the calling script
  */
-$_message = $message;
-unset($message);
+require $goto;
 ?>

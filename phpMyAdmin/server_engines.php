@@ -1,9 +1,11 @@
 <?php
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
- * display list of server engines and additonal information about them
+ * display list of server enignes and additonal information about them
  *
- * @package PhpMyAdmin
+ * @version $Id$
+ * @todo falcon storage enginge is not listed under dev.mysql.com/doc/refman but dev.mysql.com/doc/falcon/
+ * @package phpMyAdmin
  */
 
 /**
@@ -41,18 +43,20 @@ if (empty($_REQUEST['engine'])
      * Displays the sub-page heading
      */
     echo '<h2>' . "\n"
-       . ($GLOBALS['cfg']['MainPageIconic'] ? PMA_getImage('b_engine.png') : '')
-       . "\n" . __('Storage Engines') . "\n"
+       . ($GLOBALS['cfg']['MainPageIconic']
+            ? '<img class="icon" src="' . $pmaThemeImage . 'b_engine.png"'
+                .' width="16" height="16" alt="" />' : '')
+       . "\n" . $strStorageEngines . "\n"
        . '</h2>' . "\n";
 
 
     /**
      * Displays the table header
      */
-    echo '<table class="noclick">' . "\n"
+    echo '<table>' . "\n"
        . '<thead>' . "\n"
-       . '<tr><th>' . __('Storage Engine') . '</th>' . "\n"
-       . '    <th>' . __('Description') . '</th>' . "\n"
+       . '<tr><th>' . $strStorageEngine . '</th>' . "\n"
+       . '    <th>' . $strDescription . '</th>' . "\n"
        . '</tr>' . "\n"
        . '</thead>' . "\n"
        . '<tbody>' . "\n";
@@ -77,22 +81,7 @@ if (empty($_REQUEST['engine'])
            . '</tr>' . "\n";
         $odd_row = !$odd_row;
     }
-
-    $PMA_Config = $GLOBALS['PMA_Config'];
-    if ($PMA_Config->get('BLOBSTREAMING_PLUGINS_EXIST')) {
-        // Special case for PBMS daemon which is not listed as an engine
-        echo '<tr class="'
-            . ($odd_row ? 'odd' : 'even')
-            .  '">' . "\n"
-            . '    <td><a href="./server_engines.php'
-            . PMA_generate_common_url(array('engine' => "PBMS")) . '">' . "\n"
-            . '            '  . "PBMS\n"
-            . '        </a></td>' . "\n"
-            . '    <td>' . htmlspecialchars("PrimeBase MediaStream (PBMS) daemon") . '</td>' . "\n"
-            . '</tr>' . "\n";
-    }
-
-   unset($odd_row, $engine, $details);
+    unset($odd_row, $engine, $details);
     echo '</tbody>' . "\n"
        . '</table>' . "\n";
 
@@ -104,7 +93,9 @@ if (empty($_REQUEST['engine'])
 
     $engine_plugin = PMA_StorageEngine::getEngine($_REQUEST['engine']);
     echo '<h2>' . "\n"
-       . ($GLOBALS['cfg']['MainPageIconic'] ? PMA_getImage('b_engine.png') : '')
+       . ($GLOBALS['cfg']['MainPageIconic']
+            ? '<img class="icon" src="' . $pmaThemeImage . 'b_engine.png"'
+                .' width="16" height="16" alt="" />' : '')
        . '    ' . htmlspecialchars($engine_plugin->getTitle()) . "\n"
        . '    ' . PMA_showMySQLDocu('', $engine_plugin->getMysqlHelpPage()) . "\n"
        . '</h2>' . "\n\n";
@@ -118,11 +109,11 @@ if (empty($_REQUEST['engine'])
         echo '<p>' . "\n"
            . '    <strong>[</strong>' . "\n";
         if (empty($_REQUEST['page'])) {
-            echo '    <strong>' . __('Variables') . '</strong>' . "\n";
+            echo '    <strong>' . $strServerTabVariables . '</strong>' . "\n";
         } else {
             echo '    <a href="./server_engines.php'
                 . PMA_generate_common_url(array('engine' => $_REQUEST['engine'])) . '">'
-                . __('Variables') . '</a>' . "\n";
+                . $strServerTabVariables . '</a>' . "\n";
         }
         foreach ($infoPages as $current => $label) {
             echo '    <strong>|</strong>' . "\n";
@@ -155,6 +146,6 @@ if (empty($_REQUEST['engine'])
 /**
  * Sends the footer
  */
-require './libraries/footer.inc.php';
+require_once './libraries/footer.inc.php';
 
 ?>

@@ -3,8 +3,8 @@
 /**
  * SQL import plugin for phpMyAdmin
  *
- * @package PhpMyAdmin-Import
- * @subpackage SQL
+ * @version $Id$
+ * @package phpMyAdmin-Import
  */
 if (! defined('PHPMYADMIN')) {
     exit;
@@ -15,22 +15,21 @@ if (! defined('PHPMYADMIN')) {
  */
 if (isset($plugin_list)) {
     $plugin_list['sql'] = array(
-        'text'          => __('SQL'),
+        'text'          => 'strSQL',
         'extension'     => 'sql',
-        'options_text'  => __('Options'),
+        'options_text'  => 'strOptions',
     );
     $compats = PMA_DBI_getCompatibilities();
     if (count($compats) > 0) {
         $values = array();
-        foreach ($compats as $val) {
+        foreach($compats as $val) {
             $values[$val] = $val;
         }
         $plugin_list['sql']['options'] = array(
-            array('type' => 'begin_group', 'name' => 'general_opts'),
             array(
                 'type'      => 'select',
                 'name'      => 'compatibility',
-                'text'      => __('SQL compatibility mode:'),
+                'text'      => 'strSQLCompatibility',
                 'values'    => $values,
                 'doc'       => array(
                     'manual_MySQL_Database_Administration',
@@ -38,9 +37,9 @@ if (isset($plugin_list)) {
                 ),
             ),
             array(
-                'type' => 'bool',
-                'name' => 'no_auto_value_on_zero',
-                'text' => __('Do not use <code>AUTO_INCREMENT</code> for zero values'),
+                'type' => 'bool', 
+                'name' => 'no_auto_value_on_zero', 
+                'text' => 'strDoNotAutoIncrementZeroValues',
                 'doc'       => array(
                     'manual_MySQL_Database_Administration',
                     'Server_SQL_mode',
@@ -48,7 +47,6 @@ if (isset($plugin_list)) {
                 ),
 
             ),
-            array('type' => 'end_group'),
         );
     }
 
@@ -94,11 +92,11 @@ $GLOBALS['finished'] = false;
 
 while (!($GLOBALS['finished'] && $i >= $len) && !$error && !$timeout_passed) {
     $data = PMA_importGetNextChunk();
-    if ($data === false) {
+    if ($data === FALSE) {
         // subtract data we didn't handle yet and stop processing
         $offset -= strlen($buffer);
         break;
-    } elseif ($data === true) {
+    } elseif ($data === TRUE) {
         // Handle rest of buffer
     } else {
         // Append new data to buffer
@@ -106,7 +104,7 @@ while (!($GLOBALS['finished'] && $i >= $len) && !$error && !$timeout_passed) {
         // free memory
         unset($data);
         // Do not parse string when we're not at the end and don't have ; inside
-        if ((strpos($buffer, $sql_delimiter, $i) === false) && !$GLOBALS['finished']) {
+        if ((strpos($buffer, $sql_delimiter, $i) === FALSE) && !$GLOBALS['finished'])  {
             continue;
         }
     }
@@ -133,7 +131,7 @@ while (!($GLOBALS['finished'] && $i >= $len) && !$error && !$timeout_passed) {
          */
         // the cost of doing this one with preg_match() would be too high
         $first_sql_delimiter = strpos($buffer, $sql_delimiter, $i);
-        if ($first_sql_delimiter === false) {
+        if ($first_sql_delimiter === FALSE) {
             $first_sql_delimiter = $big_value;
         } else {
             $found_delimiter = true;
@@ -163,29 +161,17 @@ while (!($GLOBALS['finished'] && $i >= $len) && !$error && !$timeout_passed) {
         $ch = $buffer[$i];
 
         // Quotes
-        if (strpos('\'"`', $ch) !== false) {
+        if (strpos('\'"`', $ch) !== FALSE) {
             $quote = $ch;
-            $endq = false;
+            $endq = FALSE;
             while (!$endq) {
                 // Find next quote
                 $pos = strpos($buffer, $quote, $i + 1);
-                /*
-                 * Behave same as MySQL and accept end of query as end of backtick.
-                 * I know this is sick, but MySQL behaves like this:
-                 *
-                 * SELECT * FROM `table
-                 *
-                 * is treated like
-                 *
-                 * SELECT * FROM `table`
-                 */
-                if ($pos === false && $quote == '`' && $found_delimiter) {
-                    $pos = $first_sql_delimiter - 1;
                 // No quote? Too short string
-                } elseif ($pos === false) {
+                if ($pos === FALSE) {
                     // We hit end of string => unclosed quote, but we handle it as end of query
                     if ($GLOBALS['finished']) {
-                        $endq = true;
+                        $endq = TRUE;
                         $i = $len - 1;
                     }
                     $found_delimiter = false;
@@ -235,11 +221,11 @@ while (!($GLOBALS['finished'] && $i >= $len) && !$error && !$timeout_passed) {
             }
             // Skip the rest
             $start_of_comment = $i;
-            // do not use PHP_EOL here instead of "\n", because the export
+            // do not use PHP_EOL here instead of "\n", because the export 
             // file might have been produced on a different system
             $i = strpos($buffer, $ch == '/' ? '*/' : "\n", $i);
             // didn't we hit end of string?
-            if ($i === false) {
+            if ($i === FALSE) {
                 if ($GLOBALS['finished']) {
                     $i = $len - 1;
                 } else {
@@ -271,7 +257,7 @@ while (!($GLOBALS['finished'] && $i >= $len) && !$error && !$timeout_passed) {
              // (see previous comment about PHP_EOL)
            $new_line_pos = strpos($buffer, "\n", $i + $length_of_delimiter_keyword);
            // it might happen that there is no EOL
-           if (false === $new_line_pos) {
+           if (FALSE === $new_line_pos) {
                $new_line_pos = $len;
            }
            $sql_delimiter = substr($buffer, $i + $length_of_delimiter_keyword, $new_line_pos - $i - $length_of_delimiter_keyword);
@@ -304,8 +290,8 @@ while (!($GLOBALS['finished'] && $i >= $len) && !$error && !$timeout_passed) {
                 $i = 0;
                 $start_pos = 0;
                 // Any chance we will get a complete query?
-                //if ((strpos($buffer, ';') === false) && !$GLOBALS['finished']) {
-                if ((strpos($buffer, $sql_delimiter) === false) && !$GLOBALS['finished']) {
+                //if ((strpos($buffer, ';') === FALSE) && !$GLOBALS['finished']) {
+                if ((strpos($buffer, $sql_delimiter) === FALSE) && !$GLOBALS['finished']) {
                     break;
                 }
             } else {

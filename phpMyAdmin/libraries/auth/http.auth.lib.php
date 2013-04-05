@@ -4,7 +4,8 @@
  * Set of functions used to run http authentication.
  * NOTE: Requires PHP loaded as a Apache module.
  *
- * @package PhpMyAdmin-Auth-HTTP
+ * @package phpMyAdmin-Auth-HTTP
+ * @version $Id$
  */
 
 
@@ -27,49 +28,44 @@ function PMA_auth()
         exit;
     }
 
-    if (empty($GLOBALS['cfg']['Server']['auth_http_realm'])) {
-        if (empty($GLOBALS['cfg']['Server']['verbose'])) {
-            $server_message = $GLOBALS['cfg']['Server']['host'];
-        } else {
-            $server_message = $GLOBALS['cfg']['Server']['verbose'];
-        }
-        $realm_message = 'phpMyAdmin ' . $server_message;
+    if (empty($GLOBALS['cfg']['Server']['verbose'])) {
+        $server_message = $GLOBALS['cfg']['Server']['host'];
     } else {
-        $realm_message = $GLOBALS['cfg']['Server']['auth_http_realm'];
+        $server_message = $GLOBALS['cfg']['Server']['verbose'];
     }
     // remove non US-ASCII to respect RFC2616
-    $realm_message = preg_replace('/[^\x20-\x7e]/i', '', $realm_message);
-    header('WWW-Authenticate: Basic realm="' . $realm_message .  '"');
+    $server_message = preg_replace('/[^\x20-\x7e]/i', '', $server_message);
+    header('WWW-Authenticate: Basic realm="phpMyAdmin ' . $server_message .  '"');
     header('HTTP/1.0 401 Unauthorized');
     if (php_sapi_name() !== 'cgi-fcgi') {
-        header('status: 401 Unauthorized');
+	header('status: 401 Unauthorized');
     }
 
     // Defines the charset to be used
-    header('Content-Type: text/html; charset=utf-8');
+    header('Content-Type: text/html; charset=' . $GLOBALS['charset']);
     /* HTML header */
-    $page_title = __('Access denied');
-    include './libraries/header_meta_style.inc.php';
+    $page_title = $GLOBALS['strAccessDenied'];
+    require './libraries/header_meta_style.inc.php';
     ?>
 </head>
 <body>
     <?php
-    if (file_exists(CUSTOM_HEADER_FILE)) {
-        include CUSTOM_HEADER_FILE;
+    if (file_exists('./config.header.inc.php')) {
+        require './config.header.inc.php';
     }
     ?>
 
 <br /><br />
 <center>
-    <h1><?php echo sprintf(__('Welcome to %s'), ' phpMyAdmin'); ?></h1>
+    <h1><?php echo sprintf($GLOBALS['strWelcome'], ' phpMyAdmin'); ?></h1>
 </center>
 <br />
 
     <?php
-    PMA_Message::error(__('Wrong username/password. Access denied.'))->display();
+    PMA_Message::error('strWrongUser')->display();
 
-    if (file_exists(CUSTOM_FOOTER_FILE)) {
-        include CUSTOM_FOOTER_FILE;
+    if (file_exists('./config.footer.inc.php')) {
+        require './config.footer.inc.php';
     }
     ?>
 
@@ -206,10 +202,6 @@ function PMA_auth_set_user()
 
     $cfg['Server']['user']     = $PHP_AUTH_USER;
     $cfg['Server']['password'] = $PHP_AUTH_PW;
-
-    // Avoid showing the password in phpinfo()'s output
-    unset($GLOBALS['PHP_AUTH_PW']);
-    unset($_SERVER['PHP_AUTH_PW']);
 
     return true;
 } // end of the 'PMA_auth_set_user()' function

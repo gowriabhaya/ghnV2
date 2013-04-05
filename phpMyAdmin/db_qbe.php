@@ -3,13 +3,17 @@
 /**
  * query by example the whole database
  *
- * @package PhpMyAdmin
+ * @version $Id$
+ * @package phpMyAdmin
  */
 
 /**
  * requirements
  */
 require_once './libraries/common.inc.php';
+require_once './libraries/Table.class.php';
+require_once './libraries/relation.lib.php';
+
 
 /**
  * Gets the relation settings
@@ -18,29 +22,26 @@ $cfgRelation = PMA_getRelationsParam();
 
 
 /**
- * A query has been submitted -> (maybe) execute it
+ * A query has been submitted -> execute it, else display the headers
  */
-$message_to_display = false;
 if (isset($_REQUEST['submit_sql']) && ! empty($sql_query)) {
-    if (! preg_match('@^SELECT@i', $sql_query)) {
-        $message_to_display = true;
-    } else {
-        $goto      = 'db_sql.php';
-        include './sql.php';
-        exit;
-    }
+    $goto      = 'db_sql.php';
+    $zero_rows = htmlspecialchars($GLOBALS['strSuccess']);
+    require './sql.php';
+    exit;
+} else {
+    $sub_part  = '_qbe';
+    require './libraries/db_common.inc.php';
+    $url_query .= '&amp;goto=db_qbe.php';
+    $url_params['goto'] = 'db_qbe.php';
+    require './libraries/db_info.inc.php';
 }
 
-$sub_part  = '_qbe';
-require './libraries/db_common.inc.php';
-$url_query .= '&amp;goto=db_qbe.php';
-$url_params['goto'] = 'db_qbe.php';
-require './libraries/db_info.inc.php';
-
-if ($message_to_display) {
-    PMA_Message::error(__('You have to choose at least one column to display'))->display();
+if (isset($_REQUEST['submit_sql'])
+ && ! preg_match('@^SELECT@i', $sql_query)) {
+    PMA_Message::warning('strHaveToShow')->display();
 }
-unset($message_to_display);
+
 
 /**
  * Initialize some variables
@@ -98,14 +99,14 @@ if (PMA_isValid($_REQUEST['TableList'], 'array')) {
 $tbl_result     = PMA_DBI_query('SHOW TABLES FROM ' . PMA_backquote($db) . ';', null, PMA_DBI_QUERY_STORE);
 $tbl_result_cnt = PMA_DBI_num_rows($tbl_result);
 if (0 == $tbl_result_cnt) {
-    PMA_Message::error(__('No tables found in database.'))->display();
-    include './libraries/footer.inc.php';
+    PMA_Message::error('strNoTablesFound')->display();
+    require_once './libraries/footer.inc.php';
     exit;
 }
 
 // The tables list gets from MySQL
 while (list($tbl) = PMA_DBI_fetch_row($tbl_result)) {
-    $fld_results = PMA_DBI_get_columns($db, $tbl);
+    $fld_results = PMA_DBI_get_fields($db, $tbl);
 
     if (empty($tbl_names[$tbl]) && !empty($_REQUEST['TableList'])) {
         $tbl_names[$tbl] = '';
@@ -140,7 +141,7 @@ $realwidth = $form_column_width . 'ex';
  * Enter description here...
  *
  * @param array     $columns
- * @param integer   $column_number
+ * @param numeric   $column_number
  * @param string    $selected
  */
 function showColumnSelectCell($columns, $column_number, $selected = '')
@@ -166,34 +167,11 @@ function showColumnSelectCell($columns, $column_number, $selected = '')
 }
 
 ?>
-<?php if (!empty($tab_designer['link'])) {
-        $tab_designer['link'] = htmlentities($tab_designer['link']);
-        $tab_designer['link'] = $tab_designer['link'] . PMA_generate_common_url($url_params);
-        if (! empty($tab_designer['args'])) {
-            foreach ($tab_designer['args'] as $param => $value) {
-                $tab_designer['link'] .= PMA_get_arg_separator('html') . urlencode($param) . '='
-                    . urlencode($value);
-            }
-        }
-    }
-    if (! empty($tab['fragment'])) {
-        $tab['link'] .= $tab['fragment'];
-    }
-    if (isset($tab_designer['link'])) {
-?>
-<div id="visual_builder_anchor" class="notice hide">
-    <span id="footnote_1">
-<?php printf(__('Switch to %svisual builder%s'), ' <a href="' . $tab_designer['link'] . PMA_get_arg_separator('html') . 'query=1">', '</a>'); ?>
-    </span>
-</div>
-<?php
-    }
-?>
 <form action="db_qbe.php" method="post">
 <fieldset>
 <table class="data" style="width: 100%;">
 <tr class="odd noclick">
-    <th><?php echo __('Column'); ?>:</th>
+    <th><?php echo $strField; ?>:</th>
 <?php
 $z = 0;
 for ($x = 0; $x < $col; $x++) {
@@ -219,7 +197,7 @@ for ($x = 0; $x < $col; $x++) {
 
 <!-- Sort row -->
 <tr class="even noclick">
-    <th><?php echo __('Sort'); ?>:</th>
+    <th><?php echo $strSort; ?>:</th>
 <?php
 $z = 0;
 for ($x = 0; $x < $col; $x++) {
@@ -228,8 +206,8 @@ for ($x = 0; $x < $col; $x++) {
     <td align="center">
         <select style="width: <?php echo $realwidth; ?>" name="Sort[<?php echo $z; ?>]" size="1">
             <option value="">&nbsp;</option>
-            <option value="ASC"><?php echo __('Ascending'); ?></option>
-            <option value="DESC"><?php echo __('Descending'); ?></option>
+            <option value="ASC"><?php echo $strAscending; ?></option>
+            <option value="DESC"><?php echo $strDescending; ?></option>
         </select>
     </td>
         <?php
@@ -249,7 +227,7 @@ for ($x = 0; $x < $col; $x++) {
 
     // If they have chosen all fields using the * selector,
     // then sorting is not available
-    // Fix for Bug #570698
+    // Robbat2 - Fix for Bug #570698
     if (isset($Sort[$x]) && isset($Field[$x])
      && substr($Field[$x], -2) == '.*') {
         $Sort[$x] = '';
@@ -262,7 +240,7 @@ for ($x = 0; $x < $col; $x++) {
         $sel         = '';
     } // end if
     echo '                ';
-    echo '<option value="ASC"' . $sel . '>' . __('Ascending') . '</option>' . "\n";
+    echo '<option value="ASC"' . $sel . '>' . $strAscending . '</option>' . "\n";
     if (isset($Sort[$x]) && $Sort[$x] == 'DESC') {
         $curSort[$z] = $Sort[$x];
         $sel         = ' selected="selected"';
@@ -270,7 +248,7 @@ for ($x = 0; $x < $col; $x++) {
         $sel         = '';
     } // end if
     echo '                ';
-    echo '<option value="DESC"' . $sel . '>' . __('Descending') . '</option>' . "\n";
+    echo '<option value="DESC"' . $sel . '>' . $strDescending . '</option>' . "\n";
     ?>
         </select>
     </td>
@@ -283,7 +261,7 @@ for ($x = 0; $x < $col; $x++) {
 
 <!-- Show row -->
 <tr class="odd noclick">
-    <th><?php echo __('Show'); ?>:</th>
+    <th><?php echo $strShow; ?>:</th>
 <?php
 $z = 0;
 for ($x = 0; $x < $col; $x++) {
@@ -319,7 +297,7 @@ for ($x = 0; $x < $col; $x++) {
 
 <!-- Criteria row -->
 <tr class="even noclick">
-    <th><?php echo __('Criteria'); ?>:</th>
+    <th><?php echo $strCriteria; ?>:</th>
 <?php
 $z = 0;
 for ($x = 0; $x < $col; $x++) {
@@ -337,18 +315,18 @@ for ($x = 0; $x < $col; $x++) {
         continue;
     }
     if (isset($criteria[$x])) {
-        $tmp_criteria = $criteria[$x];
+        $stripped_Criteria = $criteria[$x];
     }
-    if ((empty($prev_criteria) || ! isset($prev_criteria[$x]))
-        || $prev_criteria[$x] != htmlspecialchars($tmp_criteria)) {
-        $curCriteria[$z]   = $tmp_criteria;
+    if ((empty($prev_criteria) || !isset($prev_criteria[$x]))
+        || $prev_criteria[$x] != htmlspecialchars($stripped_Criteria)) {
+        $curCriteria[$z]   = $stripped_Criteria;
     } else {
         $curCriteria[$z]   = $prev_criteria[$x];
     }
     ?>
     <td align="center">
         <input type="hidden" name="prev_criteria[<?php echo $z; ?>]" value="<?php echo htmlspecialchars($curCriteria[$z]); ?>" />
-        <input type="text" name="criteria[<?php echo $z; ?>]" value="<?php echo htmlspecialchars($tmp_criteria); ?>" class="textfield" style="width: <?php echo $realwidth; ?>" size="20" />
+        <input type="text" name="criteria[<?php echo $z; ?>]" value="<?php echo htmlspecialchars($stripped_Criteria); ?>" class="textfield" style="width: <?php echo $realwidth; ?>" size="20" />
     </td>
     <?php
     $z++;
@@ -372,11 +350,11 @@ for ($y = 0; $y <= $row; $y++) {
         <table cellpadding="0" cellspacing="0" border="0">
         <tr>
             <td align="<?php echo $cell_align_right; ?>" nowrap="nowrap">
-                <small><?php echo __('Ins'); ?>:</small>
+                <small><?php echo $strQBEIns; ?>:</small>
                 <input type="checkbox" name="ins_row[<?php echo $w; ?>]" />
             </td>
             <td align="<?php echo $cell_align_right; ?>">
-                <strong><?php echo __('And'); ?>:</strong>
+                <strong><?php echo $strAnd; ?>:</strong>
             </td>
             <td>
                 <input type="radio" name="and_or_row[<?php echo $w; ?>]" value="and"<?php echo $chk['and']; ?> />
@@ -385,11 +363,11 @@ for ($y = 0; $y <= $row; $y++) {
         </tr>
         <tr>
             <td align="<?php echo $cell_align_right; ?>" nowrap="nowrap">
-                <small><?php echo __('Del'); ?>:</small>
+                <small><?php echo $strQBEDel; ?>:</small>
                 <input type="checkbox" name="del_row[<?php echo $w; ?>]" />
             </td>
             <td align="<?php echo $cell_align_right; ?>">
-                <strong><?php echo __('Or'); ?>:</strong>
+                <strong><?php echo $strOr; ?>:</strong>
             </td>
             <td>
                 <input type="radio" name="and_or_row[<?php echo $w; ?>]" value="or"<?php echo $chk['or']; ?> />
@@ -406,7 +384,7 @@ for ($y = 0; $y <= $row; $y++) {
                 $or = 'Or' . $w . '[' . $z . ']';
                 ?>
     <td align="center">
-        <input type="text" name="Or<?php echo $or; ?>" class="textfield" style="width: <?php echo $realwidth; ?>" size="20" />
+        <textarea cols="20" rows="2" style="width: <?php echo $realwidth; ?>" name="<?php echo $or; ?>" dir="<?php echo $text_dir; ?>"></textarea>
     </td>
                 <?php
                 $z++;
@@ -419,7 +397,7 @@ for ($y = 0; $y <= $row; $y++) {
             $or = 'Or' . $w . '[' . $z . ']';
             ?>
     <td align="center">
-        <input type="text" name="Or<?php echo $or; ?>" class="textfield" style="width: <?php echo $realwidth; ?>" size="20" />
+        <textarea cols="20" rows="2" style="width: <?php echo $realwidth; ?>" name="<?php echo $or; ?>" dir="<?php echo $text_dir; ?>"></textarea>
     </td>
             <?php
             $z++;
@@ -454,11 +432,11 @@ for ($y = 0; $y <= $row; $y++) {
         <table border="0" cellpadding="0" cellspacing="0">
         <tr>
             <td align="<?php echo $cell_align_right; ?>" nowrap="nowrap">
-                <small><?php echo __('Ins'); ?>:</small>
+                <small><?php echo $strQBEIns; ?>:</small>
                 <input type="checkbox" name="ins_row[<?php echo $w; ?>]" />
             </td>
             <td align="<?php echo $cell_align_right; ?>">
-                <strong><?php echo __('And'); ?>:</strong>
+                <strong><?php echo $strAnd; ?>:</strong>
             </td>
             <td>
                 <input type="radio" name="and_or_row[<?php echo $w; ?>]" value="and"<?php echo $chk['and']; ?> />
@@ -466,11 +444,11 @@ for ($y = 0; $y <= $row; $y++) {
         </tr>
         <tr>
             <td align="<?php echo $cell_align_right; ?>" nowrap="nowrap">
-                <small><?php echo __('Del'); ?>:</small>
+                <small><?php echo $strQBEDel; ?>:</small>
                 <input type="checkbox" name="del_row[<?php echo $w; ?>]" />
             </td>
             <td align="<?php echo $cell_align_right; ?>">
-                <strong><?php echo __('Or'); ?>:</strong>
+                <strong><?php echo $strOr; ?>:</strong>
             </td>
             <td>
                 <input type="radio" name="and_or_row[<?php echo $w; ?>]" value="or"<?php echo $chk['or']; ?> />
@@ -486,7 +464,7 @@ for ($y = 0; $y <= $row; $y++) {
             $or = 'Or' . $w . '[' . $z . ']';
             ?>
     <td align="center">
-        <input type="text" name="Or<?php echo $or; ?>" class="textfield" style="width: <?php echo $realwidth; ?>" size="20" />
+        <textarea cols="20" rows="2" style="width: <?php echo $realwidth; ?>" name="<?php echo $or; ?>" dir="<?php echo $text_dir; ?>"></textarea>
     </td>
             <?php
             $z++;
@@ -497,17 +475,17 @@ for ($y = 0; $y <= $row; $y++) {
 
         echo "\n";
         $or = 'Or' . $y;
-        if (! isset(${$or})) {
+        if (!isset(${$or})) {
             ${$or} = '';
         }
         if (!empty(${$or}) && isset(${$or}[$x])) {
-            $tmp_or = ${$or}[$x];
+            $stripped_or = ${$or}[$x];
         } else {
-            $tmp_or     = '';
+            $stripped_or     = '';
         }
         ?>
     <td align="center">
-        <input type="text" name="Or<?php echo $w . '[' . $z . ']'; ?>" value="<?php echo htmlspecialchars($tmp_or); ?>" class="textfield" style="width: <?php echo $realwidth; ?>" size="20" />
+        <textarea cols="20" rows="2" style="width: <?php echo $realwidth; ?>" name="Or<?php echo $w . '[' . $z . ']'; ?>" dir="<?php echo $text_dir; ?>"><?php echo htmlspecialchars($stripped_or); ?></textarea>
     </td>
         <?php
         if (!empty(${$or}) && isset(${$or}[$x])) {
@@ -526,7 +504,7 @@ for ($y = 0; $y <= $row; $y++) {
 ?>
 <!-- Modify columns -->
 <tr class="even noclick">
-    <th><?php echo __('Modify'); ?>:</th>
+    <th><?php echo $strModify; ?>:</th>
 <?php
 $z = 0;
 for ($x = 0; $x < $col; $x++) {
@@ -541,14 +519,14 @@ for ($x = 0; $x < $col; $x++) {
         }
         ?>
     <td align="center">
-        <strong><?php echo __('Or'); ?>:</strong>
+        <strong><?php echo $strOr; ?>:</strong>
         <input type="radio" name="and_or_col[<?php echo $z; ?>]" value="or"<?php echo $chk['or']; ?> />
-        &nbsp;&nbsp;<strong><?php echo __('And'); ?>:</strong>
+        &nbsp;&nbsp;<strong><?php echo $strAnd; ?>:</strong>
         <input type="radio" name="and_or_col[<?php echo $z; ?>]" value="and"<?php echo $chk['and']; ?> />
         <br />
-        <?php echo __('Ins') . "\n"; ?>
+        <?php echo $strQBEIns . "\n"; ?>
         <input type="checkbox" name="ins_col[<?php echo $z; ?>]" />
-        &nbsp;&nbsp;<?php echo __('Del') . "\n"; ?>
+        &nbsp;&nbsp;<?php echo $strQBEDel . "\n"; ?>
         <input type="checkbox" name="del_col[<?php echo $z; ?>]" />
     </td>
         <?php
@@ -572,14 +550,14 @@ for ($x = 0; $x < $col; $x++) {
     }
     ?>
     <td align="center">
-        <strong><?php echo __('Or'); ?>:</strong>
+        <strong><?php echo $strOr; ?>:</strong>
         <input type="radio" name="and_or_col[<?php echo $z; ?>]" value="or"<?php echo $chk['or']; ?> />
-        &nbsp;&nbsp;<strong><?php echo __('And'); ?>:</strong>
+        &nbsp;&nbsp;<strong><?php echo $strAnd; ?>:</strong>
         <input type="radio" name="and_or_col[<?php echo $z; ?>]" value="and"<?php echo $chk['and']; ?> />
         <br />
-        <?php echo __('Ins') . "\n"; ?>
+        <?php echo $strQBEIns . "\n"; ?>
         <input type="checkbox" name="ins_col[<?php echo $z; ?>]" />
-        &nbsp;&nbsp;<?php echo __('Del') . "\n"; ?>
+        &nbsp;&nbsp;<?php echo $strQBEDel . "\n"; ?>
         <input type="checkbox" name="del_col[<?php echo $z; ?>]" />
     </td>
     <?php
@@ -603,8 +581,8 @@ echo PMA_generate_common_hidden_inputs($url_params);
 <table border="0" cellpadding="2" cellspacing="1">
 <tr>
     <td nowrap="nowrap">
-        <?php echo __('Add/Delete criteria rows'); ?>:
-        <select size="1" name="add_row">
+        <?php echo $strAddDeleteRow; ?>:
+        <select size="1" name="add_row" style="vertical-align: middle">
             <option value="-3">-3</option>
             <option value="-2">-2</option>
             <option value="-1">-1</option>
@@ -615,8 +593,8 @@ echo PMA_generate_common_hidden_inputs($url_params);
         </select>
     </td>
     <td width="10">&nbsp;</td>
-    <td nowrap="nowrap"><?php echo __('Add/Delete columns'); ?>:
-        <select size="1" name="add_col">
+    <td nowrap="nowrap"><?php echo $strAddDeleteColumn; ?>:
+        <select size="1" name="add_col" style="vertical-align: middle">
             <option value="-3">-3</option>
             <option value="-2">-2</option>
             <option value="-1">-1</option>
@@ -628,7 +606,7 @@ echo PMA_generate_common_hidden_inputs($url_params);
     </td>
     <td width="10">&nbsp;</td>
     <!-- Generates a query -->
-    <td><input type="submit" name="modify" value="<?php echo __('Update Query'); ?>" /></td>
+    <td><input type="submit" name="modify" value="<?php echo $strUpdateQuery; ?>" /></td>
 </tr>
 </table>
 </fieldset>
@@ -636,30 +614,30 @@ echo PMA_generate_common_hidden_inputs($url_params);
 <table>
 <tr><td>
         <fieldset>
-            <legend><?php echo __('Use Tables'); ?></legend>
+            <legend><?php echo $strUseTables; ?></legend>
 <?php
-$options = '';
+$strTableListOptions = '';
 $numTableListOptions = 0;
 foreach ($tbl_names as $key => $val) {
-    $options .= '                        ';
-    $options .= '<option value="' . htmlspecialchars($key) . '"' . $val . '>'
+    $strTableListOptions .= '                        ';
+    $strTableListOptions .= '<option value="' . htmlspecialchars($key) . '"' . $val . '>'
         . str_replace(' ', '&nbsp;', htmlspecialchars($key)) . '</option>' . "\n";
     $numTableListOptions++;
 }
 ?>
             <select name="TableList[]" multiple="multiple" id="listTable"
                 size="<?php echo ($numTableListOptions > 30) ? '15' : '7'; ?>">
-                <?php echo $options; ?>
+                <?php echo $strTableListOptions; ?>
             </select>
         </fieldset>
         <fieldset class="tblFooters">
-            <input type="submit" name="modify" value="<?php echo __('Update Query'); ?>" />
+            <input type="submit" name="modify" value="<?php echo $strUpdateQuery; ?>" />
         </fieldset>
     </td>
     <td width="20">&nbsp;</td>
     <td>
         <fieldset>
-            <legend><?php echo sprintf(__('SQL query on database <b>%s</b>:'), PMA_getDbLink($db)); ?>
+            <legend><?php echo sprintf($strQueryOnDb, PMA_getDbLink($db)); ?>
                 </legend>
             <textarea cols="80" name="sql_query" id="textSqlquery"
                 rows="<?php echo ($numTableListOptions > 30) ? '15' : '7'; ?>"
@@ -667,7 +645,7 @@ foreach ($tbl_names as $key => $val) {
 <?php
 // 1. SELECT
 $last_select = 0;
-if (! isset($qry_select)) {
+if (!isset($qry_select)) {
     $qry_select         = '';
 }
 for ($x = 0; $x < $col; $x++) {
@@ -686,6 +664,7 @@ if (!empty($qry_select)) {
 // 2. FROM
 
 // Create LEFT JOINS out of Relations
+// Code originally by Mike Beck <mike.beck@ibmiller.de>
 // If we can use Relations we could make some left joins.
 // First find out if relations are available in this database.
 
@@ -755,11 +734,11 @@ if (isset($Field) && count($Field) > 0) {
             PMA_DBI_select_db($db);
 
             foreach ($tab_all as $tab) {
-                $indexes = PMA_DBI_get_table_indexes($db, $tab);
-                foreach ($indexes as $ind) {
+                $ind_rs   = PMA_DBI_query('SHOW INDEX FROM ' . PMA_backquote($tab) . ';');
+                while ($ind = PMA_DBI_fetch_assoc($ind_rs)) {
                     $col1 = $tab . '.' . $ind['Column_name'];
                     if (isset($col_all[$col1])) {
-                        if ($ind['Non_unique'] == 0) {
+                        if ($ind['non_unique'] == 0) {
                             if (isset($col_where[$col1])) {
                                 $col_unique[$col1] = 'Y';
                             } else {
@@ -891,7 +870,7 @@ if ($criteria_cnt > 1) {
     $qry_where      = '(' . $qry_where . ')';
 }
 // OR rows ${'cur' . $or}[$x]
-if (! isset($curAndOrRow)) {
+if (!isset($curAndOrRow)) {
     $curAndOrRow          = array();
 }
 for ($y = 0; $y <= $row; $y++) {
@@ -928,7 +907,7 @@ if (!empty($qry_where) && $qry_where != '()') {
 
 // 4. ORDER BY
 $last_orderby = 0;
-if (! isset($qry_orderby)) {
+if (!isset($qry_orderby)) {
     $qry_orderby      = '';
 }
 for ($x = 0; $x < $col; $x++) {
@@ -938,7 +917,7 @@ for ($x = 0; $x < $col; $x++) {
     if (!empty($curField[$x]) && !empty($curSort[$x])) {
         // if they have chosen all fields using the * selector,
         // then sorting is not available
-        // Fix for Bug #570698
+        // Robbat2 - Fix for Bug #570698
         if (substr($curField[$x], -2) != '.*') {
             $qry_orderby  .=  $curField[$x] . ' ' . $curSort[$x];
             $last_orderby = 1;
@@ -952,7 +931,7 @@ if (!empty($qry_orderby)) {
         </textarea>
         </fieldset>
         <fieldset class="tblFooters">
-            <input type="submit" name="submit_sql" value="<?php echo __('Submit Query'); ?>" />
+            <input type="submit" name="submit_sql" value="<?php echo $strRunQuery; ?>" />
         </fieldset>
     </td>
 </tr>
@@ -962,5 +941,5 @@ if (!empty($qry_orderby)) {
 /**
  * Displays the footer
  */
-require './libraries/footer.inc.php';
+require_once './libraries/footer.inc.php';
 ?>
