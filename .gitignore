@@ -5,7 +5,8 @@ sites/default/settings.php
 /cache
 .htaccess
 .htpasswd
-phpMyAdmin
+phpMyAdmin/config.inc.php
+phpMyAdmin/*
 # Packages #
 ############
 *.7z
