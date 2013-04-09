@@ -75,6 +75,29 @@ body,
 .sidebar .section {
   padding: 0 15px;
 }
+.front #main-wrapper{
+   background-color: #eee;
+}
+  
+.front #content a {
+   color: #000;
+}
+.front #content h1.title,
+.front #block-system-main {
+   color: #E12921;
+   width: 50%;
+   float: left;
+   padding: 5px 10px;
+}
+.front #content h1.title {
+   font-size: 2.5em;
+   font-weight:500;
+}
+.front #block-system-main,
+.front #block-system-main a {
+   color: #000;
+   font-size: 2.0em;
+}
 #breadcrumb {
   margin: 0 15px;
 }
@@ -83,6 +106,39 @@ body,
 .region-triptych-last {
   margin: 20px 20px 30px;
   width: 280px;
+}
+.front .region-triptych-middle {
+  color: #000;
+  font-size: 1.3em;
+  width: 47%;
+  float:left;
+}
+.front .region-triptych-middle,
+.front .region-triptych-last {
+  padding: 5px 10px;
+  /* fallback */
+  background-color: #E5DEDE;
+  background: url(images/linear_bg_2.png);
+  background-repeat: repeat-x;
+  
+  /* Safari 4-5, Chrome 1-9 */
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#E5DEDE), to(#2F2727));
+  
+  /* Safari 5.1, Chrome 10+ */
+  background: -webkit-linear-gradient(top, #E5DEDE, #F2BCBA);
+  
+  /* Firefox 3.6+ */
+  background: -moz-linear-gradient(top, #E5DEDE, #1a82f7);
+  
+  /* IE 10 */
+  background: -ms-linear-gradient(top, #2F2727, #1a82f7);
+  
+  /* Opera 11.10+ */
+  background: -o-linear-gradient(top, #E5DEDE, #1a82f7);
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -khtml-border-radius: 10px;
+  border-radius: 10px;
 }
 #footer-wrapper {
   padding: 35px 5px 30px;

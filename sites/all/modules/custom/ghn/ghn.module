@@ -4,11 +4,13 @@
  **/
 function ghn_form_alter(&$form,&$form_state,$form_id) {
          $tmp = $form_id;
-//drupal_set_message(" IN GHN FORM ALTER ".$tmp);
+ //drupal_set_message(" IN GHN FORM ALTER ".$tmp);
+//$tmp = var_export($form['links']['#markup'],TRUE);
+//drupal_set_message($tmp);
 }
 
 /**
- * This is called from page--node--2.tpl.php
+ * This is called from page--front.tpl.php
  * to render user register form
  **/
 function ghn_user_register() {
