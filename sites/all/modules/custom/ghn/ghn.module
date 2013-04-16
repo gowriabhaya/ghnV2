@@ -5,10 +5,26 @@
 function ghn_form_alter(&$form,&$form_state,$form_id) {
          $tmp = $form_id;
  //drupal_set_message(" IN GHN FORM ALTER ".$tmp);
+//krumo($form);
+//krumo($form_id);
+/*
+         switch($form_id) {
+         case "user_login_block":
+            $form['#submit'][] = 'ghn_user_login_submit';
+            break;
+         default:
+            break;
+         }
+*/
 //$tmp = var_export($form['links']['#markup'],TRUE);
 //drupal_set_message($tmp);
 }
-
+/*
+function ghn_user_login_submit($form,&$form_state) {
+         global $base_url;
+	 $form_state['destination'] = $base_url.'/user';
+}
+*/
 /**
  * This is called from page--front.tpl.php
  * to render user register form

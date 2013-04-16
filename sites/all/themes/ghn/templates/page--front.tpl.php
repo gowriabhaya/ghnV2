@@ -101,7 +101,6 @@
       <?php print render($page['content']) ?>
       <?php $regform = ghn_user_register(); print '<div class="front-register">'.$regform.'</div>'; ?>
       <?php print $feed_icons; ?>
-
     </div></div> <!-- /.section, /#content -->
 
     <?php if ($page['sidebar_second']): ?>

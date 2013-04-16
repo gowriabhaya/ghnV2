@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * @file
+ * Adds a logout tab to the profile area.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function logouttab_menu() {
+  $items['user/%user/logouttab'] = array(
+    'title' => 'Log out',
+    'page callback' => '_logouttab_redirect_url',
+    'access callback' => 'user_is_logged_in',
+    'weight' => 8,
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items['admin/config/people/logouttab'] = array(
+    'title' => 'Logout settings',
+    'description' => 'Choose the page that the user account logout tab link goes to.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('logouttab_admin_settings'),
+    'access arguments' => array('administer users'),
+  );
+  return $items;
+}
+
+/**
+ * Redirects user to defined page.
+ */
+function _logouttab_redirect_url() {
+  drupal_goto(variable_get('logouttab_url', 'user/logout'));
+}
+
+/**
+ * Defines the settings form.
+ */
+function logouttab_admin_settings() {
+  $form['logouttab_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('URL for the account help page'),
+    '#description' => t('Enter the relative path for the user account logout page.'),
+    '#default_value' => variable_get('logouttab_url', 'user/logout'),
+    '#title' => t('URL'),
+  );
+  return system_settings_form($form);
+}

@@ -349,12 +349,25 @@ h1#site-name {
   margin-right: 2px; /* LTR */
   width: 120px;
 }
+.front .region-header .form-text {
+  background: #000;
+  background: #E2E0E0;
+  border-color: #C1BDBD;
+}
 .region-header .form-text:hover,
 .region-header .form-text:focus,
 .region-header .form-text:active {
   background: #fff;
   background: rgba(255, 255, 255, 0.8);
 }
+.front .region-header .form-text:hover,
+.front .region-header .form-text:focus,
+.front .region-header .form-text:active {
+  background: #ccc;
+  background: rgba(200, 155, 255, 0.8);
+       
+}
+
 .region-header .form-required {
   color: #eee;
   color: rgba(255, 255, 255, 0.7);
@@ -782,7 +795,7 @@ ul.links {
 
 #triptych-wrapper {
   background-color: #eee;
-  background: rgba(30, 50, 10, 0.08);
+  background: #eeeeee; 
   border-top: 1px solid #e7e7e7;
 }
 #triptych h2 {
