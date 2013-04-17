@@ -419,7 +419,7 @@
 
 
   ; Custom CSS
-  settings[custom_css] = ''
+  settings[custom_css] = 'ghn.css'
 
 ; Information added by drupal.org packaging script on 2013-04-04
 version = "7.x-3.2"

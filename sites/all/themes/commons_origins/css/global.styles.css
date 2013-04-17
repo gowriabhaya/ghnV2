@@ -1,3 +1,7 @@
+.page-user ul.primary,
+.page-user-edit ul.primary {
+   display: none;
+}
 #menu-bar.nav ul.menu li a {
   border-left: 1px solid #247aac;
   -webkit-box-shadow: #224567 -1px 0px 0px;
@@ -4875,3 +4879,23 @@ body.front.logged-in .view-commons-homepage-content .article.node.node-page .lin
   background-image: -o-linear-gradient(top, #0b769c 0%, #0c80ab 100%);
   background-image: linear-gradient(top, #0b769c 0%, #0c80ab 100%);
 }
+// profile left sidebar
+div.profile-left {
+  padding: 4px;
+  background-color: #0b769c;
+ background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #0b769c), color-stop(100%, #0c80ab));
+  background-image: -webkit-linear-gradient(top, #0b769c 0%, #0c80ab 100%);
+  background-image: -moz-linear-gradient(top, #0b769c 0%, #0c80ab 100%);
+  background-image: -o-linear-gradient(top, #0b769c 0%, #0c80ab 100%);
+  background-image: linear-gradient(top, #0b769c 0%, #0c80ab 100%);
+}
+a.left-dashboard-link,
+a.left-account-link,
+a.left-profile-link {
+       margin: 5px 0;
+       padding: 10px 0;
+       color: #0b799c;
+       clear: both;
+}
+
+

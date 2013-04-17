@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @file
+ *   flag_follow install file.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function flag_follow_uninstall() {
+  // Remove default flag if it's enabled.
+  if ($flag = flag_get_flag('follow')) {
+    $flag->delete();
+  }
+  drupal_set_message(t('Flag Follow module was successfully uninstalled.'));
+}

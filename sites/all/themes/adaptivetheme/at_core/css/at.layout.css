@@ -48,3 +48,11 @@ div.at-panel .region-conditional-stack {
 .lt-ie8 .at-panel {
   overflow: hidden;
 }
+
+.panel-col-first {
+   //border-right: 1px solid #000;
+}
+.panel-col-last {
+   //border-left: 1px solid #000;
+}
+

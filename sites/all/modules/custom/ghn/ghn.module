@@ -19,6 +19,30 @@ function ghn_form_alter(&$form,&$form_state,$form_id) {
 //$tmp = var_export($form['links']['#markup'],TRUE);
 //drupal_set_message($tmp);
 }
+/**
+ * hook_menu
+ **/
+function ghn_menu() {
+    $items['main-profile'] = array(
+        'page callback' => '_profile2_form',
+        'page arguments' => array(),
+        'access callback' => TRUE,
+        'type' => MENU_CALLBACK,
+    );
+    return $items;
+}
+/**
+ * profile2 is not registering profile pages with the menu
+ * this is the hack for it, so page existing manager can find it 
+ * for panels consumption
+ **/
+function _profile2_form() {
+    global $user;
+    module_load_include('inc', 'profile2_page', 'profile2_page');
+    $profile2 = profile2_by_uid_load($user->uid, 'main');
+    $entity_form = entity_ui_get_form('profile2', $profile2, 'edit');
+    return $entity_form;    
+}
 /*
 function ghn_user_login_submit($form,&$form_state) {
          global $base_url;

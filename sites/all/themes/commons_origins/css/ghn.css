@@ -1,0 +1,7 @@
+//profile left sidebar
+a.left-dashboard-link,
+a.left-account-link,
+a.left-profile-link {
+      margin: 5px;
+      color: #fff !important;
+}

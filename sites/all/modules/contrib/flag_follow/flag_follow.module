@@ -1,0 +1,158 @@
+<?php
+
+/**
+ * @file
+ *   flag_follow module file.
+ */
+
+/**
+ * Implements hook_heartbeat_stream_info().
+ */
+function flag_follow_heartbeat_stream_info() {
+  $heartbeatstreams = array();
+
+  $heartbeatstream = new HeartbeatStreamConfig();
+  $heartbeatstream->disabled = FALSE; /* Edit this to true to make a default heartbeatstream disabled initially */
+  $heartbeatstream->api_version = 1;
+  $heartbeatstream->class = 'favoritesactivity';
+  $heartbeatstream->real_class = 'favoritesactivity';
+  $heartbeatstream->name = 'Favorites';
+  $heartbeatstream->module = 'heartbeat_flag_favorites';
+  $heartbeatstream->title = 'Favorites';
+  $heartbeatstream->path = 'streams/favoritesactivity.inc';
+  $heartbeatstream->settings = array(
+    'settings__active_tab' => 'edit-settings-fs-blocks',
+    'messages_denied' => array(),
+    'skip_active_user' => 0,
+    'show_message_times' => 1,
+    'show_message_times_grouped' => 1,
+    'poll_messages' => '0',
+    'num_load_max' => '100',
+    'grouping_seconds' => '7200',
+    'has_block' => 1,
+    'block_items_max' => '5',
+    'block_show_pager' => '1',
+    'block_view_mode' => 'default',
+    'stream_path' => 'favoritesactivity',
+    'stream_profile_path' => 'favoritesactivity',
+	'page_disabled' => 0,
+    'profilePage' => 1,
+    'page_items_max' => '8',
+    'page_show_pager' => 0,
+    'page_pager_ajax' => 0,
+    'page_view_mode' => 'default',
+    'show_status_form' => '0',
+    'shoutbox' => 0,
+  );
+  $heartbeatstream->variables = array();
+  $heartbeatstreams['favoritesactivity'] = $heartbeatstream;
+  return $heartbeatstreams;
+}
+
+/**
+ * Implements hook_ctools_plugin_api().
+ */
+function flag_follow_ctools_plugin_api($owner, $api) {
+  if (($owner == 'heartbeat' && $api == 'heartbeat') || ($owner == 'ds' && $api == 'ds') || ($owner == 'ds_extras' && $api == 'ds_extras')) {
+    return array('version' => 1);
+  }
+}
+
+/**
+ * Implements hook_heartbeat_related_uids().
+ */
+function flag_follow_heartbeat_related_uids($uid) {
+  $uids = array();
+
+  if (module_exists('flag')) {
+    $flags = flag_get_user_flags('user', NULL, $uid, NULL, FALSE);
+    if (isset($flags['follow'])) {
+      foreach ($flags['follow'] as $key => $val) {
+        $uids[$key] = $key;
+      }
+    }
+  }
+
+  return $uids;
+}
+
+/**
+ * Implements hook_flag_default_flags().
+ */
+function flag_follow_flag_default_flags() {
+  $flags = array();
+  $flags[] = array(
+    'content_type' => 'user',
+    'name' => 'follow',
+    'title' => 'Add to favorites',
+    'global' => '0',
+    'types' => array(),
+    'flag_short' => 'Follow',
+    'flag_long' => 'Add this user to your list of favorites.',
+    'flag_message' => '',
+    'unflag_short' => 'Unfollow',
+    'unflag_long' => 'Remove this user from your list of favorites.',
+    'unflag_message' => '',
+    'unflag_denied_text' => '',
+    'types' => array(),
+    'link_type' => 'toggle',
+    'roles' => array(
+      'flag' => array(
+        0 => '2',
+      ),
+      'unflag' => array(
+        0 => '2',
+      ),
+    ),
+    'show_on_profile' => 1,
+    'access_uid' => 'others',
+    'api_version' => 2,
+    'locked' => array(
+      'name',
+      'global',
+      'roles',
+      'show_on_profile',
+    ),
+    'status' => TRUE,
+  );
+  return $flags;
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function flag_follow_menu_alter(&$items) {
+  $items['user/%user/heartbeat/favoritesactivity']['access callback'] = 'flag_follow_stream_access';
+  $items['user/%user/heartbeat/favoritesactivity']['access arguments'] = array('favoritesactivity');
+
+}
+
+/**
+ * Acces Callback function to check access on Favorites stream.
+ *
+ * @param String $stream
+ *   The ClassName of the stream.
+ */
+function flag_follow_stream_access($stream) {
+  $stream_config = heartbeat_stream_config_load($stream);
+  return _flag_follow_stream_access($stream_config);
+}
+
+/**
+ * Helper function to check access on Favorites stream.
+ *
+ * @param HeartbeatStreamConfig $stream_config
+ *   A Heartbeat stream configuration object.
+ */
+function _flag_follow_stream_access($stream_config = NULL) {
+  global $user;
+  
+  if (isset($stream_config) && $stream_config instanceof HeartbeatStreamConfig) {
+    // Allow current user to acces Favorites tab.
+    if (arg(0) == 'user' && is_numeric(arg(1)) && $user->uid == arg(1)) {
+      return user_access('view heartbeat messages') && user_access('view ' . $stream_config->name . ' stream');
+    }
+  }
+
+  return FALSE;
+}
