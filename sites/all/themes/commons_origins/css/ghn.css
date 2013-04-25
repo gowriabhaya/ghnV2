@@ -1,4 +1,12 @@
-//profile left sidebar
+.not-logged-in fieldset {
+     border: 0px solid #fff !important;
+}
+.not-logged-in fieldset legend{
+     display: none;
+}
+.not-logged-in fieldset .description {
+     display: none;
+}
 a.left-dashboard-link,
 a.left-account-link,
 a.left-profile-link {

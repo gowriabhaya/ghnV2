@@ -9,6 +9,9 @@ function ghn_form_alter(&$form,&$form_state,$form_id) {
 //krumo($form_id);
 /*
          switch($form_id) {
+         case "user_register_form":
+            $tmp = var_export($form,TRUE);
+            break;
          case "user_login_block":
             $form['#submit'][] = 'ghn_user_login_submit';
             break;
