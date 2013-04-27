@@ -13,6 +13,7 @@
 ;----------// Stylesheets
 
   ; See each stylesheet for extensive documentation and help.
+  stylesheets[screen][] = css/ghn.css
   stylesheets[screen][] = css/global.base.css
   stylesheets[screen][] = css/global.styles.css
 
@@ -419,7 +420,6 @@
 
 
   ; Custom CSS
-  settings[custom_css] = 'ghn.css'
 
 ; Information added by drupal.org packaging script on 2013-04-04
 version = "7.x-3.2"

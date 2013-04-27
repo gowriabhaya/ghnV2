@@ -7,8 +7,13 @@ function ghn_form_alter(&$form,&$form_state,$form_id) {
  //drupal_set_message(" IN GHN FORM ALTER ".$tmp);
 //krumo($form);
 //krumo($form_id);
-/*
          switch($form_id) {
+         case "profile2_edit_main_form":
+            //$tmp = var_export($form['und'][0]['registration_type'],TRUE);
+            $tmp = var_export($form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#options'],TRUE);
+            unset($form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#options']['']);
+            $form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#title'] = "Memberhsip Type";
+            break;
          case "user_register_form":
             $tmp = var_export($form,TRUE);
             break;
@@ -18,16 +23,25 @@ function ghn_form_alter(&$form,&$form_state,$form_id) {
          default:
             break;
          }
+/*
+$tmp = var_export($form['links']['#markup'],TRUE);
+print '<pre>';
+print $tmp;
+print '</pre>';
 */
-//$tmp = var_export($form['links']['#markup'],TRUE);
-//drupal_set_message($tmp);
 }
 /**
  * hook_menu
  **/
 function ghn_menu() {
     $items['main-profile'] = array(
-        'page callback' => '_profile2_form',
+        'page callback' => '_profile2_main_form',
+        'page arguments' => array(),
+        'access callback' => TRUE,
+        'type' => MENU_CALLBACK,
+    );
+    $items['general-profile'] = array(
+        'page callback' => '_profile2_general_form',
         'page arguments' => array(),
         'access callback' => TRUE,
         'type' => MENU_CALLBACK,
@@ -39,19 +53,20 @@ function ghn_menu() {
  * this is the hack for it, so page existing manager can find it 
  * for panels consumption
  **/
-function _profile2_form() {
+function _profile2_main_form() {
     global $user;
     module_load_include('inc', 'profile2_page', 'profile2_page');
     $profile2 = profile2_by_uid_load($user->uid, 'main');
     $entity_form = entity_ui_get_form('profile2', $profile2, 'edit');
     return $entity_form;    
 }
-/*
-function ghn_user_login_submit($form,&$form_state) {
-         global $base_url;
-	 $form_state['destination'] = $base_url.'/user';
+function _profile2_general_form() {
+    global $user;
+    module_load_include('inc', 'profile2_page', 'profile2_page');
+    $profile2 = profile2_by_uid_load($user->uid, 'general');
+    $entity_form = entity_ui_get_form('profile2', $profile2, 'edit');
+    return $entity_form;    
 }
-*/
 /**
  * This is called from page--front.tpl.php
  * to render user register form

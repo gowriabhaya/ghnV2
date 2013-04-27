@@ -7,9 +7,39 @@
 .not-logged-in fieldset .description {
      display: none;
 }
-a.left-dashboard-link,
-a.left-account-link,
-a.left-profile-link {
-      margin: 5px;
-      color: #fff !important;
+.logged-in .form-item-profile-main-field-choose-membership-type-und-0-registration-type .description {
+    display: none;
+}
+/* left sidebar */
+div.left-link {
+    border-bottom: 1px solid #fff;
+}
+.left-link a {
+      color: #910404 !important;
+}
+/* right sidebar */
+.view-service-offerings .view-content,
+.view-service-offerings .view-empty,
+.view-service-requests .view-content,
+.view-service-requests .view-empty{
+      padding-left: 0.6em;
+}
+.view-service-offerings .view-content .views-row,
+.view-service-requests .view-content .views-row{
+      padding-bottom: 3px;
+      margin-bottom: 3px;
+}
+
+/* pane and node title */
+.node-title,
+.view-header h3,
+.pane-title {
+       font-size: 1.2em !important;
+       color: #910404;
+}
+/* page level elements */
+#page-title {
+       font-size: 1.5em !important;
+       font-weight: bold !important;;
+       color: #000;
 }
