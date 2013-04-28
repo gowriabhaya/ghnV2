@@ -134,8 +134,15 @@
 
   <div id="columns" class="columns clearfix">
     <!-- Messages and Help -->
-    <?php print $messages; ?>
+              <?php
+            // id, direction, depth should have the values you want them to have.
+
+            $menu = theme('nice_menus', array('id' => 0, 'direction' => 'down', 'depth' => 1, 'menu_name' => 'main-menu', 'menu' => NULL));
+
+            print $menu['content'];
+            ?>
     <?php print render($page['help']); ?>
+    <?php print $messages; ?>
 
     <!-- region: Secondary Content -->
     <?php print render($page['secondary_content']); ?>

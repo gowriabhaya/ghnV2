@@ -117,9 +117,11 @@ function commons_origins_menu_link($variables) {
  * Helper function to examine menu links and return the appropriate class.
  */
 function commons_origins_menu_link_class(&$element)  {
+/*
   if ($element['#original_link']['menu_name'] == 'main-menu') {
     $element['#attributes']['class'][] = drupal_html_class($element['#original_link']['menu_name'] . '-' . $element['#original_link']['router_path']);
   }
+*/
 }
 
 /**

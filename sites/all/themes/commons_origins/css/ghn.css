@@ -10,6 +10,30 @@
 .logged-in .form-item-profile-main-field-choose-membership-type-und-0-registration-type .description {
     display: none;
 }
+/* top navigation */
+#page ul.nice-menu {
+    width: 100%;
+    float: left;
+    margin-left: 180px;
+}
+#block-system-main-menu ul  {
+    width: 100%;
+    float: left;
+    height: 20px;
+    padding: 6px;
+    background-color: #000;
+}
+#block-system-main-menu ul li  {
+    width: 15%;
+    float: left;
+    list-style-image: none;
+    list-style-type: none;
+    text-transform: uppercase;
+    font-size: 1.1em;
+}
+#block-system-main-menu ul li a {
+    color: #fff;
+}
 /* left sidebar */
 div.left-link {
     border-bottom: 1px solid #fff;
@@ -43,3 +67,25 @@ div.left-link {
        font-weight: bold !important;;
        color: #000;
 }
+/* profile page */
+#block-menu-menu-profile-menu ul,
+.pane-menu-menu-profile-menu ul {
+    margin-left: 185px;
+    margin-top: 15px;
+    height: 20px;
+    padding: 6px;
+}
+#block-menu-menu-profile-menu ul li,
+.pane-menu-menu-profile-menu ul li  {
+    width: 25%;
+    float: left;
+    list-style-image: none;
+    list-style-type: none;
+    text-transform: uppercase;
+    font-size: 1.1em;
+}
+#block-menu-menu-profile-menu ul li a,
+.pane-menu-menu-profile-menu ul li a {
+    color: #000;
+}
+
