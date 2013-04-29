@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+
+<script src="videos/build/jquery.js"></script>	
+	<script src="videos/build/mediaelement-and-player.min.js"></script>
+	<link rel="stylesheet" href="videos/build/mediaelementplayer.min.css" />
+    
+</head>
+
+<body>
+
+<video width="298" height="167" controls>
+	<!-- MP4 must be first for iPad! -->
+    <source src="videos/WebM/video.webm" type="video/webm" />
+	<source src="videos/MP4/video.MP4" type="video/mp4" /><!-- Safari / iOS video    -->
+    <source src="videos/M4V/video.OGV" type="video/M4V" /><!-- Firefox / Opera / Chrome10 -->
+	<source src="videos/OGV/video.OGV" type="video/ogg" /><!-- Firefox / Opera / Chrome10 -->
+	<!-- fallback to Flash: -->
+	<object width="298" height="167" type="application/x-shockwave-flash" data="videos/SWF/video.SWF">
+		<!-- Firefox uses the `data` attribute above, IE/Safari uses the param below -->
+		<param name="movie" value="videos/SWF/video.SWF" />
+		<param name="flashvars" value="controlbar=over&amp;image=images/play.JPG&amp;file=videos/MP4/video.MP4" />
+		<!-- fallback image. note the title field below, put the title of the video there -->
+		<img src="images/play.JPG" width="298" height="167" alt="The Global HEart Network"
+		     title="No video playback capabilities, please download the video below" />
+	</object>
+</video>
+
+
+<script>
+
+$('audio,video').mediaelementplayer({
+	success: function(player, node) {
+		$('#' + node.id + '-mode').html('mode: ' + player.pluginType);
+	}
+});
+
+</script>
+
+<input type="button" id="stopall" value="Stop all">
+
+<script>
+$('#stopall').click(function() {
+    $('video, audio').each(function() {
+          $(this)[0].player.pause();		  
+    });
+});
+</script>
+
+</body>
+</html>
