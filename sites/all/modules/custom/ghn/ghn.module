@@ -46,6 +46,12 @@ function ghn_menu() {
         'access callback' => TRUE,
         'type' => MENU_CALLBACK,
     );
+    $items['detail-profile'] = array(
+        'page callback' => '_profile2_detail_form',
+        'page arguments' => array(),
+        'access callback' => TRUE,
+        'type' => MENU_CALLBACK,
+    );
     return $items;
 }
 /**
@@ -65,6 +71,38 @@ function _profile2_general_form() {
     module_load_include('inc', 'profile2_page', 'profile2_page');
     $profile2 = profile2_by_uid_load($user->uid, 'general');
     $entity_form = entity_ui_get_form('profile2', $profile2, 'edit');
+    return $entity_form;    
+}
+function _profile2_detail_form() {
+    global $user;
+    $uid = $user->uid;
+    module_load_include('inc', 'profile2_page', 'profile2_page');
+    $results = db_query("SELECT field_choose_membership_type_registration_type AS memtype FROM {field_data_field_choose_membership_type} m LEFT JOIN {profile} p ON m.entity_id = p.pid WHERE p.uid = :uid",array(':uid'=>$uid));
+    foreach ($results as $result) {
+            $mtype = $result->memtype;
+    }
+    switch ($mtype) {
+           case "individual": // individual role
+                $profile2 = profile2_by_uid_load($user->uid, 'individual');
+                $entity_form = entity_ui_get_form('profile2', $profile2, 'edit');
+                break;
+           case "hospital":
+                $profile2 = profile2_by_uid_load($user->uid, 'hospital');
+                $entity_form = entity_ui_get_form('profile2', $profile2, 'edit');
+                break;
+           case "organization":
+                $profile2 = profile2_by_uid_load($user->uid, 'organization');
+                $entity_form = entity_ui_get_form('profile2', $profile2, 'edit');
+                break;
+           case "government":
+                $profile2 = profile2_by_uid_load($user->uid, 'government');
+                $entity_form = entity_ui_get_form('profile2', $profile2, 'edit');
+                break;
+           default:
+                $entity_form = "No Detail Profile";
+                break;
+                
+    }
     return $entity_form;    
 }
 /**
