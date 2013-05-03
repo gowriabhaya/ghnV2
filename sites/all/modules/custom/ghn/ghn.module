@@ -3,32 +3,79 @@
  * Form alter 
  **/
 function ghn_form_alter(&$form,&$form_state,$form_id) {
-         $tmp = $form_id;
- //drupal_set_message(" IN GHN FORM ALTER ".$tmp);
-//krumo($form);
 //krumo($form_id);
          switch($form_id) {
-         case "profile2_edit_main_form":
-            //$tmp = var_export($form['und'][0]['registration_type'],TRUE);
-            $tmp = var_export($form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#options'],TRUE);
-            unset($form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#options']['']);
-            $form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#title'] = "Memberhsip Type";
-            break;
-         case "user_register_form":
-            $tmp = var_export($form,TRUE);
-            break;
-         case "user_login_block":
-            $form['#submit'][] = 'ghn_user_login_submit';
-            break;
-         default:
-            break;
+               case "profile2_edit_main_form":
+                     $tmp = var_export($form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#options'],TRUE);
+                     unset($form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#options']['']);
+                     $form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#title'] = "Memberhsip Type";
+                     break;
+               case "user_register_form":
+                    break;
+               case "service_request_node_form":
+                    $form['field_clinical_services']['und'] += array(
+                           '#weight' => -10,
+                    );
+                    $form['field_clinical_services']['und']['#ajax'] = array(
+                         'callback' => 'react_to_my_wishes',   
+                         'wrapper' => 'clinical-choices',// The div id where the returned HTML will be applied.
+                         'method' => 'replace',
+                         'effect' => 'fade',
+                     );
+                     $form['choices'] = array(
+                          '#tree' => FALSE,
+                          '#prefix' => '<div class="clearfix" id="clinical-choice-wrapper">',
+                          '#suffix' => '</div>',
+                          '#weight' => 4,
+                      );
+                      // Container for just the clinical choices.
+                      $form['choices']['choice'] = array(
+                           '#prefix' => '<div class="clearfix" id="clinical-choices">',
+                           '#suffix' => '</div>',
+                      );
+                    break;
+               case "service_offering_node_form":
+                    $form['field_clinical_services']['und']['#ajax'] = array(
+                         'callback' => 'react_to_my_wishes',   // The URL path that the hook_menu will trigger the callback on.
+                         'wrapper' => 'clinical-choices',   // The div id where the returned HTML will be applied.
+                         'method' => 'replace',
+                         'effect' => 'fade',
+                     );
+                     $form['clinical_choices'] = array(
+                          '#tree' => FALSE,
+                          '#weight' => -4,
+                          '#prefix' => '<div class="clearfix" id="clinical-choice-wrapper">',
+                          '#suffix' => '</div>',
+                      );
+                      // Container for just the clinical choices.
+                      $form['clinical_choice_wrapper']['choice'] = array(
+                           '#prefix' => '<div id="clinical-choices">',
+                           '#suffix' => '</div>',
+                           '#weight' => 10,
+                      );
+                    break;
+               case "user_login":
+                    array_push($form['#submit'],'ghn_user_login_submit');
+                    break;
+               default:
+                    break;
          }
 /*
-$tmp = var_export($form['links']['#markup'],TRUE);
+krumo($form);
+$tmp = var_export($form['field_clinical_services'],TRUE);
+//print $tmp;
+//$tmp = var_export($form['links']['#markup'],TRUE);
 print '<pre>';
 print $tmp;
 print '</pre>';
 */
+}
+/**
+ * redirecting user login form submission 
+ **/
+function ghn_user_login_submit(&$form,&$form_state) {
+         global $user;
+         $form_state['redirect'] = 'dashboard/'.$user->uid;
 }
 /**
  * hook_menu
@@ -37,6 +84,12 @@ function ghn_menu() {
     $items['main-profile'] = array(
         'page callback' => '_profile2_main_form',
         'page arguments' => array(),
+        'access callback' => TRUE,
+        'type' => MENU_CALLBACK,
+    );
+    $items['affiliations'] = array(
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('ghn_affiliation_form'),
         'access callback' => TRUE,
         'type' => MENU_CALLBACK,
     );
@@ -52,8 +105,87 @@ function ghn_menu() {
         'access callback' => TRUE,
         'type' => MENU_CALLBACK,
     );
+    $items['dashboard/%'] = array(
+        'page callback' => '_ghn_user_dashboard',
+        'page arguments' => array(1),
+        'access callback' => TRUE,
+        'type' => MENU_CALLBACK,
+    );
     return $items;
 }
+/**
+ * Affiliation link on the leftside bar
+**/
+function ghn_affiliation_form() {
+    global $user;
+    $form = array();
+    $form['affiliation'] = array(
+         '#type' => 'checkbox',
+         '#title' => t('Hospital,Community Clinics and Health Care Providers'),
+         '#ajax' => array(
+                 'callback' => 'ghn_hospital_affiliation',   // The URL path that the hook_menu will trigger the callback on.
+                 'wrapper' => 'hospital-fields',   // The div id where the returned HTML will be applied.
+                 'method' => 'replace',
+                 'effect' => 'fade',
+                  ),
+      );
+      $form['choices'] = array(
+           '#tree' => FALSE,
+           '#weight' => 1,
+           '#prefix' => '<div class="clearfix" id="hospital-fields-wrapper">',
+           '#suffix' => '</div>',
+      );
+      $form['choices']['fields'] = array(
+           '#prefix' => '<div class="clearfix" id="hospital-fields">',
+           '#suffix' => '</div>',
+      );
+
+       $form['submit'] = array(
+            '#type' => 'submit',
+            '#value' => 'SUBMIT',
+       );
+       return $form;
+}
+/**
+ * this function is AJAX form call back for Hospital Affiliation form
+ **/
+function ghn_hospital_affiliation($form,&$form_state) {
+      global $base_url;
+      $form = array();
+      //$fields = _ghn_hospital_affiliation_form_fields();
+      $form['choices']['fields']['name'] = array(
+           '#prefix' => '<div class="clearfix" id="hospital-fields">',
+           '#type' => 'textfield',
+           '#title' => t("Hospital Name"),
+           '#size' => 60,
+      );
+      $form['choices']['fields']['add1'] = array(
+           '#type' => 'textfield',
+           '#title' => t("Address 1"),
+           '#size' => 60,
+           '#suffix' => '</div>',
+      );
+      $form['choices']['fields']['add2'] = array(
+           '#type' => 'textfield',
+           '#title' => t("Address 1"),
+           '#size' => 60,
+           '#suffix' => '</div>',
+      );
+      $form['choices']['fields']['city'] = array(
+           '#type' => 'textfield',
+           '#title' => t("Address 1"),
+           '#size' => 60,
+           '#suffix' => '</div>',
+      );
+      $form['choices']['fields']['s'] = array(
+           '#type' => 'textfield',
+           '#title' => t("Address 1"),
+           '#size' => 60,
+           '#suffix' => '</div>',
+      );
+      return $form;
+}
+
 /**
  * profile2 is not registering profile pages with the menu
  * this is the hack for it, so page existing manager can find it 
@@ -106,12 +238,128 @@ function _profile2_detail_form() {
     return $entity_form;    
 }
 /**
- * This is called from page--front.tpl.php
- * to render user register form
+ * User dashboard
  **/
-function ghn_user_register() {
-     $ret = drupal_get_form("user_register_form");
-     return drupal_render($ret);
-}
+function _ghn_user_dashboard($uid) {
+    $ret = '';
+    // get user contact link (only for visitor)
+    // get user follow link (only for visitor)
+    // get user name
+    $results = db_query("SELECT a.field_address_name_line AS name FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $uid LIMIT 1");
+    foreach ($results AS $result) {
+        $name = $result->name;
+    } 
+    $ret .= '<div class="dashboard-name">Name: '.$name.'</div>';
+    // get member type
+    $results = db_query("SELECT m.field_choose_membership_type_registration_type AS membertype FROM {field_data_field_choose_membership_type} m LEFT JOIN {profile} p ON p.pid = m.entity_id WHERE p.uid = $uid LIMIT 1");
+    foreach ($results AS $result) {
+        $type = $result->membertype;
+    } 
+    $ret .= '<div class="dashboard-memtype">Membership Type: '.$type.'</div>';
+    // member since info
+    $results = db_query("SELECT u.created FROM {users} u WHERE uid = $uid LIMIT 1");
+    foreach ($results AS $result) {
+        $membersince = date("d F, Y",$result->created);
+    } 
+    $ret .= '<div class="dashboard-membersince">Member Since: '.$membersince.'</div>';
+    // country location (possible display on a map)
+    $results = db_query("SELECT a.field_address_country AS country FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $uid LIMIT 1");
+    foreach ($results AS $result) {
+        $country = $result->country;
+    } 
+    $ret .= '<div class="dashboard-country">Location : '.$country.'</div>';
+    // how many forum posts
+    $results = db_query("SELECT count(nid) AS forumcount FROM {node} WHERE type = 'forum' AND uid = $uid LIMIT 1");
+    foreach ($results AS $result) {
+        $forumcount = $result->forumcount;
+    } 
+    $ret .= '<div class="dashboard-count">Number of forum postings: '.$forumcount.'</div>';
+    // how many need posts
+    $results = db_query("SELECT count(nid) AS needcount FROM {node} WHERE type = 'service_request' AND uid = $uid LIMIT 1");
+    foreach ($results AS $result) {
+        $needcount = $result->needcount;
+    } 
+    $ret .= '<div class="dashboard-count">Number of Need postings: '.$needcount.'</div>';
+    // how many resource posts
+    $results = db_query("SELECT count(nid) AS resourcecount FROM {node} WHERE type = 'service_offer' AND uid = $uid LIMIT 1");
+    foreach ($results AS $result) {
+        $forumcount = $result->resourcecount;
+    } 
+    $ret .= '<div class="dashboard-count">Number of Resource postings: '.$forumcount.'</div>';
+    $ret .= '<div class="dashboard-count">Number of Matches to date: COMING SOON</div>';
+    // how many matches
 
+    return $ret;
+}
+/**
+ * this function is AJAX form call back for a Need form
+ **/
+function react_to_my_wishes($form,&$form_state) {
+global $base_url;
+   if ($form_state['input']['field_clinical_services']['und'] == 'Clinical Services') {
+      $options = _ghn_need_form_options(1);
+      $form['choices']['choice'] = array(
+           '#prefix' => "<div id='clinical-choices'>",
+           '#suffix' => "</div>",
+           '#type' => 'select',
+           '#title' => "Choose...",
+           '#options' => $options,
+           '#weight' => 10,
+           '#access' => "content access",
+      );
+   }
+   if ($form_state['input']['field_clinical_services']['und'] == 'Medical Equipment and Supplies') {
+      $options = _ghn_need_form_options(2);
+      $form['choices']['choice'] = array(
+           '#prefix' => "<div id='clinical-choices'>",
+           '#suffix' => "</div>",
+           '#type' => 'select',
+           '#title' => "Choose...",
+           '#options' => $options,
+           '#weight' => 10,
+           '#access' => "content access",
+      );
+   }
+   if ($form_state['input']['field_clinical_services']['und'] == 'Educational Activities') {
+      $options = _ghn_need_form_options(3);
+      $form['choices']['choice'] = array(
+           '#prefix' => "<div id='clinical-choices'>",
+           '#suffix' => "</div>",
+           '#type' => 'select',
+           '#title' => "Choose...",
+           '#options' => $options,
+           '#weight' => 10,
+           '#access' => "content access",
+      );
+   }
+   if ($form_state['input']['field_clinical_services']['und'] == 'Funding') {
+      $form['choices']['choice'] = array(
+           '#prefix' => "<div id='clinical-choices'>",
+           '#suffix' => "</div>",
+      );
+   }
+   return $form['choices']['choice'];
+}
+/**
+ * this function is a helper AJAX form call back function for a Need form
+ **/
+function _ghn_need_form_options($service) {
+     $results = db_query("SELECT extra FROM {webform_component} WHERE cid = $service AND nid = 15 LIMIT 1");
+     foreach ($results AS $result => $component) {
+             $str = $component->extra;
+             $tmp = unserialize($str);
+             $tmp1 = explode(';',$tmp['items']);
+             $choices = $tmp1[0];
+             $options = explode('**',$choices);
+             $ret = array();
+             $i = 0;
+             foreach ($options AS $option) {
+                     $opt = substr($option,strpos($option,'|')+1);
+                     if ($opt != '')
+                        $ret[$i++] = $opt;
+             }
+     }
+     return $ret;
+     //return array('0'=>$service,'1'=>$service);
+}
 
