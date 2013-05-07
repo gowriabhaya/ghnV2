@@ -207,7 +207,6 @@
 
       </div><!-- /end .content-inner -->
     </div><!-- /end #content-column -->
-
     <!-- regions: Sidebar first and Sidebar second -->
     <?php $sidebar_first = render($page['sidebar_first']); print $sidebar_first; ?>
     <?php $sidebar_second = render($page['sidebar_second']); print $sidebar_second; ?>

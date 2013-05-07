@@ -1,3 +1,25 @@
+/* body background */
+body {
+     background-image: url("../images/pageBG.png");
+}
+/* top navigation */
+.not-logged-in ul#nice-menu-0 {
+     position: absolute;
+     left: 400px;
+     top: 50px;
+}
+.logged-in ul#nice-menu-0 {
+     position: absolute;
+     left: 400px;
+     top: 100px;
+}
+/* content bottom */
+.first-footer img {
+     margin: 5px 7px;
+     background:#fff url("../images/borderFooter.png") repeat-x top left;
+}
+/* footer */
+
 .not-logged-in fieldset {
      border: 0px solid #fff !important;
 }
@@ -41,7 +63,7 @@ div.left-link {
 .left-link a {
       color: #910404 !important;
 }
-#hideme {
+#hideme1 {
       margin-left: 1.7em;
 }
 /* right sidebar */
@@ -56,7 +78,14 @@ div.left-link {
       padding-bottom: 3px;
       margin-bottom: 3px;
 }
-
+.affiliation-group{
+      margin-bottom: 10px;
+      border-bottom: 1px solid #fff;
+}
+.affiliation-add-link {
+      color: #910404;
+      float: right;
+}
 /* pane and node title */
 .node-title,
 .view-header h3,
@@ -92,11 +121,20 @@ div.left-link {
     color: #000;
 }
 /* node edit form */
+.node-type-service-request .supplementary-fields,
+.node-type-service-offering .supplementary-fields,
 .page-node-add-service-offering .supplementary-fields,
 .page-node-add-service-request .supplementary-fields {
     display: none;
 }
 /* user edit form */
+.node-type-service-offering ul.primary,
+.node-type-service-request ul.primary,
+.node-type-affiliations ul.primary,
 .page-user ul.primary {
     display: none;
 }
+.not-logged-in ul.primary {
+    display: block;
+}
+

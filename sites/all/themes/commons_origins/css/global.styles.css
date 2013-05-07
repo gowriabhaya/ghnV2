@@ -323,10 +323,10 @@ var {
  */
 #header {
   height: auto;
-  color: white;
+  background-image: url("../images/pageBG.png");
   text-align: right;
-  margin-right: 8px;
   white-space: nowrap;
+  border-bottom: 1px double #ccc;
 }
 #header a.hdr-user-register {
   color: white;
@@ -349,25 +349,17 @@ var {
 }
 #header a.hdr-user-login,
 #header a.hdr-user-dashboard {
-   color: #cc0000;
+   color: #000000;
    box-shadow: 1px 1px 1px #c0c2bf inset, 0 3px 3px rgba(0, 0, 0, 0.09);
    min-width: 83px;
    height: 34px;
    padding: 0 10px;
-   background-color: #919591;
    filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF919591', endColorstr='#FF737772');
-   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #919591), color-stop(12%, #90948f), color-stop(33%, #757a74), color-stop(100%, #737772));
-   background-image: -webkit-linear-gradient(top, #919591 0%, #90948f 12%, #757a74 33%, #737772 100%);
-   background-image: -moz-linear-gradient(top, #919591 0%, #90948f 12%, #757a74 33%, #737772 100%);
-   background-image: -o-linear-gradient(top, #919591 0%, #90948f 12%, #757a74 33%, #737772 100%);
-   background-image: linear-gradient(top, #919591 0%, #90948f 12%, #757a74 33%, #737772 100%);
-   border: 1px solid #585C58;
    -webkit-border-radius: 3px;
    -moz-border-radius: 3px;
    -ms-border-radius: 3px;
    -o-border-radius: 3px;
    border-radius: 3px;
-   color: white;
    font-size: 19px;
    line-height: 34px;
    font-weight: bold;
@@ -378,7 +370,7 @@ var {
 }
 
 .header-color-row-one {
-  height: 120px;
+  height: 110px;
   background-color: #ffffff;
   border-top: 4px solid black;
 }
@@ -2069,12 +2061,12 @@ ul.action-links {
   font-size: 1.6em;
 }
 .front .top-left .pane-title {
-  color: #CC0000;
-  font-weight: 700;
-  font-size: 30px;
+  color: #000000;
+  font-weight: 500;
+  font-size: 14px;
 }
 .front .top-left p {
-  font-size: 24px;
+  font-size: 14px;
   font-weight: 300;
 }
 

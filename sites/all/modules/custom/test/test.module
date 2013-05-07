@@ -1,0 +1,182 @@
+<?php
+/**
+ * hook_menu
+ **/
+function test_menu() {
+    $items['test-ajaxform'] = array(
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('test_form'),
+        'access callback' => TRUE,
+        'type' => MENU_CALLBACK,
+    );
+    return $items;
+}
+function test_form($form,&$form_state) {
+   $options = array();
+   if (!empty($form_state['values']['main'])) {
+             if ($form_state['values']['main'] == 'yes'):
+                  $options = array('0'=>'YYY','1'=>'MMM');
+             else:
+                  $options = array('0'=>'010','1'=>'101');
+             endif;
+      }
+//print_r($form_state['values']['main']);
+//print_r($options);
+         $form = array();
+         $form['#tree'] = TRUE;
+// adding AJAX (AHAH) feature
+         $form['main'] = array(
+              '#type' => 'radios',
+              '#options' => array('yes'=>'yes','no'=>'no'),
+              '#weight' => -10,
+              '#ajax' => array(
+              'callback' => 'test_post_options',
+              'wrapper' => 'checkboxes-div',// The div id where the returned HTML will be applied.
+              'effect' => 'slide',
+      // 'speed' defaults to 'slow'. You can also use 'fast'
+      // or a number of milliseconds for the animation to last.
+      // 'speed' => 'slow',
+      // Don't show any throbber...
+               'progress' => array('type' => 'none'),
+               ),
+          );
+  $form['checkboxes_fieldset'] = array(
+    '#title' => t("Generated Checkboxes"),
+    // The prefix/suffix provide the div that we're replacing, named by
+    // #ajax['wrapper'] above.
+    '#prefix' => '<div id="checkboxes-div">',
+    '#suffix' => '</div>',
+    '#type' => 'fieldset',
+    '#description' => t('This is where we get automatically generated checkboxes'),
+  );
+  if (count($options) > 0):
+       $form['checkboxes_fieldset']['choices'] = array(
+            '#type' => 'radios',
+            '#options' => $options,
+        );
+   endif; 
+   $form['#submit'] = array('test_form_submit');
+//simple form function
+   $form['submit'] = array(
+      '#type' => 'submit',
+      '#name' => 'submit',
+      '#value' => t('Submit'),
+    );
+    return $form;
+}
+function test_post_options(&$form,&$form_state) {
+  return $form['checkboxes_fieldset'];
+}
+function test_form_submit($form,&$form_state) {
+         $tmp = var_export($form_state['input'],TRUE);
+$tmp = var_export($_POST,TRUE);
+drupal_set_message($tmp);
+print '<pre>';
+print $tmp;
+print '</pre>';
+}
+function ea_question_form($form, &$form_state) {
+   $form['#tree'] = TRUE;
+ 
+   $form['question'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Question'),
+      '#default_value' => '',
+      '#required' => TRUE,
+   );
+ 
+   $form['all_options'] = array(
+      '#type' => 'fieldset',
+      '#title' => 'Question Options',
+      '#prefix' => '<div id="ea_question_options">',
+      '#suffix' => '</div>',
+   );
+ 
+   $form['all_options']['add_option'] = array(
+      '#type' => 'submit',
+      '#theme' => 'ea_options_theme',
+      '#name' => 'add_option',
+      '#value' => 'Add Option',
+      '#limit_validation_errors' => array(),
+      '#submit' => array('ea_add_option_submit'),
+      '#ajax' => array(
+         'callback' => 'ajax_ea_add_option_callback',
+         'wrapper' => 'ea_question_options',
+      ),
+   );
+   return $form;
+}
+//callback function for our ajax form element
+function ajax_ea_add_option_callback($form, &$form_state) {
+   return $form['all_options'];
+}
+function ea_add_option_submit($form, &$form_state) {
+   if (!empty($form_state['values']['add_option'])) {
+      $weight = (!empty($form_state['all_options'])) ? sizeof($form_state['all_options']) : 0;
+      $form_state['all_options'][] = array(
+         'remove' => 0,
+         'title' => '',
+         'weight' => $weight,
+         'option_id' => 0,
+      );
+   }
+   $form_state['rebuild'] = TRUE;
+}
+function ea_option_form_el($option = array()) {
+   $element = array(
+      'remove' => array(
+         '#type' => 'checkbox',
+         '#title' => '',
+         '#default_value' => (!empty($option['remove'])) ? $option['remove'] : '',
+         '#attributes' => array('class' => array('remove')),
+      ),
+      'title' => array(
+         '#type' => 'textfield',
+         '#title' => '',
+         '#default_value' => (!empty($option['title'])) ? $option['title'] : '',
+         '#attributes' => array('class' => array('title')),
+      ),
+      'weight' => array(
+         '#type' => 'hidden',
+         '#default_value' => (!empty($option['weight'])) ? $option['weight'] : '',
+      ),
+      'option_id' => array(
+         '#type' => 'hidden',
+         '#default_value' => (!empty($option['option_id'])) ? $option['option_id'] : '',
+      ),
+   );
+   return $element;
+}
+function example_ajax_theme() {
+   $themes = array(
+      'ea_options_theme' => array(
+         'render element' => 'form',
+      ),
+   );
+   return $themes;
+}
+function theme_ea_options_theme($variables) {
+   $form = $variables['form'];
+   $output = '';
+   if(!empty($form)) {
+      $headers = array();
+      $rows = array();
+      foreach(element_children($form) as $num => $line_items) {
+         $td = array();
+         foreach(element_children($form[$num]) as $field) {
+            $type = $form[$num][$field]['#type'];
+            if($type == 'hidden') {
+               $td[0]['data'] .= drupal_render($form[$num][$field]);
+            } else {
+               $headers[$field] = array('data' => $field, 'class' => array('question-option-header-'.$field));
+               $td[] = array('data' => drupal_render($form[$num][$field]), 'class' => array('question-option-field-'.$field));
+            }
+         }
+         $rows[] = $td;
+      }
+      $table = theme('table', array('header' => $headers, 'rows' => $rows));
+      $output .=  $table;
+   } 
+   $output .= drupal_render_children($form);
+   return $output;
+}
