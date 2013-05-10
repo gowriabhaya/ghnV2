@@ -128,8 +128,10 @@ div.left-link {
     display: none;
 }
 /* user edit form */
-.node-type-service-offering ul.primary,
-.node-type-service-request ul.primary,
+.node-type-faq ul.primary,
+.node-type-events ul.primary,
+.node-type-need-post ul.primary,
+.node-type-resource-post ul.primary,
 .node-type-affiliations ul.primary,
 .page-user ul.primary {
     display: none;

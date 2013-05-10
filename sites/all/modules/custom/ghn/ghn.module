@@ -336,7 +336,7 @@ function _ghn_user_dashboard($uid) {
     $rows[] = array('data'=>$row,'class' => array('dash-row'));
     $row = array();
     // how many resource posts
-    $results = db_query("SELECT count(nid) AS resourcecount FROM {node} WHERE type = 'service_offer' AND uid = $uid LIMIT 1");
+    $results = db_query("SELECT count(nid) AS resourcecount FROM {node} WHERE type = 'resource_post' AND uid = $uid LIMIT 1");
     foreach ($results AS $result) {
         $forumcount = $result->resourcecount;
     } 
@@ -386,14 +386,16 @@ function _ghn_post_form_options($service) {
 function ghn_followers($uid) {
     global $user,$base_url,$theme_path;
     $output = '';
+    $followers = array();
 // get all the users this user is following
          $results = db_query("SELECT content_id AS fuid FROM {flag_content} WHERE uid = $uid and content_type = 'user' ");
           foreach ($results AS $result) {
                   $followers[]= $result;
           }
+    $row = array();
     $rows = array();
     $i = 3; 
-    if (is_array($followers)) {
+    if (count($followers) > 0) {
       $i = 0;
       $row = array();
       $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
