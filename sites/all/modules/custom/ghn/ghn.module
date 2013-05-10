@@ -263,8 +263,10 @@ function _profile2_detail_form() {
  **/
 function _ghn_user_dashboard($uid) {
     $ret = '';
-    // get user contact link (only for visitor)
-    // get user follow link (only for visitor)
+    global $base_url,$user;
+    $row = array();
+    $rows = array(); 
+    // get Affiliations 
     // get user name
     $results = db_query("SELECT a.field_address_name_line AS name FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $uid LIMIT 1");
     foreach ($results AS $result) {
@@ -274,47 +276,80 @@ function _ghn_user_dashboard($uid) {
         $account = user_load($uid);
         $name = $account->name;
     }
-    
-    $ret .= '<h3>Dashboard of '.strtoupper($name).'</h3>';
+    if ($user->uid != $uid) {
+       $ret .= '<h3>You are visiting <br /> Dashboard of '.strtoupper($name).'</h3>';
+    }
+    else {
+       $ret .= '<h3>Dashboard of '.strtoupper($name).'</h3>';
+    }
+    // get user contact link (only for visitor)
+    // get user follow link (only for visitor)
+    if ($user->uid != $uid) {
+       $row[] = l("Contact ".$name,'user/'.$uid.'/contact');
+       $row[] = flag_create_link('follow',$uid);
+       $rows[] = array('data' => $row,'class'=>array('dash-row'));
+    }
+    $row = array();
     //$ret .= '<div class="dashboard-name">Name: '.strtoupper($name).'</div>';
     // member since info
     $results = db_query("SELECT u.created FROM {users} u WHERE uid = $uid LIMIT 1");
     foreach ($results AS $result) {
         $membersince = date("d F, Y",$result->created);
     } 
-    $ret .= '<div class="dashboard-membersince">Member Since: '.$membersince.'</div>';
+    $row[] = '<div class="label">Member Since: </div>';
+    $row[] = '<div class="dashboard-membersince">'.$membersince.'</div>';
+    $rows[] = array('data'=>$row,'class' => array('need-row'));
+    $row = array();
     // country location (possible display on a map)
     $results = db_query("SELECT a.field_address_country AS country FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $uid LIMIT 1");
     foreach ($results AS $result) {
         $country = $result->country;
     } 
     if (!empty($country)) {
-       $ret .= '<div class="dashboard-country">Location : '.$country.'</div>';
+       $row[] = '<div class="label">Location : </div>';
+       $row[] = '<div class="dashboard-country">'.$country.'</div>';
     }
     else {
-       $ret .= '<div class="dashboard-country">Location : NA</div>';
+       $row[] = '<div class="label">Location : </div>';
+       $row[] = '<div class="dashboard-country"> NA</div>';
     }
+    $rows[] = array('data'=>$row,'class' => array('dash-row'));
+    $row = array();
     // how many forum posts
     $results = db_query("SELECT count(nid) AS forumcount FROM {node} WHERE type = 'forum' AND uid = $uid LIMIT 1");
     foreach ($results AS $result) {
         $forumcount = $result->forumcount;
     } 
-    $ret .= '<div class="dashboard-count">Number of forum postings: '.$forumcount.'</div>';
+    $row[] = '<div class="label">Number of forum postings: </div>';
+    $row[] = '<div class="dashboard-count"> '.$forumcount.'</div>';
+    $rows[] = array('data'=>$row,'class' => array('dash-row'));
+    $row = array();
     // how many need posts
-    $results = db_query("SELECT count(nid) AS needcount FROM {node} WHERE type = 'service_request' AND uid = $uid LIMIT 1");
+    $results = db_query("SELECT count(nid) AS needcount FROM {node} WHERE type = 'need_post' AND uid = $uid LIMIT 1");
     foreach ($results AS $result) {
-        $needcount = $result->needcount;
+        $result->needcount == 0 ?
+        $needcount = $result->needcount :
+        $needcount = $result->needcount.' '.l("View List",$base_url."/need-posts/".$uid);
     } 
-    $ret .= '<div class="dashboard-count">Number of Need postings: '.$needcount.'</div>';
+    $row[] = '<div class="label">Number of Need postings: </div>';
+    $row[] = '<div class="dashboard-count"> '.$needcount.'</div>';
+    $rows[] = array('data'=>$row,'class' => array('dash-row'));
+    $row = array();
     // how many resource posts
     $results = db_query("SELECT count(nid) AS resourcecount FROM {node} WHERE type = 'service_offer' AND uid = $uid LIMIT 1");
     foreach ($results AS $result) {
         $forumcount = $result->resourcecount;
     } 
-    $ret .= '<div class="dashboard-count">Number of Resource postings: '.$forumcount.'</div>';
-    $ret .= '<div class="dashboard-count">Number of Matches to date: COMING SOON</div>';
+    $row[] = '<div class="label">Number of Resource postings: </div>';
+    $row[] = '<div class="dashboard-count"> '.$forumcount.'</div>';
+    $rows[] = array('data'=>$row,'class'=>array('dash-row'));
+    $row = array();
+    $row[] = '<div class="label">Number of Matches to date: </div>';
+    $row[] = '<div class="dashboard-count"> COMING SOON</div>';
+    $rows[] = array('data' => $row,'class'=>array('dash-row'));
+    $ret .= theme('table',array('rows'=>$rows));
     // how many matches
-
+    
     return $ret;
 }
 /**
@@ -346,21 +381,67 @@ function _ghn_post_form_options($service) {
      //return array('0'=>$service,'1'=>$service);
 }
 /** 
+ * customing Follower block
+ **/
+function ghn_followers($uid) {
+    global $user,$base_url,$theme_path;
+    $output = '';
+// get all the users this user is following
+         $results = db_query("SELECT content_id AS fuid FROM {flag_content} WHERE uid = $uid and content_type = 'user' ");
+          foreach ($results AS $result) {
+                  $followers[]= $result;
+          }
+    $rows = array();
+    $i = 3; 
+    if (is_array($followers)) {
+      $i = 0;
+      $row = array();
+      $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
+      foreach ($followers as $follower) {
+          $account = user_load($follower->fuid);
+          if ($i <= 2) {
+             if ($account->picture)
+                $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'thumbnail'));
+             else
+                $pic = theme('image',array('path' => $default_uri, 'style_name' => 'thumbnail'));
+             $ulink = '<a href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
+             $row[$i++] = $ulink;
+          }
+          else {
+               $rows[] = array('data' => $row,'class'=>array('follower-row'));
+               $row = array();
+               $i = 0;
+               $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'thumbnail'));
+               $ulink = '<a href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
+               $row[$i++] = $pic;
+          }
+      }
+    }
+    $rows[] = array('data' => $row,'class'=>array('follower-row'));
+    $output = theme('table',array('rows'=>$rows));
+    return $output;
+}
+/** 
  * customing Latest visitor block
  **/
 function ghn_latest_visitors($uid) {
-    global $user,$base_url;
+    global $user,$base_url,$theme_path;
     $output = '';
     $visitors = user_visits_latest($uid, 5);
     $rows = array();
     $i = 3; 
     if (is_array($visitors)) {
       $i = 0;
+      $j = 0;
       $row = array();
+      $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
       foreach ($visitors as $visitor) {
           $account = user_load($visitor->vuid);
           if ($i <= 2) {
-             $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'thumbnail'));
+             if ($account->picture)
+                $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'thumbnail'));
+             else
+                $pic = theme('image',array('path' => $default_uri, 'style_name' => 'thumbnail'));
              $ulink = '<a href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
              $row[$i++] = $ulink;
           }
