@@ -11,12 +11,12 @@ function ghn_form_alter(&$form,&$form_state,$form_id) {
                      unset($form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#options']['']);
                      $form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#title'] = "Memberhsip Type";
                      break;
-               case "service_request_node_form":
+               case "need_post_node_form":
 /*
 $tmp = var_export($form_state['input'],TRUE);
                     $options = array('0'=>'yes','1'=>'no');
                     if (!empty($form_state['input'])) {
-$tmp = var_export($form_state['input']['field_clinical_services'],TRUE);
+$tmp = var_export($form_state['input']['field_post_service'],TRUE);
 //drupal_set_message($tmp);
                       if ($form_state['input']['field_clinical_services']['und'] == 'Clinical Services') {
                           $options = _ghn_post_form_options(1);
@@ -53,12 +53,23 @@ $tmp = var_export($form_state['input']['field_clinical_services'],TRUE);
                               '#options' => $options,
                           );
                       endif;
-$tmp = var_export($form,TRUE);
-//drupal_set_message($tmp);
 */
+/*
+                      if (is_numeric(arg(1))):
+                         $form['field_post_service']['und']['#disabled'] = TRUE;
+                         $form['field_clinical_services_choices']['und']['#disabled'] = TRUE;
+                         $form['field_education_choices']['und']['#disabled'] = TRUE;
+                         $form['field_equipment_choices']['und']['#disabled'] = TRUE;
+                         $form['field_medical_1st_level_subcateg']['und']['#disabled'] = TRUE;
+                         $form['field_volunteer_choices']['und']['#disabled'] = TRUE;
+                         $form['field_funding_choices']['und']['#disabled'] = TRUE;
+                      endif;
+*/
+$tmp = var_export($form,TRUE);
+//drupal_set_message($existingnode);
                       array_push($form['#submit'],'ghn_post_submit');  
                       break;
-               case "service_offering_node_form":
+               case "resource_post_node_form":
 /*
                     $form['field_clinical_services']['und']['#ajax'] = array(
                          'callback' => 'ghn_post_options',   // The URL path that the hook_menu will trigger the callback on.
@@ -79,8 +90,6 @@ $tmp = var_export($form,TRUE);
                       );
 // need to add affiliation checkboxes as this may belong to one of their 
 // affiliations
-                      global $user;
-                      $uid = $user->uid;
                       $results = db_query("SELECT field_affiliations_value AS affiliation FROM {field_data_field_affiliations} a LEFT JOIN {node} n ON n.nid = a.entity_id WHERE n.uid = $uid ORDER BY affiliation");
                       foreach ($results AS $result) {
                               $options[] = $result->affiliation;
@@ -92,6 +101,41 @@ $tmp = var_export($form,TRUE);
                                    '#weight' => 3,
                       );
                     //array_push($form['#submit'],'ghn_post_submit');  
+*/
+                      global $user;
+                      $uid = $user->uid;
+// get all the affilations for this user
+                      $options = $form['field_affiliations']['und']['#options'];
+                      $results = db_query("SELECT a.field_affiliations_value AS affiliation FROM {field_data_field_affiliations} a LEFT JOIN {node} n ON n.nid = a.entity_id WHERE n.uid = $uid AND n.type = 'affiliations'");
+                      foreach ($options AS $option => $value) {
+                              $default[$option] = TRUE;
+                      }
+                      foreach ($results AS $result) {
+                              foreach ($options AS $option => $value) {
+                                      if ($option == $result->affiliation) {
+                                         $default[$option] = FALSE;
+                                      }
+                              }
+                      }
+                      foreach ($default AS $option => $value) {
+                              if ($value) {
+                                 unset($form['field_affiliations']['und']['#options'][$option]);
+                              }
+                      }
+/*
+                      if (is_numeric(arg(1))):
+                         $options = $form['field_affiliations']['und']['#options'];
+                         foreach ($options AS $option => $value) {
+                                 $default[$option] = TRUE;
+                         }
+                         $form['field_type_of_services_provided']['und']['#disabled'] = TRUE;
+                         $form['field_clinical_services_choices']['und']['#disabled'] = TRUE;
+                         $form['field_education_choices']['und']['#disabled'] = TRUE;
+                         $form['field_equipment_choices']['und']['#disabled'] = TRUE;
+                         $form['field_medical_1st_level_subcateg']['und']['#disabled'] = TRUE;
+                         $form['field_volunteer_choices']['und']['#disabled'] = TRUE;
+                         $form['field_funding_choices']['und']['#disabled'] = TRUE;
+                      endif;
 */
                     $original = array_shift($form['actions']['submit']['#submit']);
                     $form['actions']['submit']['#submit'][]='ghn_post_submit';
@@ -338,10 +382,31 @@ function _ghn_user_dashboard($uid) {
     // how many resource posts
     $results = db_query("SELECT count(nid) AS resourcecount FROM {node} WHERE type = 'resource_post' AND uid = $uid LIMIT 1");
     foreach ($results AS $result) {
-        $forumcount = $result->resourcecount;
+        $result->resourcecount == 0 ?
+        $resourcecount = $result->resourcecount :
+        $resourcecount = $result->resourcecount.' '.l("View List",$base_url."/resource-posts/".$uid);
     } 
     $row[] = '<div class="label">Number of Resource postings: </div>';
-    $row[] = '<div class="dashboard-count"> '.$forumcount.'</div>';
+    $row[] = '<div class="dashboard-count"> '.$resourcecount.'</div>';
+    $rows[] = array('data'=>$row,'class'=>array('dash-row'));
+    $row = array();
+    $row[] = '<div class="label">Number of Members Following: </div>';
+// count of members you are following
+         $results = db_query("SELECT count(content_id) AS num FROM {flag_content} WHERE uid = $uid and content_type = 'user' ");
+          foreach ($results AS $result) {
+                $memcount = $result->num;
+          }
+    $row[] = '<div class="dashboard-count">'.$memcount.'</div>';
+    $rows[] = array('data'=>$row,'class'=>array('dash-row'));
+    $row = array();
+    $row[] = '<div class="label">Number of Members Followed: </div>';
+// count of members following you
+// count of members you are following
+         $results = db_query("SELECT count(uid) AS num FROM {flag_content} WHERE content_id = $uid and content_type = 'user' ");
+          foreach ($results AS $result) {
+                $memcount = $result->num;
+          }
+    $row[] = '<div class="dashboard-count"> '.$memcount.'</div>';
     $rows[] = array('data'=>$row,'class'=>array('dash-row'));
     $row = array();
     $row[] = '<div class="label">Number of Matches to date: </div>';
@@ -381,14 +446,71 @@ function _ghn_post_form_options($service) {
      //return array('0'=>$service,'1'=>$service);
 }
 /** 
+ * customing Followed block
+ **/
+function ghn_followed($uid) {
+    global $user,$base_url,$theme_path;
+    $output = '';
+    $output = '<h3>Members following you</h3>';
+    $followeds = array();
+// get all the users this user is following
+         $results = db_query("SELECT uid AS fuid,timestamp FROM {flag_content} WHERE content_id = $uid AND content_type = 'user'");
+          foreach ($results AS $result) {
+                  $followeds[]= $result;
+          }
+    $row = array();
+    $rows = array();
+    if (count($followeds) > 0) {
+      $i = 0;
+      $row = array();
+      $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
+      foreach ($followeds as $followed) {
+          $account = user_load($followed->fuid);
+          if ($account->picture)
+             $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'thumbnail'));
+          else
+              $pic = theme('image',array('path' => $default_uri, 'style_name' => 'thumbnail'));
+// build info for hover information
+          $hover = '';
+// get user name
+          $results = db_query("SELECT a.field_address_name_line AS name FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $followed->fuid LIMIT 1");
+          foreach ($results AS $result) {
+                  $name = $result->name;
+          } 
+          if (empty($name)) {
+             $name = $account->name;
+          }
+          $hover = $name.' has started following you on '.date("j \of M, Y",$followed->timestamp);
+
+          $ulink = '<a title="'.$hover.'" href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
+          if ($i <= 2) {
+             $row[$i++] = $ulink;
+          }
+          else {
+               $rows[] = array('data' => $row,'class'=>array('follower-row'));
+               $row = array();
+               $i = 0;
+               $row[$i++] = $pic;
+          }
+      }
+      $rows[] = array('data' => $row,'class'=>array('follower-row'));
+      $output .= theme('table',array('rows'=>$rows));
+    }
+    else {
+       $output .= '<div class="empty-text">You have no followers currently</div>';
+    }
+    return $output;
+}
+/** 
  * customing Follower block
  **/
 function ghn_followers($uid) {
     global $user,$base_url,$theme_path;
     $output = '';
+    $output = '<h3>Members you are following</h3>';
     $followers = array();
 // get all the users this user is following
-         $results = db_query("SELECT content_id AS fuid FROM {flag_content} WHERE uid = $uid and content_type = 'user' ");
+         $results = db_query("SELECT content_id AS fuid,timestamp FROM {flag_content} WHERE uid = $uid and content_type = 'user' ");
           foreach ($results AS $result) {
                   $followers[]= $result;
           }
@@ -401,26 +523,37 @@ function ghn_followers($uid) {
       $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
       foreach ($followers as $follower) {
           $account = user_load($follower->fuid);
+          if ($account->picture)
+             $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'thumbnail'));
+          else
+              $pic = theme('image',array('path' => $default_uri, 'style_name' => 'thumbnail'));
+// get user name
+          $results = db_query("SELECT a.field_address_name_line AS name FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $follower->fuid LIMIT 1");
+          foreach ($results AS $result) {
+                  $name = $result->name;
+          } 
+          if (empty($name)) {
+             $name = $account->name;
+          }
+          $hover = 'You started following '.$name.' on '.date("j \of M, Y",$follower->timestamp);
           if ($i <= 2) {
-             if ($account->picture)
-                $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'thumbnail'));
-             else
-                $pic = theme('image',array('path' => $default_uri, 'style_name' => 'thumbnail'));
-             $ulink = '<a href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
+             $ulink = '<a title="'.$hover.'" href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
              $row[$i++] = $ulink;
           }
           else {
                $rows[] = array('data' => $row,'class'=>array('follower-row'));
                $row = array();
                $i = 0;
-               $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'thumbnail'));
-               $ulink = '<a href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
+               $ulink = '<a title="'.$hover.'" href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
                $row[$i++] = $pic;
           }
       }
-    }
     $rows[] = array('data' => $row,'class'=>array('follower-row'));
-    $output = theme('table',array('rows'=>$rows));
+    $output .= theme('table',array('rows'=>$rows));
+    }
+    else {
+    $output .= '<div class="empty-text">You are not following anyone currently</div>';
+    }
     return $output;
 }
 /** 
@@ -438,24 +571,34 @@ function ghn_latest_visitors($uid) {
       $row = array();
       $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
       foreach ($visitors as $visitor) {
-          $account = user_load($visitor->vuid);
-          if ($i <= 2) {
-             if ($account->picture)
-                $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'thumbnail'));
-             else
-                $pic = theme('image',array('path' => $default_uri, 'style_name' => 'thumbnail'));
-             $ulink = '<a href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
-             $row[$i++] = $ulink;
-          }
-          else {
-               $rows[] = array('data' => $row,'class'=>array('visitor-row'));
-               $row = array();
-               $i = 0;
-               $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'thumbnail'));
-               $ulink = '<a href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
-               $row[$i++] = $pic;
-          }
-      }
+              $account = user_load($visitor->vuid);
+              if ($account->picture)
+                 $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'thumbnail'));
+              else
+                 $pic = theme('image',array('path' => $default_uri, 'style_name' => 'thumbnail'));
+// build info for hover information
+              $hover = '';
+// get user name
+              $results = db_query("SELECT a.field_address_name_line AS name FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $visitor->vuid LIMIT 1");
+              foreach ($results AS $result) {
+                      $name = $result->name;
+              }
+              if (empty($name)) {
+                 $name = $account->name;
+              }
+              $hover = $name;
+              if ($i <= 2) {
+                 $ulink = '<a title="'.$hover.'" href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
+                 $row[$i++] = $ulink;
+              }
+              else {
+                   $rows[] = array('data' => $row,'class'=>array('visitor-row'));
+                   $row = array();
+                   $i = 0;
+                   $ulink = '<a title="'.$hover.'" href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
+                   $row[$i++] = $pic;
+              }
+         }
     }
     $rows[] = array('data' => $row,'class'=>array('visitor-row'));
     $output = theme('table',array('rows'=>$rows));
@@ -480,3 +623,171 @@ print '</pre>';
          $tmp = var_export($form_state['redirect'],TRUE);    
 drupal_set_message($tmp);
 }
+/**
+ * GHN Matching algorithm for need posts
+ **/
+function ghn_need_matching($uid,$nid) {
+// get the needs posts
+         $need = array();
+         $subresults = array();
+         $results = db_query("SELECT n.nid,f.field_post_service_value AS service FROM {node} n LEFT JOIN {field_data_field_post_service} f ON f.entity_id = n.nid  WHERE type = 'need_post' AND n.uid = $uid AND n.nid = $nid"); 
+         foreach ($results AS $result) {
+                 switch ($result->service) {
+                        case "Clinical Services":
+                             $subresults = db_query("SELECT field_clinical_services_choices_value AS opt FROM {field_data_field_clinical_services_choices} WHERE entity_id = $result->nid"); 
+                             break;
+                        case "Educational Activities":
+drupal_set_message(" nid ".$result->nid." service ".$result->service);
+                             $subresults = db_query("SELECT field_education_choices_value AS opt FROM {field_data_field_education_choices} WHERE entity_id = $result->nid"); 
+                             break;
+                        case "Medical Equipment and Supplies":
+                             $subresults = db_query("SELECT field_equipment_choices_value AS opt FROM {field_data_field_equipment_choices} WHERE entity_id = $result->nid"); 
+                             break;
+                        case "Volunteers and personnel":
+                             $subresults = db_query("SELECT field_volunteer_choices_value AS opt FROM {field_data_field_volunteer_choices} WHERE entity_id = $result->nid"); 
+                             break;
+                        case "Financial":
+                             $subresults = db_query("SELECT field_funding_choices_value AS opt FROM {field_data_field_funding_choices} WHERE entity_id = $result->nid"); 
+                             break;
+
+                 } 
+                 foreach ($subresults AS $subresult) {
+                         $need[$result->service][$result->nid] = $subresult->opt;
+                  }
+         }
+// get the resource posts
+         $resource = array();
+         $results = db_query("SELECT n.uid,n.nid,n.title,f.field_type_of_services_provided_value AS service FROM {node} n LEFT JOIN {field_data_field_type_of_services_provided} f ON f.entity_id = n.nid  WHERE type = 'resource_post'"); 
+         foreach ($results AS $result) {
+                 switch ($result->service) {
+                        case "Clinical Services":
+                             $subresults = db_query("SELECT field_clinical_services_choices_value AS opt FROM {field_data_field_clinical_services_choices} WHERE entity_id = $result->nid"); 
+                             break;
+                        case "Educational Activities":
+                             $subresults = db_query("SELECT field_education_choices_value AS opt FROM {field_data_field_education_choices} WHERE entity_id = $result->nid"); 
+                             break;
+                        case "Medical Equipment and Supplies":
+                             $subresults = db_query("SELECT field_equipment_choices_value AS opt FROM {field_data_field_equipment_choices} WHERE entity_id = $result->nid"); 
+                             break;
+                        case "Volunteers and personnel":
+                             $subresults = db_query("SELECT field_volunteer_choices_value AS opt FROM {field_data_field_volunteer_choices} WHERE entity_id = $result->nid"); 
+                             break;
+                        case "Finance":
+                             $subresults = db_query("SELECT field_funding_choices_value AS opt FROM {field_data_field_funding_choices} WHERE entity_id = $result->nid"); 
+                             break;
+
+                 } 
+                 foreach ($subresults AS $subresult) {
+                         $resource[$result->service][$result->nid] = $result->uid.';'.$result->title.';'.$subresult->opt;
+                  }
+         }
+         $tmp = var_export($need,TRUE);
+         //drupal_set_message($tmp);
+         $tmp = var_export($resource,TRUE);
+         //drupal_set_message($tmp);
+// start matching 
+         $ret = array();
+         foreach ($need AS $index => $nvalue) {
+                 if (!empty($resource[$index])) {
+                    foreach ($nvalue AS $nnid => $nopt) {
+                            $tmp = var_export($nvalue,TRUE);
+                            foreach ($resource[$index] AS $rnid => $ropt) {
+                                    $rropt = explode(';',$ropt);
+                                    if (!empty($rropt[2])&&($nopt == $rropt[2])) {
+                                       $ret[] = $index.';'.$rropt[0].';'.$rropt[1];
+                                    }
+                                    else {
+                                       $ret[] = $index.';'.$rropt[0].';'.'No match';
+                                    }
+                            }
+                     }
+                 }
+         }         
+         return $ret;
+}
+/**
+ * GHN Matching algorithm for Resource posts
+ **/
+function ghn_resource_matching($uid,$nid) {
+// get the resource posts
+         $resource = array();
+         $need = array();
+         $subresults = array();
+	 $results = db_query("SELECT n.nid,f.field_type_of_services_provided_value AS service FROM {node} n LEFT JOIN {field_data_field_type_of_services_provided} f ON f.entity_id = n.nid  WHERE type = 'resource_post' AND n.uid = $uid AND n.nid = $nid"); 
+         foreach ($results AS $result) {
+                 switch ($result->service) {
+                        case "Clinical Services":
+                             $subresults = db_query("SELECT field_clinical_services_choices_value AS opt FROM {field_data_field_clinical_services_choices} WHERE entity_id = $result->nid"); 
+                             break;
+                        case "Educational Activities":
+                             $subresults = db_query("SELECT field_education_choices_value AS opt FROM {field_data_field_education_choices} WHERE entity_id = $result->nid"); 
+                             break;
+                        case "Medical Equipment and Supplies":
+                             $subresults = db_query("SELECT field_equipment_choices_value AS opt FROM {field_data_field_equipment_choices} WHERE entity_id = $result->nid"); 
+                             break;
+                        case "Volunteers and personnel":
+                             $subresults = db_query("SELECT field_volunteer_choices_value AS opt FROM {field_data_field_volunteer_choices} WHERE entity_id = $result->nid"); 
+                             break;
+                        case "Finance":
+//drupal_set_message(" nid ".$result->nid." service ".$result->service);
+                             $subresults = db_query("SELECT field_funding_choices_value AS opt FROM {field_data_field_funding_choices} WHERE entity_id = $result->nid"); 
+                             break;
+
+                 } 
+                 foreach ($subresults AS $subresult) {
+                         $resource[$result->service][$result->nid] = $subresult->opt;
+                  }
+         }
+// get the need posts
+         $results = db_query("SELECT n.uid,n.nid,n.title,f.field_post_service_value AS service FROM {node} n LEFT JOIN {field_data_field_post_service} f ON f.entity_id = n.nid  WHERE type = 'need_post'"); 
+         foreach ($results AS $result) {
+                 switch ($result->service) {
+                        case "Clinical Services":
+                             $subresults = db_query("SELECT field_clinical_services_choices_value AS opt FROM {field_data_field_clinical_services_choices} WHERE entity_id = $result->nid"); 
+                             break;
+                        case "Educational Activities":
+                             $subresults = db_query("SELECT field_education_choices_value AS opt FROM {field_data_field_education_choices} WHERE entity_id = $result->nid"); 
+                             break;
+                        case "Medical Equipment and Supplies":
+                             $subresults = db_query("SELECT field_equipment_choices_value AS opt FROM {field_data_field_equipment_choices} WHERE entity_id = $result->nid"); 
+                             break;
+                        case "Volunteers and personnel":
+                             $subresults = db_query("SELECT field_volunteer_choices_value AS opt FROM {field_data_field_volunteer_choices} WHERE entity_id = $result->nid"); 
+                             break;
+                        case "Financial":
+                             $subresults = db_query("SELECT field_funding_choices_value AS opt FROM {field_data_field_funding_choices} WHERE entity_id = $result->nid"); 
+                             break;
+
+                 } 
+                 foreach ($subresults AS $subresult) {
+                         $need[$result->service][$result->nid] = $result->uid.';'.$result->title.';'.$subresult->opt;
+                  }
+         }
+         $tmp = var_export($need,TRUE);
+         //drupal_set_message($tmp);
+         $tmp = var_export($resource,TRUE);
+         //drupal_set_message($tmp);
+// start matching 
+         $ret = array();
+         foreach ($resource AS $index => $rvalue) {
+                 if (!empty($need[$index])) {
+                    foreach ($rvalue AS $rnid => $ropt) {
+                            $tmp = var_export($rvalue,TRUE);
+                            foreach ($need[$index] AS $nnid => $nopt) {
+                                    $nnopt = explode(';',$nopt);
+                            //drupal_set_message($index.' '.$nnid.' '.$nopt.' '.$rnid.' '.$ropt);
+                                    if (!empty($nnopt[2])&&($ropt == $nnopt[2])) {
+                                       $ret[] = $index.';'.$nnopt[0].';'.$nnopt[1];
+                                    }
+                                    else {
+                                       $ret[] = $index.';'.$nnopt[0].';'.'No match';
+                                    }
+                            }
+                     }
+                 }
+         }         
+         $tmp = var_export($ret,TRUE);
+         //drupal_set_message($tmp);
+         //return $ret;
+}
+
