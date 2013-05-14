@@ -2,6 +2,28 @@
 body {
      background-image: url("../images/pageBG.png");
 }
+/* landing page */
+.not-logged-in .howtouse h2 {
+     font-size: 14px;
+     color: #000;
+     text-decoration:underline;
+     font-weight: 600;
+     margin: 5px 0;
+     line-height: 15px;
+}
+.not-logged-in .howtouse .text {
+     margin:1px 5px;
+}
+.not-logged-in h2.pane-title {
+     font-size: 20px !important;
+     color:#000000 !important;
+     font-weight: 600;
+}
+.not-logged-in .video {
+     font-size: 16px !important;
+     color:#37BA51 !important;
+     font-weight: 600;
+}
 /* top navigation */
 .not-logged-in ul#nice-menu-0 {
      position: absolute;

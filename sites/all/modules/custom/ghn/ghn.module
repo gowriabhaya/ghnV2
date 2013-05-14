@@ -3,14 +3,21 @@
  * Form alter 
  **/
 function ghn_form_alter(&$form,&$form_state,$form_id) {
-//krumo($form_id);
          $form['options']['status']['#value'] = 1;
+//krumo($form_id);
          switch($form_id) {
                case "profile2_edit_main_form":
                      $tmp = var_export($form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#options'],TRUE);
                      unset($form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#options']['']);
                      $form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#title'] = "Memberhsip Type";
                      break;
+               case "mailchimp_lists_user_subscribe_form_newletter":
+//krumo($form['submit']);
+$form['submit']['#value'] = 'Join';
+unset($form['mailchimp_lists']['mailchimp_newletter']['mergevars']['FNAME']);
+unset($form['mailchimp_lists']['mailchimp_newletter']['mergevars']['LNAME']);
+
+                    break;
                case "need_post_node_form":
 /*
 $tmp = var_export($form_state['input'],TRUE);
@@ -451,7 +458,7 @@ function _ghn_post_form_options($service) {
 function ghn_followed($uid) {
     global $user,$base_url,$theme_path;
     $output = '';
-    $output = '<h3>Members following you</h3>';
+    $output = '<h3>Followed By</h3>';
     $followeds = array();
 // get all the users this user is following
          $results = db_query("SELECT uid AS fuid,timestamp FROM {flag_content} WHERE content_id = $uid AND content_type = 'user'");
@@ -507,7 +514,7 @@ function ghn_followed($uid) {
 function ghn_followers($uid) {
     global $user,$base_url,$theme_path;
     $output = '';
-    $output = '<h3>Members you are following</h3>';
+    //$output = '<h3>Members you are following</h3>';
     $followers = array();
 // get all the users this user is following
          $results = db_query("SELECT content_id AS fuid,timestamp FROM {flag_content} WHERE uid = $uid and content_type = 'user' ");
@@ -630,7 +637,7 @@ function ghn_need_matching($uid,$nid) {
 // get the needs posts
          $need = array();
          $subresults = array();
-         $results = db_query("SELECT n.nid,f.field_post_service_value AS service FROM {node} n LEFT JOIN {field_data_field_post_service} f ON f.entity_id = n.nid  WHERE type = 'need_post' AND n.uid = $uid AND n.nid = $nid"); 
+         $results = db_query("SELECT n.nid,f.field_post_service_value AS service FROM {node} n LEFT JOIN {field_data_field_post_service} f ON f.entity_id = n.nid  WHERE n.type = 'need_post' AND n.uid = $uid AND n.nid = $nid"); 
          foreach ($results AS $result) {
                  switch ($result->service) {
                         case "Clinical Services":
@@ -646,7 +653,7 @@ drupal_set_message(" nid ".$result->nid." service ".$result->service);
                         case "Volunteers and personnel":
                              $subresults = db_query("SELECT field_volunteer_choices_value AS opt FROM {field_data_field_volunteer_choices} WHERE entity_id = $result->nid"); 
                              break;
-                        case "Financial":
+                        case "Funding":
                              $subresults = db_query("SELECT field_funding_choices_value AS opt FROM {field_data_field_funding_choices} WHERE entity_id = $result->nid"); 
                              break;
 
@@ -657,7 +664,7 @@ drupal_set_message(" nid ".$result->nid." service ".$result->service);
          }
 // get the resource posts
          $resource = array();
-         $results = db_query("SELECT n.uid,n.nid,n.title,f.field_type_of_services_provided_value AS service FROM {node} n LEFT JOIN {field_data_field_type_of_services_provided} f ON f.entity_id = n.nid  WHERE type = 'resource_post'"); 
+         $results = db_query("SELECT n.uid,n.nid,n.title,f.field_post_service_value AS service FROM {node} n LEFT JOIN {field_data_field_post_service} f ON f.entity_id = n.nid  WHERE n.type = 'resource_post' AND n.uid != $uid"); 
          foreach ($results AS $result) {
                  switch ($result->service) {
                         case "Clinical Services":
@@ -672,7 +679,7 @@ drupal_set_message(" nid ".$result->nid." service ".$result->service);
                         case "Volunteers and personnel":
                              $subresults = db_query("SELECT field_volunteer_choices_value AS opt FROM {field_data_field_volunteer_choices} WHERE entity_id = $result->nid"); 
                              break;
-                        case "Finance":
+                        case "Funding":
                              $subresults = db_query("SELECT field_funding_choices_value AS opt FROM {field_data_field_funding_choices} WHERE entity_id = $result->nid"); 
                              break;
 
@@ -688,16 +695,22 @@ drupal_set_message(" nid ".$result->nid." service ".$result->service);
 // start matching 
          $ret = array();
          foreach ($need AS $index => $nvalue) {
+/*
+$tmp = var_export($resource,TRUE);
+print '<pre>';
+print $tmp;
+print '</pre>';
+*/
+//drupal_set_message($tmp);
                  if (!empty($resource[$index])) {
                     foreach ($nvalue AS $nnid => $nopt) {
-                            $tmp = var_export($nvalue,TRUE);
                             foreach ($resource[$index] AS $rnid => $ropt) {
                                     $rropt = explode(';',$ropt);
                                     if (!empty($rropt[2])&&($nopt == $rropt[2])) {
-                                       $ret[] = $index.';'.$rropt[0].';'.$rropt[1];
+                                       $ret[] = $index.';'.$rnid.';'.$rropt[0].';'.$rropt[1].';Match';
                                     }
                                     else {
-                                       $ret[] = $index.';'.$rropt[0].';'.'No match';
+                                       //$ret[] = $index.';'.$rnid.';'.$rropt[0].';No match';
                                     }
                             }
                      }
@@ -713,7 +726,7 @@ function ghn_resource_matching($uid,$nid) {
          $resource = array();
          $need = array();
          $subresults = array();
-	 $results = db_query("SELECT n.nid,f.field_type_of_services_provided_value AS service FROM {node} n LEFT JOIN {field_data_field_type_of_services_provided} f ON f.entity_id = n.nid  WHERE type = 'resource_post' AND n.uid = $uid AND n.nid = $nid"); 
+	 $results = db_query("SELECT n.nid,f.field_post_service_value AS service FROM {node} n LEFT JOIN {field_data_field_post_service} f ON f.entity_id = n.nid  WHERE type = 'resource_post' AND n.uid = $uid AND n.nid = $nid"); 
          foreach ($results AS $result) {
                  switch ($result->service) {
                         case "Clinical Services":
@@ -728,7 +741,7 @@ function ghn_resource_matching($uid,$nid) {
                         case "Volunteers and personnel":
                              $subresults = db_query("SELECT field_volunteer_choices_value AS opt FROM {field_data_field_volunteer_choices} WHERE entity_id = $result->nid"); 
                              break;
-                        case "Finance":
+                        case "Funding":
 //drupal_set_message(" nid ".$result->nid." service ".$result->service);
                              $subresults = db_query("SELECT field_funding_choices_value AS opt FROM {field_data_field_funding_choices} WHERE entity_id = $result->nid"); 
                              break;
@@ -739,7 +752,7 @@ function ghn_resource_matching($uid,$nid) {
                   }
          }
 // get the need posts
-         $results = db_query("SELECT n.uid,n.nid,n.title,f.field_post_service_value AS service FROM {node} n LEFT JOIN {field_data_field_post_service} f ON f.entity_id = n.nid  WHERE type = 'need_post'"); 
+         $results = db_query("SELECT n.uid,n.nid,n.title,f.field_post_service_value AS service FROM {node} n LEFT JOIN {field_data_field_post_service} f ON f.entity_id = n.nid  WHERE type = 'need_post' AND n.uid != $uid"); 
          foreach ($results AS $result) {
                  switch ($result->service) {
                         case "Clinical Services":
@@ -754,7 +767,7 @@ function ghn_resource_matching($uid,$nid) {
                         case "Volunteers and personnel":
                              $subresults = db_query("SELECT field_volunteer_choices_value AS opt FROM {field_data_field_volunteer_choices} WHERE entity_id = $result->nid"); 
                              break;
-                        case "Financial":
+                        case "Funding":
                              $subresults = db_query("SELECT field_funding_choices_value AS opt FROM {field_data_field_funding_choices} WHERE entity_id = $result->nid"); 
                              break;
 
@@ -790,4 +803,14 @@ function ghn_resource_matching($uid,$nid) {
          //drupal_set_message($tmp);
          //return $ret;
 }
-
+/**
+ * Match page listing
+ **/
+function ghn_match_list($matches,$type) {
+// parse thru the $matches array 
+ // build a table with these info
+// display user picture
+// the matching need/resource posting
+// contact link
+// follow link
+}
