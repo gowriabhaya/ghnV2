@@ -29,7 +29,7 @@
       $fields = explode("/",$output);
       $ret = ghn_need_matching($uid,$fields[1]);
       if (count($ret) > 0) {
-         print '<a href="'.$base_url.'/node/'.$fields[1].'/edit" title="'.$fields[2].'">'.$fields[2].'</a> MATCHED'; 
+         print '<a href="'.$base_url.'/node/'.$fields[1].'/edit" title="'.$fields[2].'">'.$fields[2].'</a> <a class="match-link" href="'.$base_url.'/match/need/'.$uid.'/'.$fields[1].'">Matched</a>'; 
       }
       else {
          print '<a href="'.$base_url.'/node/'.$fields[1].'/edit" title="'.$fields[2].'">'.$fields[2].'</a> NO MATCH'; 

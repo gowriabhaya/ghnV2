@@ -61,7 +61,6 @@ $tmp = var_export($form_state['input']['field_post_service'],TRUE);
                           );
                       endif;
 */
-/*
                       if (is_numeric(arg(1))):
                          $form['field_post_service']['und']['#disabled'] = TRUE;
                          $form['field_clinical_services_choices']['und']['#disabled'] = TRUE;
@@ -71,7 +70,6 @@ $tmp = var_export($form_state['input']['field_post_service'],TRUE);
                          $form['field_volunteer_choices']['und']['#disabled'] = TRUE;
                          $form['field_funding_choices']['und']['#disabled'] = TRUE;
                       endif;
-*/
 $tmp = var_export($form,TRUE);
 //drupal_set_message($existingnode);
                       array_push($form['#submit'],'ghn_post_submit');  
@@ -129,7 +127,6 @@ $tmp = var_export($form,TRUE);
                                  unset($form['field_affiliations']['und']['#options'][$option]);
                               }
                       }
-/*
                       if (is_numeric(arg(1))):
                          $options = $form['field_affiliations']['und']['#options'];
                          foreach ($options AS $option => $value) {
@@ -143,7 +140,6 @@ $tmp = var_export($form,TRUE);
                          $form['field_volunteer_choices']['und']['#disabled'] = TRUE;
                          $form['field_funding_choices']['und']['#disabled'] = TRUE;
                       endif;
-*/
                     $original = array_shift($form['actions']['submit']['#submit']);
                     $form['actions']['submit']['#submit'][]='ghn_post_submit';
                     $form['actions']['submit']['#submit'][]=$original;
@@ -237,6 +233,12 @@ function ghn_menu() {
     $items['dashboard/%'] = array(
         'page callback' => '_ghn_user_dashboard',
         'page arguments' => array(1),
+        'access callback' => TRUE,
+        'type' => MENU_CALLBACK,
+    );
+    $items['match/%/%/%'] = array(
+        'page callback' => '_ghn_match_page',
+        'page arguments' => array(1,2,3),
         'access callback' => TRUE,
         'type' => MENU_CALLBACK,
     );
@@ -433,6 +435,7 @@ function ghn_post_options(&$form,&$form_state) {
 /**
  * this function is a helper AJAX form call back function for a Need form
  **/
+/*
 function _ghn_post_form_options($service) {
      $results = db_query("SELECT extra FROM {webform_component} WHERE cid = $service AND nid = 15 LIMIT 1");
      foreach ($results AS $result => $component) {
@@ -452,6 +455,7 @@ function _ghn_post_form_options($service) {
      return $ret;
      //return array('0'=>$service,'1'=>$service);
 }
+*/
 /** 
  * customing Followed block
  **/
@@ -806,11 +810,41 @@ function ghn_resource_matching($uid,$nid) {
 /**
  * Match page listing
  **/
-function ghn_match_list($matches,$type) {
-// parse thru the $matches array 
- // build a table with these info
+function _ghn_match_page($type,$uid,$nid) {
+     global $base_url,$theme_path;
+     $ret = '';
+     if ($type == "need") {
+        $matches = ghn_need_matching($uid,$nid);
+     }
+     else if ($type == "resource") {
+        $matches = ghn_resource_matching($uid,$nid);
+     }
+     foreach ($matches AS $match => $value) {
+             $fields = explode(';',$value);
 // display user picture
+             $user = user_load($fields[2]);
+             $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
+             if ($user->picture)
+                $pic = theme('image_style',array('path' => $user->picture->uri, 'style_name' => 'thumbnail'));
+             else
+                $pic = theme('image',array('path' => $default_uri, 'style_name' => 'thumbnail'));
+// user name
+             $results = db_query("SELECT a.field_address_name_line AS name FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $fields[2] LIMIT 1");
+             foreach ($results AS $result) {
+                     $name = $result->name;
+             }
+             if (empty($name)) {
+                $name = $user->name;
+             }
 // the matching need/resource posting
+             $title = l($fields[3],$base_url.'/node/'.$fields[1]);
 // contact link
+             $links = l('Contact '.$name,$base_url.'/user/'.$fields[2].'/contact');
 // follow link
+       $links .= flag_create_link('follow',$fields[2]);
+     }
+     $ret = $pic.'<div class="match-name">'.$name.'</div><br />';
+     $ret .= '<div class="match-title">'.$title.'</div><br />';
+     $ret .= '<div class="match-links">'.$links.'</div><br />';
+     return $ret;
 }
