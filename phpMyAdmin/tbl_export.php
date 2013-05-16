@@ -2,25 +2,29 @@
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  *
- * @version $Id$
- * @package phpMyAdmin
+ * @package PhpMyAdmin
  */
 
 /**
  *
  */
-require_once './libraries/common.inc.php';
+require_once 'libraries/common.inc.php';
+
+$response = PMA_Response::getInstance();
+$header   = $response->getHeader();
+$scripts  = $header->getScripts();
+$scripts->addFile('export.js');
 
 /**
  * Gets tables informations and displays top links
  */
-require_once './libraries/tbl_common.php';
+require_once 'libraries/tbl_common.inc.php';
 $url_query .= '&amp;goto=tbl_export.php&amp;back=tbl_export.php';
-require_once './libraries/tbl_info.inc.php';
+require_once 'libraries/tbl_info.inc.php';
 
 // Dump of a table
 
-$export_page_title = $strViewDump;
+$export_page_title = __('View dump (schema) of table');
 
 // When we have some query, we need to remove LIMIT from that and possibly
 // generate WHERE clause (if we are asked to export specific rows)
@@ -32,33 +36,19 @@ if (! empty($sql_query)) {
 
     // Need to generate WHERE clause?
     if (isset($where_clause)) {
-        // Yes => rebuild query from scratch; this doesn't work with nested
-        // selects :-(
-        $sql_query = 'SELECT ';
 
-        if (isset($analyzed_sql[0]['queryflags']['distinct'])) {
-            $sql_query .= ' DISTINCT ';
-        }
+        $temp_sql_array = preg_split("/\bwhere\b/i", $sql_query);
 
-        $sql_query .= $analyzed_sql[0]['select_expr_clause'];
+        // The part "SELECT `id`, `name` FROM `customers`"
+        // is not modified by the next code segment, when exporting 
+        // the result set from a query such as
+        // "SELECT `id`, `name` FROM `customers` WHERE id NOT IN
+        //  ( SELECT id FROM companies WHERE name LIKE '%u%')"
+        $sql_query = $temp_sql_array[0];
 
-        if (!empty($analyzed_sql[0]['from_clause'])) {
-            $sql_query .= ' FROM ' . $analyzed_sql[0]['from_clause'];
-        }
-
-        $wheres = array();
-
-        if (isset($where_clause) && is_array($where_clause)
-         && count($where_clause) > 0) {
-            $wheres[] = '(' . implode(') OR (',$where_clause) . ')';
-        }
-
-        if (!empty($analyzed_sql[0]['where_clause']))  {
-            $wheres[] = $analyzed_sql[0]['where_clause'];
-        }
-
-        if (count($wheres) > 0) {
-            $sql_query .= ' WHERE (' . implode(') AND (', $wheres) . ')';
+        // Append the where clause using the primary key of each row
+        if (is_array($where_clause) && (count($where_clause) > 0)) {
+            $sql_query .= ' WHERE (' . implode(') OR (', $where_clause) . ')';
         }
 
         if (!empty($analyzed_sql[0]['group_by_clause'])) {
@@ -74,20 +64,9 @@ if (! empty($sql_query)) {
         // Just crop LIMIT clause
         $sql_query = $analyzed_sql[0]['section_before_limit'] . $analyzed_sql[0]['section_after_limit'];
     }
-    $message = PMA_Message::success();
+    echo PMA_Util::getMessage(PMA_Message::success());
 }
 
-/**
- * Displays top menu links
- */
-require './libraries/tbl_links.inc.php';
-
 $export_type = 'table';
-require_once './libraries/display_export.lib.php';
-
-
-/**
- * Displays the footer
- */
-require_once './libraries/footer.inc.php';
+require_once 'libraries/display_export.lib.php';
 ?>

@@ -1,11 +1,9 @@
 <?php
+/* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  * Overview (main page)
  *
- * @package    phpMyAdmin-setup
- * @author     Piotr Przybylski <piotrprz@gmail.com>
- * @license    http://www.gnu.org/licenses/gpl.html GNU GPL 2.0
- * @version    $Id$
+ * @package PhpMyAdmin-Setup
  */
 
 if (!defined('PHPMYADMIN')) {
@@ -16,12 +14,12 @@ if (!defined('PHPMYADMIN')) {
  * Core libraries.
  */
 require_once './libraries/display_select_lang.lib.php';
-require_once './setup/lib/FormDisplay.class.php';
+require_once './libraries/config/FormDisplay.class.php';
 require_once './setup/lib/index.lib.php';
 
 // prepare unfiltered language list
 $all_languages = PMA_langList();
-uasort($all_languages, 'PMA_language_cmp');
+uasort($all_languages, 'PMA_languageCmp');
 
 $cf = ConfigFile::getInstance();
 $separator = PMA_get_arg_separator('html');
@@ -49,42 +47,39 @@ $config_writable = false;
 $config_exists = false;
 check_config_rw($config_readable, $config_writable, $config_exists);
 if (!$config_writable || !$config_readable) {
-    messages_set('error', 'config_rw', 'CannotLoadConfig', PMA_lang('CannotLoadConfigMsg'));
+    messages_set(
+        'error', 'config_rw', __('Cannot load or save configuration'),
+        PMA_lang(__('Please create web server writable folder [em]config[/em] in phpMyAdmin top level directory as described in [doc@setup_script]documentation[/doc]. Otherwise you will be only able to download or display it.'))
+    );
 }
 //
 // Check https connection
 //
 $is_https = !empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on';
 if (!$is_https) {
-    $text = $GLOBALS['strSetupInsecureConnectionMsg1'];
+    $text = __('You are not using a secure connection; all data (including potentially sensitive information, like passwords) is transferred unencrypted!');
+
     if (!empty($_SERVER['REQUEST_URI']) && !empty($_SERVER['HTTP_HOST'])) {
-        $text .= ' ' . PMA_lang('InsecureConnectionMsg2',
-            'https://' . htmlspecialchars($_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']));
+        $link = 'https://' . htmlspecialchars($_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+        $strInsecureConnectionMsg2 = __('If your server is also configured to accept HTTPS requests follow [a@%s]this link[/a] to use a secure connection.');
+        $strInsecureConnectionMsg2 = sprintf($strInsecureConnectionMsg2, $link);
+        $text .= ' ' . PMA_lang($strInsecureConnectionMsg2);
     }
-    messages_set('warning', 'no_https', 'InsecureConnection', $text);
+    messages_set('notice', 'no_https', __('Insecure connection'), $text);
 }
 ?>
 
 <form id="select_lang" method="post" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
     <?php echo PMA_generate_common_hidden_inputs() ?>
-    <bdo xml:lang="en" dir="ltr"><label for="lang">
-    <?php echo $GLOBALS['strLanguage'] . ($GLOBALS['strLanguage'] != 'Language' ? ' - Language' : '') ?>
+    <bdo lang="en" dir="ltr"><label for="lang">
+    <?php echo __('Language') . (__('Language') != 'Language' ? ' - Language' : '') ?>
     </label></bdo><br />
-    <select id="lang" name="lang" onchange="this.form.submit();" xml:lang="en" dir="ltr">
+    <select id="lang" name="lang" class="autosubmit" lang="en" dir="ltr">
     <?php
     // create language list
     $lang_list = array();
     foreach ($all_languages as $each_lang_key => $each_lang) {
-        if (!file_exists($GLOBALS['lang_path'] . $each_lang[1] . '.inc.php')) {
-            continue;
-        }
-
-        $lang_name = ucfirst(substr(strrchr($each_lang[0], '|'), 1));
-        // Include native name if non empty
-        if (!empty($each_lang[3])) {
-            $lang_name = $each_lang[3] . ' - ' . $lang_name;
-        }
-
+        $lang_name = PMA_langName($each_lang);
         //Is current one active?
         $selected = ($GLOBALS['lang'] == $each_lang_key) ? ' selected="selected"' : '';
         echo '<option value="' . $each_lang_key . '"' . $selected . '>' . $lang_name
@@ -94,7 +89,22 @@ if (!$is_https) {
     </select>
 </form>
 
-<h2><?php echo $GLOBALS['strSetupOverview'] ?></h2>
+<?php
+// Check for done action info and set notice message if present
+switch ($action_done) {
+case 'config_saved':
+    /* Use uniqid to display this message every time configuration is saved */
+    messages_set(
+        'notice', uniqid('config_saved'), __('Configuration saved.'),
+        PMA_lang(__('Configuration saved to file config/config.inc.php in phpMyAdmin top level directory, copy it to top level one and delete directory config to use it.'))
+    );
+    break;
+default:
+    break;
+}
+?>
+
+<h2><?php echo __('Overview') ?></h2>
 
 <?php
 // message handling
@@ -102,28 +112,31 @@ messages_end();
 messages_show_html();
 ?>
 
-<a href="#" id="show_hidden_messages" style="display:none"><?php echo $GLOBALS['strSetupShowHiddenMessages'] ?></a>
+<a href="#" id="show_hidden_messages" style="display:none"><?php echo __('Show hidden messages (#MSG_COUNT)') ?></a>
 
-<h3><?php echo $GLOBALS['strServers'] ?></h3>
+<fieldset class="simple"><legend><?php echo __('Servers') ?></legend>
 <?php
 //
 // Display server list
 //
-display_form_top('index.php', 'get', array(
-    'page' => 'servers',
-    'mode' => 'add'
-));
+PMA_displayFormTop(
+    'index.php', 'get',
+    array(
+        'page' => 'servers',
+        'mode' => 'add'
+    )
+);
 ?>
 <div class="form">
-<?php if ($cf->getServerCount() > 0): ?>
+<?php if ($cf->getServerCount() > 0) { ?>
 <table cellspacing="0" class="datatable" style="table-layout: fixed">
 <tr>
     <th>#</th>
-    <th><?php echo $GLOBALS['strName'] ?></th>
-    <th>Authentication type</th>
+    <th><?php echo __('Name') ?></th>
+    <th><?php echo __('Authentication type') ?></th>
     <th colspan="2">DSN</th>
 </tr>
-<?php foreach ($_SESSION['ConfigFile']['Servers'] as $id => $server): ?>
+<?php foreach ($cf->getServers() as $id => $server) { ?>
 <tr>
     <td><?php echo $id ?></td>
     <td><?php echo htmlspecialchars($cf->getServerName($id)) ?></td>
@@ -131,43 +144,46 @@ display_form_top('index.php', 'get', array(
     <td><?php echo htmlspecialchars($cf->getServerDSN($id)) ?></td>
     <td style="white-space: nowrap">
         <small>
-        <a href="<?php echo "?page=servers{$separator}mode=edit{$separator}id=$id" ?>"><?php echo $GLOBALS['strEdit'] ?></a>
-        | <a href="<?php echo "?page=servers{$separator}mode=remove{$separator}id=$id" ?>"><?php echo $GLOBALS['strDelete'] ?></a>
+        <a href="<?php echo "?page=servers{$separator}mode=edit{$separator}id=$id" ?>"><?php echo __('Edit') ?></a>
+        | <a href="<?php echo "?page=servers{$separator}mode=remove{$separator}id=$id" ?>"><?php echo __('Delete') ?></a>
         </small>
     </td>
 </tr>
-<?php endforeach; ?>
+<?php } ?>
 </table>
-<?php else: ?>
+<?php } else { ?>
 <table width="100%">
 <tr>
     <td>
-        <i><?php echo $GLOBALS['strSetupNoServers'] ?></i>
+        <i><?php echo __('There are no configured servers') ?></i>
     </td>
 </tr>
 </table>
-<?php endif; ?>
+<?php } ?>
 <table width="100%">
 <tr>
     <td class="lastrow" style="text-align: left">
-        <input type="submit" name="submit" value="<?php echo $GLOBALS['strSetupNewServer'] ?>" />
+        <input type="submit" name="submit" value="<?php echo __('New server') ?>" />
     </td>
 </tr>
 </table>
 </div>
 <?php
-display_form_bottom();
+PMA_displayFormBottom();
 ?>
+</fieldset>
 
-<h3><?php echo $GLOBALS['strSetupConfigurationFile'] ?></h3>
+<fieldset class="simple"><legend><?php echo __('Configuration file') ?></legend>
 <?php
 //
 // Display config file settings and load/save form
 //
 $form_display = new FormDisplay();
 
-display_form_top('config.php');
-display_fieldset_top('', '', null, array('class' => 'simple'));
+PMA_displayFormTop('config.php');
+?>
+<table width="100%" cellspacing="0">
+<?php
 
 // Display language list
 $opts = array(
@@ -176,18 +192,13 @@ $opts = array(
     'values' => array(),
     'values_escaped' => true);
 foreach ($all_languages as $each_lang_key => $each_lang) {
-    if (!file_exists($GLOBALS['lang_path'] . $each_lang[1] . '.inc.php')) {
-        continue;
-    }
-    $lang_name = ucfirst(substr(strrchr($each_lang[0], '|'), 1));
-    // Include native name if non empty
-    if (!empty($each_lang[3])) {
-        $lang_name = $each_lang[3] . ' - ' . $lang_name;
-    }
+    $lang_name = PMA_langName($each_lang);
     $opts['values'][$each_lang_key] = $lang_name;
 }
-display_input('DefaultLang', $GLOBALS['strSetupDefaultLanguage'], '', 'select',
-    $cf->getValue('DefaultLang'), true, $opts);
+PMA_displayInput(
+    'DefaultLang', __('Default language'), 'select',
+    $cf->getValue('DefaultLang'), '', true, $opts
+);
 
 // Display server list
 $opts = array(
@@ -196,22 +207,24 @@ $opts = array(
     'values' => array(),
     'values_disabled' => array());
 if ($cf->getServerCount() > 0) {
-    $opts['values']['0'] = $GLOBALS['strSetupLetUserChoose'];
+    $opts['values']['0'] = __('let the user choose');
     $opts['values']['-'] = '------------------------------';
     if ($cf->getServerCount() == 1) {
         $opts['values_disabled'][] = '0';
     }
     $opts['values_disabled'][] = '-';
 
-    foreach ($_SESSION['ConfigFile']['Servers'] as $id => $server) {
+    foreach ($cf->getServers() as $id => $server) {
         $opts['values'][(string)$id] = $cf->getServerName($id) . " [$id]";
     }
 } else {
-    $opts['values']['1'] = $GLOBALS['strSetupOptionNone'];
+    $opts['values']['1'] = __('- none -');
     $opts['values_escaped'] = true;
 }
-display_input('ServerDefault', $GLOBALS['strSetupDefaultServer'], '', 'select',
-    $cf->getValue('ServerDefault'), true, $opts);
+PMA_displayInput(
+    'ServerDefault', __('Default server'), 'select',
+    $cf->getValue('ServerDefault'), '', true, $opts
+);
 
 // Display EOL list
 $opts = array(
@@ -220,27 +233,44 @@ $opts = array(
         'win' => 'Windows (\r\n)'),
     'values_escaped' => true);
 $eol = PMA_ifSetOr($_SESSION['eol'], (PMA_IS_WINDOWS ? 'win' : 'unix'));
-display_input('eol', $GLOBALS['strSetupEndOfLine'], '', 'select',
-    $eol, true, $opts);
+PMA_displayInput(
+    'eol', __('End of line'), 'select',
+    $eol, '', true, $opts
+);
 ?>
 <tr>
     <td colspan="2" class="lastrow" style="text-align: left">
-        <input type="submit" name="submit_display" value="<?php echo $GLOBALS['strSetupDisplay'] ?>" />
-        <input type="submit" name="submit_download" value="<?php echo $GLOBALS['strSetupDownload'] ?>" />
+        <input type="submit" name="submit_display" value="<?php echo __('Display') ?>" />
+        <input type="submit" name="submit_download" value="<?php echo __('Download') ?>" />
         &nbsp; &nbsp;
-        <input type="submit" name="submit_save" value="<?php echo $GLOBALS['strSave'] ?>"<?php if (!$config_writable) echo ' disabled="disabled"' ?> />
-        <input type="submit" name="submit_load" value="<?php echo $GLOBALS['strSetupLoad'] ?>"<?php if (!$config_exists) echo ' disabled="disabled"' ?> />
-        <input type="submit" name="submit_delete" value="<?php echo $GLOBALS['strDelete'] ?>"<?php if (!$config_exists || !$config_writable) echo ' disabled="disabled"' ?> />
+        <input type="submit" name="submit_save" value="<?php echo __('Save') ?>"<?php
+if (!$config_writable) {
+    echo ' disabled="disabled"';
+} ?> />
+        <input type="submit" name="submit_load" value="<?php echo __('Load') ?>"<?php
+if (!$config_exists) {
+    echo ' disabled="disabled"';
+} ?> />
+        <input type="submit" name="submit_delete" value="<?php echo __('Delete')
+        ?>"<?php
+if (!$config_exists || !$config_writable) {
+    echo ' disabled="disabled"';
+} ?> />
         &nbsp; &nbsp;
-        <input type="submit" name="submit_clear" value="<?php echo $GLOBALS['strSetupClear'] ?>" class="red" />
+        <input type="submit" name="submit_clear" value="<?php echo __('Clear')
+        ?>" class="red" />
     </td>
 </tr>
+</table>
 <?php
-display_fieldset_bottom_simple();
-display_form_bottom();
+PMA_displayFormBottom();
 ?>
+</fieldset>
 <div id="footer">
-    <a href="http://phpmyadmin.net"><?php echo $GLOBALS['strSetupHomepageLink'] ?></a>
-    <a href="http://sourceforge.net/donate/index.php?group_id=23067"><?php echo $GLOBALS['strSetupDonateLink'] ?></a>
-    <a href="?version_check=1<?php echo "{$separator}token=" . $_SESSION[' PMA_token '] ?>"><?php echo $GLOBALS['strSetupVersionCheckLink'] ?></a>
+    <a href="http://phpmyadmin.net"><?php echo __('phpMyAdmin homepage') ?></a>
+    <a href="http://sourceforge.net/donate/index.php?group_id=23067"><?php
+    echo __('Donate') ?></a>
+    <a href="?version_check=1<?php
+    echo "{$separator}token="
+    . $_SESSION[' PMA_token '] ?>"><?php echo __('Check for latest version') ?></a>
 </div>
