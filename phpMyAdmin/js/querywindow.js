@@ -1,1 +1,42 @@
-function PMA_queryAutoCommit(){var a=document.getElementById("sqlqueryform");a.target=window.opener.frame_content.name;a.submit();return}function PMA_querywindowCommit(b){var a=$("#hiddenqueryform");a.find("input[name='querydisplay_tab']").val(b);a.addClass("disableAjax").submit();return false}function PMA_querywindowSetFocus(){$("#sqlquery").focus()}$(function(){$("#topmenucontainer").css("padding",0)});
+function PMA_queryAutoCommit()
+{
+    document.getElementById('sqlqueryform').target = window.opener.frame_content.name;
+    document.getElementById('sqlqueryform').submit();
+    return;
+}
+
+function PMA_querywindowCommit(tab)
+{
+    document.getElementById('hiddenqueryform').querydisplay_tab.value = tab;
+    document.getElementById('hiddenqueryform').submit();
+    return false;
+}
+
+function PMA_querywindowSetFocus()
+{
+    document.getElementById('sqlquery').focus();
+}
+
+function PMA_querywindowResize()
+{
+    // for Gecko
+    if (typeof(self.sizeToContent) == 'function') {
+        self.sizeToContent();
+        //self.scrollbars.visible = false;
+        // give some more space ... to prevent 'fli(pp/ck)ing'
+        self.resizeBy(10, 50);
+        return;
+    }
+
+    // for IE, Opera
+    if (document.getElementById && typeof(document.getElementById('querywindowcontainer')) != 'undefined') {
+
+        // get content size
+        var newWidth  = document.getElementById('querywindowcontainer').offsetWidth;
+        var newHeight = document.getElementById('querywindowcontainer').offsetHeight;
+
+        // set size to contentsize
+        // plus some offset for scrollbars, borders, statusbar, menus ...
+        self.resizeTo(newWidth + 45, newHeight + 75);
+    }
+}
