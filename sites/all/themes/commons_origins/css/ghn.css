@@ -32,7 +32,7 @@ body {
 }
 .logged-in ul#nice-menu-0 {
      position: absolute;
-     left: 400px;
+     left: 300px;
      top: 100px;
 }
 /* content bottom */
@@ -87,6 +87,12 @@ div.left-link {
 }
 #hideme1 {
       margin-left: 1.7em;
+}
+.profile-left .left-link,
+.profile-left .dashboard-name {
+      font-weight: bold;
+      font-size: 110%;
+      color: #13138E;
 }
 /* right sidebar */
 .view-service-offerings .view-content,
@@ -150,6 +156,7 @@ div.left-link {
     display: none;
 }
 /* user edit form */
+.node-type-medical-mission ul.primary,
 .node-type-faq ul.primary,
 .node-type-events ul.primary,
 .node-type-need-post ul.primary,
@@ -160,5 +167,28 @@ div.left-link {
 }
 .not-logged-in ul.primary {
     display: block;
+}
+/* match pages */
+.match-links .contact-link {
+      padding: 5px;
+      background-color:#eee;
+}
+.match-links .contact-link,
+.match-links .flag-wrapper{
+      padding: 5px;
+      background-color:#000000;
+}
+.match-links a {
+      font-weight: 500;
+      color: #ffffff;
+}
+/* Search page related */
+.search-page-link {
+      padding: 5px;
+      background-color:#13138E;
+}
+.search-page-link a {
+      font-weight: 500;
+      color: #ffffff;
 }
 

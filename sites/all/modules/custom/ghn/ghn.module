@@ -6,6 +6,9 @@ function ghn_form_alter(&$form,&$form_state,$form_id) {
          $form['options']['status']['#value'] = 1;
 //krumo($form_id);
          switch($form_id) {
+               case "user_register_form":
+                    //krumo($form['submit']);
+                    break;
                case "profile2_edit_main_form":
                      $tmp = var_export($form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#options'],TRUE);
                      unset($form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#options']['']);
@@ -61,15 +64,18 @@ $tmp = var_export($form_state['input']['field_post_service'],TRUE);
                           );
                       endif;
 */
+/*
                       if (is_numeric(arg(1))):
                          $form['field_post_service']['und']['#disabled'] = TRUE;
-                         $form['field_clinical_services_choices']['und']['#disabled'] = TRUE;
+                         $form['field_patient_type']['und']['#disabled'] = TRUE;
+                         $form['field_patient_adult_type']['und']['#disabled'] = TRUE;
                          $form['field_education_choices']['und']['#disabled'] = TRUE;
                          $form['field_equipment_choices']['und']['#disabled'] = TRUE;
                          $form['field_medical_1st_level_subcateg']['und']['#disabled'] = TRUE;
                          $form['field_volunteer_choices']['und']['#disabled'] = TRUE;
                          $form['field_funding_choices']['und']['#disabled'] = TRUE;
                       endif;
+*/
 $tmp = var_export($form,TRUE);
 //drupal_set_message($existingnode);
                       array_push($form['#submit'],'ghn_post_submit');  
@@ -127,19 +133,22 @@ $tmp = var_export($form,TRUE);
                                  unset($form['field_affiliations']['und']['#options'][$option]);
                               }
                       }
+/*
                       if (is_numeric(arg(1))):
                          $options = $form['field_affiliations']['und']['#options'];
                          foreach ($options AS $option => $value) {
                                  $default[$option] = TRUE;
                          }
-                         $form['field_type_of_services_provided']['und']['#disabled'] = TRUE;
-                         $form['field_clinical_services_choices']['und']['#disabled'] = TRUE;
+                         $form['field_post_service']['und']['#disabled'] = TRUE;
+                         $form['field_patient_type']['und']['#disabled'] = TRUE;
+                         $form['field_patient_adult_type']['und']['#disabled'] = TRUE;
                          $form['field_education_choices']['und']['#disabled'] = TRUE;
                          $form['field_equipment_choices']['und']['#disabled'] = TRUE;
                          $form['field_medical_1st_level_subcateg']['und']['#disabled'] = TRUE;
                          $form['field_volunteer_choices']['und']['#disabled'] = TRUE;
                          $form['field_funding_choices']['und']['#disabled'] = TRUE;
                       endif;
+*/
                     $original = array_shift($form['actions']['submit']['#submit']);
                     $form['actions']['submit']['#submit'][]='ghn_post_submit';
                     $form['actions']['submit']['#submit'][]=$original;
@@ -165,6 +174,13 @@ print '</pre>';
                     break;
                case "affiliations_node_form":
                     //$original = array_shift($form['actions']['submit']['#submit']);
+                    if (is_numeric(arg(1))):
+                         $options = $form['field_affiliations']['und']['#options'];
+                         foreach ($options AS $option => $value) {
+                                 if ($option == 'none')
+                                    unset($form['field_affiliations']['und']['#options'][$option]);
+                         }
+                    endif;
                     $form['actions']['submit']['#submit'][]='ghn_node_submit';
                     //$form['actions']['submit']['#submit'][]=$original;
 //$tmp = var_export($form['actions']['submit']['#submit'],TRUE);
@@ -224,6 +240,12 @@ function ghn_menu() {
         'access callback' => TRUE,
         'type' => MENU_CALLBACK,
     );
+    $items['affiliations-profile'] = array(
+        'page callback' => '_profile2_affilations_form',
+        'page arguments' => array(),
+        'access callback' => TRUE,
+        'type' => MENU_CALLBACK,
+    );
     $items['detail-profile'] = array(
         'page callback' => '_profile2_detail_form',
         'page arguments' => array(),
@@ -279,6 +301,13 @@ function _profile2_general_form() {
     $entity_form = entity_ui_get_form('profile2', $profile2, 'edit');
     return $entity_form;    
 }
+function _profile2_affilations_form() {
+    global $user;
+    module_load_include('inc', 'profile2_page', 'profile2_page');
+    $profile2 = profile2_by_uid_load($user->uid, 'affiliations');
+    $entity_form = entity_ui_get_form('profile2', $profile2, 'edit');
+    return $entity_form;    
+}
 function _profile2_detail_form() {
     global $user;
     $uid = $user->uid;
@@ -321,14 +350,7 @@ function _ghn_user_dashboard($uid) {
     $rows = array(); 
     // get Affiliations 
     // get user name
-    $results = db_query("SELECT a.field_address_name_line AS name FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $uid LIMIT 1");
-    foreach ($results AS $result) {
-           $name = $result->name;
-    } 
-    if (empty($name)) {
-        $account = user_load($uid);
-        $name = $account->name;
-    }
+    $name = _ghn_member_name($uid);
     if ($user->uid != $uid) {
        $ret .= '<h3>You are visiting <br /> Dashboard of '.strtoupper($name).'</h3>';
     }
@@ -354,17 +376,20 @@ function _ghn_user_dashboard($uid) {
     $rows[] = array('data'=>$row,'class' => array('need-row'));
     $row = array();
     // country location (possible display on a map)
-    $results = db_query("SELECT a.field_address_country AS country FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $uid LIMIT 1");
+    $results = db_query("SELECT a.field_address_country AS iso2,c.name AS country FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id LEFT JOIN {countries_country} c ON c.iso2 = a.field_address_country WHERE p.uid = $uid LIMIT 1");
     foreach ($results AS $result) {
+        $iso2 = $result->iso2;
         $country = $result->country;
     } 
     if (!empty($country)) {
        $row[] = '<div class="label">Location : </div>';
-       $row[] = '<div class="dashboard-country">'.$country.'</div>';
+       $row[] = '<div class="dashboard-country">'.$country.'('.$iso2.')</div>';
     }
     else {
+       $iso2 = 'NA';
+       $country = 'N/A';
        $row[] = '<div class="label">Location : </div>';
-       $row[] = '<div class="dashboard-country"> NA</div>';
+       $row[] = '<div class="dashboard-country"> N/A</div>';
     }
     $rows[] = array('data'=>$row,'class' => array('dash-row'));
     $row = array();
@@ -417,14 +442,65 @@ function _ghn_user_dashboard($uid) {
           }
     $row[] = '<div class="dashboard-count"> '.$memcount.'</div>';
     $rows[] = array('data'=>$row,'class'=>array('dash-row'));
+// get all the matches to date for need and resource postings
+    $matches = 0;
+    $matches = _ghn_get_all_matches($uid);
     $row = array();
     $row[] = '<div class="label">Number of Matches to date: </div>';
-    $row[] = '<div class="dashboard-count"> COMING SOON</div>';
+    $row[] = '<div class="dashboard-count"> '.$matches.'</div>';
+    $rows[] = array('data' => $row,'class'=>array('dash-row'));
+// get all the Medical Missions currently available for this memeber's country
+    $matches = 0;
+    $matches = _ghn_current_medical_missions($iso2);
+    $row = array();
+    $row[] = '<div class="label">Number of Medical Missions in '.$country.': </div>';
+    if ($matches != 0) {
+       $row[] = '<div class="dashboard-count"> '.$matches.' '.l("View List",$base_url."/medical-missions/".$iso2).'</div>';
+    }
+    else {
+       $row[] = '<div class="dashboard-count"> '.$matches.'</div>';
+    }
     $rows[] = array('data' => $row,'class'=>array('dash-row'));
     $ret .= theme('table',array('rows'=>$rows));
     // how many matches
     
     return $ret;
+}
+/** 
+ * function to get all matches for a given uid
+ **/
+function _ghn_current_medical_missions($country) {
+      $ret = 0;
+      $today = date("m-d-Y",time());
+// find all medical missions with host country = $country
+      $results = db_query("SELECT count(n.nid) AS ret FROM {node} n LEFT JOIN {field_data_field_mm_host_country} c ON c.entity_id = n.nid LEFT JOIN {field_data_field_event_time} t ON t.entity_id = n.nid WHERE n.status = 1 AND c.field_mm_host_country_iso2 = '$country' AND t.field_event_time_value2 > '$today'");
+      foreach ($results AS $result) {
+              $ret = $result->ret;
+      }
+      return $ret;
+}
+/** 
+ * function to get all matches for a given uid
+ **/
+function _ghn_get_all_matches($uid) {
+      $matches = 0;
+// find all need posts
+      $results = db_query("SELECT nid FROM {node} WHERE type = 'need_post' AND uid = $uid");
+// get the matchings for each of the need posts
+      foreach ($results AS $result) {
+              $ret = ghn_need_matching($uid,$result->nid);
+              $matches += count($ret);
+      }
+// find all request posts
+      $results = db_query("SELECT nid FROM {node} WHERE type = 'resource_post' AND uid = $uid");
+// get all matchings for each of the resource posts
+      foreach ($results AS $result) {
+              $ret = ghn_resource_matching($uid,$result->nid);
+              $matches += count($ret);
+      }
+// send the sum total of both need and resource posts matches
+      return $matches;
+
 }
 /**
  * this function is AJAX form call back for a Need form
@@ -476,6 +552,8 @@ function ghn_followed($uid) {
       $row = array();
       $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
       foreach ($followeds as $followed) {
+          $hover = '';
+          $name = '';
           $account = user_load($followed->fuid);
           if ($account->picture)
              $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'thumbnail'));
@@ -513,7 +591,7 @@ function ghn_followed($uid) {
     return $output;
 }
 /** 
- * customing Follower block
+ * customizing Follower block
  **/
 function ghn_followers($uid) {
     global $user,$base_url,$theme_path;
@@ -533,6 +611,8 @@ function ghn_followers($uid) {
       $row = array();
       $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
       foreach ($followers as $follower) {
+          $hover = '';
+          $name = '';
           $account = user_load($follower->fuid);
           if ($account->picture)
              $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'thumbnail'));
@@ -648,7 +728,6 @@ function ghn_need_matching($uid,$nid) {
                              $subresults = db_query("SELECT field_clinical_services_choices_value AS opt FROM {field_data_field_clinical_services_choices} WHERE entity_id = $result->nid"); 
                              break;
                         case "Educational Activities":
-drupal_set_message(" nid ".$result->nid." service ".$result->service);
                              $subresults = db_query("SELECT field_education_choices_value AS opt FROM {field_data_field_education_choices} WHERE entity_id = $result->nid"); 
                              break;
                         case "Medical Equipment and Supplies":
@@ -660,7 +739,6 @@ drupal_set_message(" nid ".$result->nid." service ".$result->service);
                         case "Funding":
                              $subresults = db_query("SELECT field_funding_choices_value AS opt FROM {field_data_field_funding_choices} WHERE entity_id = $result->nid"); 
                              break;
-
                  } 
                  foreach ($subresults AS $subresult) {
                          $need[$result->service][$result->nid] = $subresult->opt;
@@ -672,7 +750,7 @@ drupal_set_message(" nid ".$result->nid." service ".$result->service);
          foreach ($results AS $result) {
                  switch ($result->service) {
                         case "Clinical Services":
-                             $subresults = db_query("SELECT field_clinical_services_choices_value AS opt FROM {field_data_field_clinical_services_choices} WHERE entity_id = $result->nid"); 
+                             $subresults = db_query("SELECT field_patient_type_value AS opt FROM {field_data_field_patient_type} WHERE entity_id = $result->nid"); 
                              break;
                         case "Educational Activities":
                              $subresults = db_query("SELECT field_education_choices_value AS opt FROM {field_data_field_education_choices} WHERE entity_id = $result->nid"); 
@@ -711,15 +789,17 @@ print '</pre>';
                             foreach ($resource[$index] AS $rnid => $ropt) {
                                     $rropt = explode(';',$ropt);
                                     if (!empty($rropt[2])&&($nopt == $rropt[2])) {
-                                       $ret[] = $index.';'.$rnid.';'.$rropt[0].';'.$rropt[1].';Match';
+                                       $ret[] = $index.';'.$rnid.';'.$rropt[0].';'.$rropt[1].';Matched';
                                     }
                                     else {
-                                       //$ret[] = $index.';'.$rnid.';'.$rropt[0].';No match';
+                                       $ret[] = $index.';'.$rnid.';'.$rropt[0].';'.$rropt[1].';No match';
                                     }
                             }
                      }
                  }
          }         
+$tmp = var_export($ret,TRUE);
+//drupal_set_message($tmp);
          return $ret;
 }
 /**
@@ -730,11 +810,13 @@ function ghn_resource_matching($uid,$nid) {
          $resource = array();
          $need = array();
          $subresults = array();
+         $nidservice = '';
 	 $results = db_query("SELECT n.nid,f.field_post_service_value AS service FROM {node} n LEFT JOIN {field_data_field_post_service} f ON f.entity_id = n.nid  WHERE type = 'resource_post' AND n.uid = $uid AND n.nid = $nid"); 
          foreach ($results AS $result) {
+                 $nidservice = $result->service;
                  switch ($result->service) {
                         case "Clinical Services":
-                             $subresults = db_query("SELECT field_clinical_services_choices_value AS opt FROM {field_data_field_clinical_services_choices} WHERE entity_id = $result->nid"); 
+                             $subresults = db_query("SELECT field_patient_type_value AS opt FROM {field_data_field_patient_type} WHERE entity_id = $result->nid"); 
                              break;
                         case "Educational Activities":
                              $subresults = db_query("SELECT field_education_choices_value AS opt FROM {field_data_field_education_choices} WHERE entity_id = $result->nid"); 
@@ -756,11 +838,11 @@ function ghn_resource_matching($uid,$nid) {
                   }
          }
 // get the need posts
-         $results = db_query("SELECT n.uid,n.nid,n.title,f.field_post_service_value AS service FROM {node} n LEFT JOIN {field_data_field_post_service} f ON f.entity_id = n.nid  WHERE type = 'need_post' AND n.uid != $uid"); 
+         $results = db_query("SELECT n.uid,n.nid,n.title,f.field_post_service_value AS service FROM {node} n LEFT JOIN {field_data_field_post_service} f ON f.entity_id = n.nid  WHERE type = 'need_post' AND n.uid != $uid AND f.field_post_service_value = '$nidservice'"); 
          foreach ($results AS $result) {
                  switch ($result->service) {
                         case "Clinical Services":
-                             $subresults = db_query("SELECT field_clinical_services_choices_value AS opt FROM {field_data_field_clinical_services_choices} WHERE entity_id = $result->nid"); 
+                             $subresults = db_query("SELECT field_patient_type_value AS opt FROM {field_data_field_patient_type} WHERE entity_id = $result->nid"); 
                              break;
                         case "Educational Activities":
                              $subresults = db_query("SELECT field_education_choices_value AS opt FROM {field_data_field_education_choices} WHERE entity_id = $result->nid"); 
@@ -780,24 +862,22 @@ function ghn_resource_matching($uid,$nid) {
                          $need[$result->service][$result->nid] = $result->uid.';'.$result->title.';'.$subresult->opt;
                   }
          }
-         $tmp = var_export($need,TRUE);
-         //drupal_set_message($tmp);
          $tmp = var_export($resource,TRUE);
+         //drupal_set_message($tmp);
+         $tmp = var_export($need,TRUE);
          //drupal_set_message($tmp);
 // start matching 
          $ret = array();
          foreach ($resource AS $index => $rvalue) {
                  if (!empty($need[$index])) {
                     foreach ($rvalue AS $rnid => $ropt) {
-                            $tmp = var_export($rvalue,TRUE);
                             foreach ($need[$index] AS $nnid => $nopt) {
                                     $nnopt = explode(';',$nopt);
-                            //drupal_set_message($index.' '.$nnid.' '.$nopt.' '.$rnid.' '.$ropt);
                                     if (!empty($nnopt[2])&&($ropt == $nnopt[2])) {
-                                       $ret[] = $index.';'.$nnopt[0].';'.$nnopt[1];
+                                       $ret[] = $index.';'.$nnid.';'.$nnopt[0].';'.$nnopt[1].';Matched';
                                     }
                                     else {
-                                       $ret[] = $index.';'.$nnopt[0].';'.'No match';
+                                       $ret[] = $index.';'.$nnid.';'.$nnopt[0].';'.$nnopt[1].';No match';
                                     }
                             }
                      }
@@ -805,7 +885,7 @@ function ghn_resource_matching($uid,$nid) {
          }         
          $tmp = var_export($ret,TRUE);
          //drupal_set_message($tmp);
-         //return $ret;
+         return $ret;
 }
 /**
  * Match page listing
@@ -813,6 +893,8 @@ function ghn_resource_matching($uid,$nid) {
 function _ghn_match_page($type,$uid,$nid) {
      global $base_url,$theme_path;
      $ret = '';
+     $row = array();
+     $rows = array();
      if ($type == "need") {
         $matches = ghn_need_matching($uid,$nid);
      }
@@ -821,30 +903,63 @@ function _ghn_match_page($type,$uid,$nid) {
      }
      foreach ($matches AS $match => $value) {
              $fields = explode(';',$value);
+$tmp = var_export($fields,TRUE);
+//drupal_set_message(" HELLO ".$tmp);
+// check whether there is a match and then display it
+             if ($fields[4] == "Matched"):
 // display user picture
-             $user = user_load($fields[2]);
-             $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
-             if ($user->picture)
-                $pic = theme('image_style',array('path' => $user->picture->uri, 'style_name' => 'thumbnail'));
-             else
-                $pic = theme('image',array('path' => $default_uri, 'style_name' => 'thumbnail'));
+                $user = user_load($fields[2]);
+                $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
+                if ($user->picture)
+                   $pic = theme('image_style',array('path' => $user->picture->uri, 'style_name' => 'thumbnail'));
+                else
+                   $pic = theme('image',array('path' => $default_uri, 'style_name' => 'thumbnail'));
 // user name
-             $results = db_query("SELECT a.field_address_name_line AS name FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $fields[2] LIMIT 1");
-             foreach ($results AS $result) {
-                     $name = $result->name;
-             }
-             if (empty($name)) {
-                $name = $user->name;
-             }
+                $name = _ghn_member_name($fields[2]);
 // the matching need/resource posting
-             $title = l($fields[3],$base_url.'/node/'.$fields[1]);
+                $title = l($fields[3],$base_url.'/node/'.$fields[1]);
 // contact link
-             $links = l('Contact '.$name,$base_url.'/user/'.$fields[2].'/contact');
+                $links = '<div class="contact-link">'.l('Contact ',$base_url.'/user/'.$fields[2].'/contact',array('attributes'=>array('class'=>'link'))).'</div><br />';
 // follow link
-       $links .= flag_create_link('follow',$fields[2]);
+                $links .= flag_create_link('follow',$fields[2]);
+                $row[] =$pic;
+                $ret = '<div class="match-name">'.$name.'</div><br />';
+                $row[] = $ret;
+                $ret = '<div class="match-title">'.$title.'</div><br />';
+                $row[] = $ret;
+                $ret = '<div class="match-links">'.$links.'</div><br />';
+                $row[] = $ret;
+                $rows[] = array("data"=>$row, 'class'=>array('data-row'));
+                $row = array();
+             endif;
      }
-     $ret = $pic.'<div class="match-name">'.$name.'</div><br />';
-     $ret .= '<div class="match-title">'.$title.'</div><br />';
-     $ret .= '<div class="match-links">'.$links.'</div><br />';
+     $node = node_load($nid);
+     $ret = "<h3>Match for your ".ucfirst($type)." posting : ".$node->title.'</h3>';
+     $ret .= theme('table',array('rows'=>$rows));
      return $ret;
+}
+/**
+ * Utility function to retrieve the name of a member
+ **/
+function _ghn_member_name($uid) {
+// get user name
+         $results = db_query("SELECT a.field_address_first_name AS fname,a.field_address_last_name AS lname FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $uid LIMIT 1");
+         foreach ($results AS $result) {
+                 $name = $result->fname.' '.$result->lname;
+         }
+         if (empty($name)) {
+            $account = user_load($uid);
+            $name = $account->name;
+         }
+         return $name;
+}
+/**
+ * Utility function to retrieve uid of a member
+ **/
+function _ghn_get_uid($nid) {
+         $results = db_query("SELECT uid FROM {node} WHERE nid = $nid");
+         foreach ($results AS $result) {
+                 $uid = $result->uid;
+         }
+         return $uid;
 }
