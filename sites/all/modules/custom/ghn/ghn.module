@@ -241,7 +241,7 @@ function ghn_menu() {
         'type' => MENU_CALLBACK,
     );
     $items['affiliations-profile'] = array(
-        'page callback' => '_profile2_affilations_form',
+        'page callback' => '_profile2_affiliations_form',
         'page arguments' => array(),
         'access callback' => TRUE,
         'type' => MENU_CALLBACK,
@@ -301,7 +301,7 @@ function _profile2_general_form() {
     $entity_form = entity_ui_get_form('profile2', $profile2, 'edit');
     return $entity_form;    
 }
-function _profile2_affilations_form() {
+function _profile2_affiliations_form() {
     global $user;
     module_load_include('inc', 'profile2_page', 'profile2_page');
     $profile2 = profile2_by_uid_load($user->uid, 'affiliations');
