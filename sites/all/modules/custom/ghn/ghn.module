@@ -9,115 +9,42 @@ function ghn_form_alter(&$form,&$form_state,$form_id) {
                case "user_register_form":
                     //krumo($form['submit']);
                     break;
-               case "profile2_edit_main_form":
-                     $tmp = var_export($form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#options'],TRUE);
-                     unset($form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#options']['']);
-                     $form['profile_main']['field_choose_membership_type']['und'][0]['registration_type']['#title'] = "Memberhsip Type";
-                     break;
                case "mailchimp_lists_user_subscribe_form_newletter":
 //krumo($form['submit']);
 $form['submit']['#value'] = 'Join';
 unset($form['mailchimp_lists']['mailchimp_newletter']['mergevars']['FNAME']);
 unset($form['mailchimp_lists']['mailchimp_newletter']['mergevars']['LNAME']);
-
                     break;
                case "need_post_node_form":
-/*
-$tmp = var_export($form_state['input'],TRUE);
-                    $options = array('0'=>'yes','1'=>'no');
-                    if (!empty($form_state['input'])) {
-$tmp = var_export($form_state['input']['field_post_service'],TRUE);
-//drupal_set_message($tmp);
-                      if ($form_state['input']['field_clinical_services']['und'] == 'Clinical Services') {
-                          $options = _ghn_post_form_options(1);
-                       }
-                      if ($form_state['input']['field_clinical_services']['und'] == 'Medical Equipment and Supplies') {
-
-                          $options = _ghn_post_form_options(2);
-                       }
-                       if ($form_state['input']['field_clinical_services']['und'] == 'Educational Activities') {
-                          $options = _ghn_post_form_options(3);
-                        }
-                    }
-                    $form['#tree'] = FALSE;
-// adding AJAX (AHAH) feature
-                    $ajax  = array(
-                              'callback' => 'ghn_post_options',   
-                              'wrapper' => 'post-choices',// The div id where the returned HTML will be applied.
-                              'effect' => 'slide',
-                    );
-                    $form['field_clinical_services']['und']['#ajax'] = $ajax;
-                    if (is_array($options)&&(count($options) > 0)):
-                       unset($form['post_choices_fieldset']);
-                       $form['post_choices_fieldset'] = array(
-                          '#prefix' => '<div class="clearfix" class="post-choices-wrapper">',
-                          '#suffix' => '</div>',
-                          '#type' => 'fieldset',
-                          '#weight' => 4,
-                         );
-                         $form['post_choices_fieldset']['choices'] = array(
-                              '#title' => t('Choose your option'),
-                              '#prefix' => '<div class="clearfix" id="post-choices">',
-                              '#suffix' => '</div>',
-                              '#type' => 'radios',
-                              '#options' => $options,
-                          );
-                      endif;
-*/
-/*
                       if (is_numeric(arg(1))):
                          $form['field_post_service']['und']['#disabled'] = TRUE;
+                         $form['field_post_country']['und']['#disabled'] = TRUE;
                          $form['field_patient_type']['und']['#disabled'] = TRUE;
-                         $form['field_patient_adult_type']['und']['#disabled'] = TRUE;
-                         $form['field_education_choices']['und']['#disabled'] = TRUE;
+                         $form['field_clinical_services_choices']['und']['#disabled'] = TRUE;
                          $form['field_equipment_choices']['und']['#disabled'] = TRUE;
-                         $form['field_medical_1st_level_subcateg']['und']['#disabled'] = TRUE;
-                         $form['field_volunteer_choices']['und']['#disabled'] = TRUE;
+                         $form['field_education_choices']['und']['#disabled'] = TRUE;
                          $form['field_funding_choices']['und']['#disabled'] = TRUE;
+                         $form['field_volunteer_choices']['und']['#disabled'] = TRUE;
+                         $form['field_medical_1st_level_subcateg']['und']['#disabled'] = TRUE;
+                         $form['field_registered_nurse_choices']['und']['#disabled'] = TRUE;
+                         $form['field_doctor_choices']['und']['#disabled'] = TRUE;
+                         $form['field_cardiologist_choices']['und']['#disabled'] = TRUE;
+                         $form['field_surgeons_choices']['und']['#disabled'] = TRUE;
+                         $form['field_pharmacist_choices']['und']['#disabled'] = TRUE;
+                         $form['field_perfusionists_choices']['und']['#disabled'] = TRUE;
+                         $form['field_non_medical_choices']['und']['#disabled'] = TRUE;
+                         $form['field_post_country']['und']['#disabled'] = TRUE;
                       endif;
-*/
 $tmp = var_export($form,TRUE);
 //drupal_set_message($existingnode);
                       array_push($form['#submit'],'ghn_post_submit');  
                       break;
                case "resource_post_node_form":
-/*
-                    $form['field_clinical_services']['und']['#ajax'] = array(
-                         'callback' => 'ghn_post_options',   // The URL path that the hook_menu will trigger the callback on.
-                         'wrapper' => 'post-choices',   // The div id where the returned HTML will be applied.
-                         'method' => 'replace',
-                         'effect' => 'fade',
-                     );
-                     $form['choices'] = array(
-                          '#tree' => FALSE,
-                          '#weight' => 2,
-                          '#prefix' => '<div class="clearfix" id="post-choice-wrapper">',
-                          '#suffix' => '</div>',
-                      );
-                      // Container for just the clinical choices.
-                      $form['choices']['choice'] = array(
-                           '#prefix' => '<div id="post-choices">',
-                           '#suffix' => '</div>',
-                      );
-// need to add affiliation checkboxes as this may belong to one of their 
-// affiliations
-                      $results = db_query("SELECT field_affiliations_value AS affiliation FROM {field_data_field_affiliations} a LEFT JOIN {node} n ON n.nid = a.entity_id WHERE n.uid = $uid ORDER BY affiliation");
-                      foreach ($results AS $result) {
-                              $options[] = $result->affiliation;
-                      }
-                      $form['affiliations'] = array(
-                                   '#title' => 'Check affiliations connected with this Resource',
-                                   '#type' => 'checkboxes',
-                                   '#options' => $options,
-                                   '#weight' => 3,
-                      );
-                    //array_push($form['#submit'],'ghn_post_submit');  
-*/
                       global $user;
                       $uid = $user->uid;
-// get all the affilations for this user
+// get all the affiliations for this user
                       $options = $form['field_affiliations']['und']['#options'];
-                      $results = db_query("SELECT a.field_affiliations_value AS affiliation FROM {field_data_field_affiliations} a LEFT JOIN {node} n ON n.nid = a.entity_id WHERE n.uid = $uid AND n.type = 'affiliations'");
+                      $results = db_query("SELECT a.field_affiliations_value AS affiliation FROM {field_data_field_affiliations} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $uid");
                       foreach ($options AS $option => $value) {
                               $default[$option] = TRUE;
                       }
@@ -133,61 +60,45 @@ $tmp = var_export($form,TRUE);
                                  unset($form['field_affiliations']['und']['#options'][$option]);
                               }
                       }
-/*
                       if (is_numeric(arg(1))):
                          $options = $form['field_affiliations']['und']['#options'];
                          foreach ($options AS $option => $value) {
                                  $default[$option] = TRUE;
                          }
                          $form['field_post_service']['und']['#disabled'] = TRUE;
+                         $form['field_post_country']['und']['#disabled'] = TRUE;
                          $form['field_patient_type']['und']['#disabled'] = TRUE;
-                         $form['field_patient_adult_type']['und']['#disabled'] = TRUE;
-                         $form['field_education_choices']['und']['#disabled'] = TRUE;
+                         $form['field_clinical_services_choices']['und']['#disabled'] = TRUE;
                          $form['field_equipment_choices']['und']['#disabled'] = TRUE;
-                         $form['field_medical_1st_level_subcateg']['und']['#disabled'] = TRUE;
-                         $form['field_volunteer_choices']['und']['#disabled'] = TRUE;
+                         $form['field_education_choices']['und']['#disabled'] = TRUE;
                          $form['field_funding_choices']['und']['#disabled'] = TRUE;
+                         $form['field_volunteer_choices']['und']['#disabled'] = TRUE;
+                         $form['field_medical_1st_level_subcateg']['und']['#disabled'] = TRUE;
+                         $form['field_registered_nurse_choices']['und']['#disabled'] = TRUE;
+                         $form['field_doctor_choices']['und']['#disabled'] = TRUE;
+                         $form['field_cardiologist_choices']['und']['#disabled'] = TRUE;
+                         $form['field_surgeons_choices']['und']['#disabled'] = TRUE;
+                         $form['field_pharmacist_choices']['und']['#disabled'] = TRUE;
+                         $form['field_perfusionists_choices']['und']['#disabled'] = TRUE;
+                         $form['field_non_medical_choices']['und']['#disabled'] = TRUE;
+                         $form['field_post_country']['und']['#disabled'] = TRUE;
+                         $form['field_affiliations']['und']['#disabled'] = TRUE;
                       endif;
-*/
                     $original = array_shift($form['actions']['submit']['#submit']);
-                    $form['actions']['submit']['#submit'][]='ghn_post_submit';
+                    $form['actions']['submit']['#submit'][]='ghn_node_submit';
                     $form['actions']['submit']['#submit'][]=$original;
                     break;
                case "user_login":
-                    array_push($form['#submit'],'ghn_user_submit');
-$tmp = var_export($form,TRUE);
-print '<pre>';
-//print $tmp;
-print '</pre>';
+                    //array_push($form['#submit'],'ghn_user_submit');
                     break;
                case "user_profile_form":
                     array_push($form['#submit'],'ghn_user_submit');
-                    //$form['actions']['submit']['#submit'][]='ghn_user_submit';
-$tmp = var_export($form,TRUE);
-print '<pre>';
-//print $tmp;
-print '</pre>';
                     break;
                case "profile2_edit_general_form":
                     array_push($form['#submit'],'ghn_user_submit');
-                    //$form['actions']['submit']['#submit'][]='ghn_user_submit';
                     break;
-               case "affiliations_node_form":
-                    //$original = array_shift($form['actions']['submit']['#submit']);
-                    if (is_numeric(arg(1))):
-                         $options = $form['field_affiliations']['und']['#options'];
-                         foreach ($options AS $option => $value) {
-                                 if ($option == 'none')
-                                    unset($form['field_affiliations']['und']['#options'][$option]);
-                         }
-                    endif;
-                    $form['actions']['submit']['#submit'][]='ghn_node_submit';
-                    //$form['actions']['submit']['#submit'][]=$original;
-//$tmp = var_export($form['actions']['submit']['#submit'],TRUE);
-//$tmp = var_export($original,TRUE);
-print '<pre>';
-//print $tmp;
-print '</pre>';
+               case "profile2_edit_affiliations_form":
+                    array_push($form['#submit'],'ghn_user_submit');
                     break;
          }
 }
@@ -196,20 +107,19 @@ print '</pre>';
  **/
 function ghn_node_submit(&$form,&$form_state) {
    global $user;
-   foreach ($form AS $keys => $value) {
-      if (($keys == "form_id") && (!is_array($value))) {
-         $tmp = var_export($value,TRUE);
-         switch ($value) {
-              case "affiliations_node_form":
-                    drupal_set_message("Your affiliations are updated");
+   //$tmp = var_export($form_state['redirect'], TRUE);
+   //drupal_set_message($tmp);
+   foreach ($form_state AS $keys => $value) {
+if ($keys == 'type') {
+}
+      if ($keys == "type") {
+         switch ($value['#value']) {
+              case "resource_post":
+                    //drupal_set_message("Your Resource Posting was updated");
                     break;
           }
-print '<pre>';
-//print $tmp;
-print '</pre>';
       }
-}
-   $form_state['redirect'] = 'dashboard/'.$user->uid;
+    }
 }
 /**
  * redirecting user login form submission 
@@ -228,12 +138,14 @@ function ghn_menu() {
         'access callback' => TRUE,
         'type' => MENU_CALLBACK,
     );
+/*
     $items['affiliations/%'] = array(
         'page callback' => '_ghn_user_affiliations',
         'page arguments' => array(1),
         'access callback' => TRUE,
         'type' => MENU_CALLBACK,
     );
+*/
     $items['general-profile'] = array(
         'page callback' => '_profile2_general_form',
         'page arguments' => array(),
@@ -266,22 +178,6 @@ function ghn_menu() {
     );
     return $items;
 }
-/**
- * Affiliation right sidebar
- **/
-function _ghn_user_affiliations($uid) {
-// get all the affiliations checked by this user
-// get all the existing content for the checked affiliations and present as link
-// Add a link to add more affiliations
-     $ret = '';
-     $results = db_query("SELECT field_affiliations_value AS affiliation FROM {field_data_field_affiliations} a LEFT JOIN {node} n ON n.nid = a.entity_id WHERE n.uid = $uid ORDER BY affiliation");
-     foreach ($results AS $result) {
-             $ret .= l("Add your ".$result->affiliation." details","node/add/".strtolower($result->affiliation)); 
-     }
-return $ret;
-
-}
-
 /**
  * profile2 is not registering profile pages with the menu
  * this is the hack for it, so page existing manager can find it 
@@ -407,18 +303,20 @@ function _ghn_user_dashboard($uid) {
     foreach ($results AS $result) {
         $result->needcount == 0 ?
         $needcount = $result->needcount :
-        $needcount = $result->needcount.' '.l("View List",$base_url."/need-posts/".$uid);
+        $needcount = $result->needcount.' '.l("View List",$base_url."/posts/need/".$uid);
     } 
+/*
     $row[] = '<div class="label">Number of Need postings: </div>';
     $row[] = '<div class="dashboard-count"> '.$needcount.'</div>';
     $rows[] = array('data'=>$row,'class' => array('dash-row'));
+*/
     $row = array();
     // how many resource posts
     $results = db_query("SELECT count(nid) AS resourcecount FROM {node} WHERE type = 'resource_post' AND uid = $uid LIMIT 1");
     foreach ($results AS $result) {
         $result->resourcecount == 0 ?
         $resourcecount = $result->resourcecount :
-        $resourcecount = $result->resourcecount.' '.l("View List",$base_url."/resource-posts/".$uid);
+        $resourcecount = $result->resourcecount.' '.l("View List",$base_url."/posts/resource/".$uid);
     } 
     $row[] = '<div class="label">Number of Resource postings: </div>';
     $row[] = '<div class="dashboard-count"> '.$resourcecount.'</div>';
@@ -712,7 +610,6 @@ print $tmp;
 print '</pre>';
 */
          $tmp = var_export($form_state['redirect'],TRUE);    
-drupal_set_message($tmp);
 }
 /**
  * GHN Matching algorithm for need posts
@@ -943,9 +840,9 @@ $tmp = var_export($fields,TRUE);
  **/
 function _ghn_member_name($uid) {
 // get user name
-         $results = db_query("SELECT a.field_address_first_name AS fname,a.field_address_last_name AS lname FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $uid LIMIT 1");
+         $results = db_query("SELECT realname AS name FROM {realname} WHERE uid = $uid LIMIT 1");
          foreach ($results AS $result) {
-                 $name = $result->fname.' '.$result->lname;
+                 $name = $result->name;
          }
          if (empty($name)) {
             $account = user_load($uid);
