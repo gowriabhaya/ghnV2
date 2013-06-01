@@ -4,6 +4,10 @@
  **/
 function ghn_form_alter(&$form,&$form_state,$form_id) {
          $form['options']['status']['#value'] = 1;
+/*
+$form['body']['und'][0]['format']['guidelines']['#access'] = FALSE;
+$form['body']['und'][0]['format']['help']['#access'] =FALSE;
+*/
 //krumo($form_id);
          switch($form_id) {
                case "user_register_form":
@@ -126,7 +130,7 @@ if ($keys == 'type') {
  **/
 function ghn_user_submit(&$form,&$form_state) {
          global $user;
-         $form_state['redirect'] = 'dashboard/'.$user->uid;
+         //$form_state['redirect'] = 'dashboard/'.$user->uid;
 }
 /**
  * hook_menu
@@ -598,7 +602,7 @@ function ghn_latest_visitors($uid) {
  **/
 function ghn_post_submit(&$form,&$form_state) {
          global $user,$node;
-         $form_state['redirect'] = 'dashboard/'.$user->uid;
+         //$form_state['redirect'] = 'dashboard/'.$user->uid;
 /*
          $tmp = var_export($node,TRUE);    
          $title = $form_state['input']['title'];
