@@ -23,16 +23,7 @@
  */
 ?>
 <?php 
-      global $user,$base_url,$theme_path;
-      $uid = $user->uid;
-// find out whether there is any matching available for this resource nid
-      $fields = explode("/",$output);
-      $title = drupal_substr($fields[2],0,20).'...';
-      $ret = ghn_resource_matching($uid,$fields[1]);
-      if (count($ret) > 0) {
-         print '<a href="'.$base_url.'/node/'.$fields[1].'/edit" title="'.$fields[2].'">'.$title.'</a> <a class="match-link" href="'.$base_url.'/match/resource/'.$uid.'/'.$fields[1].'"><img src="'.$base_url.'/'.$theme_path.'/images/checkMark.png"></a>'; 
-      }
-      else {
-         print '<a href="'.$base_url.'/node/'.$fields[1].'/edit" title="'.$fields[2].'">'.$title.'</a><img src="'.$base_url.'/'.$theme_path.'/images/xMark.png">'; 
-      }
+      $currdate = date('m-d-Y',time());
+      ($currdate < $output) ? $output = '<h3>Active</h3>' : $output = '<h3>Expired</h3>';
+      print $output; 
 ?>
