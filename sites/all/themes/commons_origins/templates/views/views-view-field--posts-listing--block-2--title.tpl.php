@@ -25,7 +25,6 @@
 <?php 
       global $user,$base_url,$theme_path;
 // find out whether there is any matching available for this need nid
-drupal_set_message($output);
       $fields = explode("/",$output);
       if (count($fields) > 1):
          $nid = $fields[1];

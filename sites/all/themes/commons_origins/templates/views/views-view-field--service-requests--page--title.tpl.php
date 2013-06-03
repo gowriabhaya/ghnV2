@@ -24,18 +24,15 @@
 ?>
 <?php 
       global $user,$base_url,$theme_path;
+      $uid = $user->uid;
 // find out whether there is any matching available for this need nid
       $fields = explode("/",$output);
-      if (count($fields) > 1):
-         $nid = $fields[1];
-         $title = $fields[2];
-         $uid = $fields[3];
-         $ret = ghn_need_matching($uid,$nid);
-         if (count($ret) > 0) {
-            print '<a href="'.$base_url.'/node/'.$fields[1].'" title="'.$title.'">'.$title.'</a> <a class="match-link" href="'.$base_url.'/match/need/'.$uid.'/'.$nid.'"><img class="match-img" src="'.$base_url.'/'.$theme_path.'/images/checkMark.png"></a>'; 
-         }
-         else {
-              print '<a href="'.$base_url.'/node/'.$nid.'" title="'.$title.'">'.$title.'</a><img class="match-img" src="'.$base_url.'/'.$theme_path.'/images/xMark.png">'; 
-         }
-      endif;
+      $title = drupal_substr($fields[2],0,64).'...';
+      $ret = ghn_need_matching($uid,$fields[1]);
+      if (count($ret) > 0) {
+         print '<a href="'.$base_url.'/node/'.$fields[1].'" title="'.$fields[2].'">'.$title.'</a> <a class="match-link" href="'.$base_url.'/match/need/'.$uid.'/'.$fields[1].'"><img src="'.$base_url.'/'.$theme_path.'/images/checkMark.png"></a>'; 
+      }
+      else {
+         print '<a href="'.$base_url.'/node/'.$fields[1].'" title="'.$fields[2].'">'.$title.'</a><img src="'.$base_url.'/'.$theme_path.'/images/xMark.png">'; 
+      }
 ?>

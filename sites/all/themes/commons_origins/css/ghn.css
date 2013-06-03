@@ -24,6 +24,16 @@ body {
      color:#37BA51 !important;
      font-weight: 600;
 }
+.not-logged-in .panel-col-bottom {
+     clear: both;
+}
+.not-logged-in .panel-col-bottom .pane-node,
+.not-logged-in .panel-col-bottom .pane-posts-listing,
+.not-logged-in .panel-col-bottom .pane-advanced-forum-topic-list {
+     width:30%;
+     float:left;
+     margin: 5px 10px !important;
+}
 /* top navigation */
 .not-logged-in ul#nice-menu-0 {
      position: absolute;
