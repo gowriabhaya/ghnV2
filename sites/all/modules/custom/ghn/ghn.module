@@ -14,7 +14,6 @@ function ghn_form_alter(&$form,&$form_state,$form_id) {
 $form['body']['und'][0]['format']['guidelines']['#access'] = FALSE;
 $form['body']['und'][0]['format']['help']['#access'] =FALSE;
 */
-//krumo($form_id);
          switch($form_id) {
                case "user_register_form":
                     //krumo($form['submit']);
@@ -25,6 +24,14 @@ $form['submit']['#value'] = 'Join';
 unset($form['mailchimp_lists']['mailchimp_newletter']['mergevars']['FNAME']);
 unset($form['mailchimp_lists']['mailchimp_newletter']['mergevars']['LNAME']);
                     break;
+               case "medical_mission_node_form":
+                      if (is_numeric(arg(1))):
+                         $form['field_host_town']['und']['#disabled'] = TRUE;
+                         $form['field_host_country']['und']['#disabled'] = TRUE;
+                         $form['field_mm_type_of_mission']['und']['#disabled'] = TRUE;
+                         $form['field_clinical_services_choices']['und']['#disabled'] = TRUE;
+                         $form['field_patient_type']['und']['#disabled'] = TRUE;
+                      endif;
                case "need_post_node_form":
                       if (is_numeric(arg(1))):
                          $form['field_post_service']['und']['#disabled'] = TRUE;
@@ -871,6 +878,16 @@ function _ghn_get_uid($nid) {
          }
          return $uid;
 }
+/** 
+ *   Utility funciton to get iso2 for a nid
+ **/
+function _ghn_node_iso2($nid) {
+         global $base_url;
+// get the node type
+// look in the table appropriate for a node type to get the iso2
+         $ret = '';
+         return $ret;
+}
 /** Utility funciton to get flag image for a country with iso2
  **/
 function _ghn_country_flag($iso2) {
@@ -882,3 +899,4 @@ function _ghn_country_flag($iso2) {
           }
           return $ret;
 }
+
