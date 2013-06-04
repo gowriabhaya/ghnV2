@@ -136,7 +136,7 @@ if ($keys == 'type') {
  **/
 function ghn_user_submit(&$form,&$form_state) {
          global $user;
-         //$form_state['redirect'] = 'dashboard/'.$user->uid;
+         $form_state['redirect'] = 'dashboard/'.$user->uid;
 }
 /**
  * hook_menu
@@ -282,14 +282,17 @@ function _ghn_user_dashboard($uid) {
     $rows[] = array('data'=>$row,'class' => array('need-row'));
     $row = array();
     // country location (possible display on a map)
-    $results = db_query("SELECT a.field_address_country AS iso2,c.name AS country FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id LEFT JOIN {countries_country} c ON c.iso2 = a.field_address_country WHERE p.uid = $uid LIMIT 1");
+    $results = db_query("SELECT a.field_contact_country_iso2 AS iso2 FROM {field_data_field_contact_country} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $uid AND p.label = 'General' LIMIT 1");
     foreach ($results AS $result) {
         $iso2 = $result->iso2;
-        $country = $result->country;
     } 
-    if (!empty($country)) {
+    if (!empty($iso2)) {
        $row[] = '<div class="label">Location : </div>';
-       $row[] = '<div class="dashboard-country">'.$country.'('.$iso2.')</div>';
+       $country = country_load($iso2);
+       $name = $country->official_name;
+       $flag = _ghn_country_flag($iso2);
+       $row[] = '<div class="dashboard-country">'.$name.' '.$flag.'</div>';
+ 
     }
     else {
        $iso2 = 'NA';
@@ -359,7 +362,7 @@ function _ghn_user_dashboard($uid) {
     $matches = 0;
     $matches = _ghn_current_medical_missions($iso2);
     $row = array();
-    $row[] = '<div class="label">Number of Medical Missions in '.$country.': </div>';
+    $row[] = '<div class="label">Number of Medical Missions in '.$name.': </div>';
     if ($matches != 0) {
        $row[] = '<div class="dashboard-count"> '.$matches.' '.l("View List",$base_url."/medical-missions/".$iso2).'</div>';
     }
@@ -867,4 +870,15 @@ function _ghn_get_uid($nid) {
                  $uid = $result->uid;
          }
          return $uid;
+}
+/** Utility funciton to get flag image for a country with iso2
+ **/
+function _ghn_country_flag($iso2) {
+         global $base_url;
+         $ret = '';
+         if (module_exists('countryicons')) {
+            $path = drupal_get_path('module','countryicons');
+            $ret = '<img src="'.$base_url.'/'.$path.'/iconsets/shiny/'.strtolower($iso2).'.png">';
+          }
+          return $ret;
 }
