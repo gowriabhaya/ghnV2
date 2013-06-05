@@ -857,6 +857,7 @@ $tmp = var_export($fields,TRUE);
  * Utility function to retrieve the name of a member
  **/
 function _ghn_member_name($uid) {
+         if (!is_numeric($uid)) return '';
 // get user name
          $results = db_query("SELECT realname AS name FROM {realname} WHERE uid = $uid LIMIT 1");
          foreach ($results AS $result) {
@@ -884,9 +885,25 @@ function _ghn_get_uid($nid) {
 function _ghn_node_iso2($nid) {
          global $base_url;
 // get the node type
+         $node = node_load($nid);
+         $type = $node->type; 
 // look in the table appropriate for a node type to get the iso2
          $ret = '';
-         return $ret;
+         switch ($type) {
+                case 'need_post':
+                     $results = db_query('SELECT field_post_country_iso2 AS iso2 FROM {field_data_field_post_country} WHERE entity_id = :nid AND bundle = :type',array(':nid'=>$nid,':type'=>'need_post'));
+                     foreach ($results AS $result) {
+                             $iso2 = $result->iso2;
+                     }
+                     break;
+                case 'resource_post':
+                     $results = db_query('SELECT field_post_country_iso2 AS iso2 FROM {field_data_field_post_country} WHERE entity_id = :nid AND bundle = :type',array(':nid'=>$nid,':type'=>'resource_post'));
+                     foreach ($results AS $result) {
+                             $iso2 = $result->iso2;
+                     }
+                     break;
+         }
+         return $iso2;
 }
 /** Utility funciton to get flag image for a country with iso2
  **/

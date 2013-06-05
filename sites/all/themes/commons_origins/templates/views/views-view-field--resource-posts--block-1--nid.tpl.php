@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * This template is used to print a single field in a view.
@@ -26,13 +25,7 @@
       global $user,$base_url,$theme_path;
       $uid = $user->uid;
 // find out whether there is any matching available for this need nid
-      $fields = explode("/",$output);
-      $title = drupal_substr($fields[2],0,20).'...';
-      $ret = ghn_need_matching($uid,$fields[1]);
-      if (count($ret) > 0) {
-         print '<a href="'.$base_url.'/node/'.$fields[1].'/edit" title="'.$fields[2].'">'.$title.'</a> <a class="match-link" href="'.$base_url.'/match/need/'.$uid.'/'.$fields[1].'"><img src="'.$base_url.'/'.$theme_path.'/images/checkMark.png"></a>'; 
-      }
-      else {
-         print '<a href="'.$base_url.'/node/'.$fields[1].'/edit" title="'.$fields[2].'">'.$title.'</a><img src="'.$base_url.'/'.$theme_path.'/images/xMark.png">'; 
-      }
+      $iso2 = _ghn_node_iso2($output);
+      $ret = _ghn_country_flag($iso2);
+      print $ret;
 ?>

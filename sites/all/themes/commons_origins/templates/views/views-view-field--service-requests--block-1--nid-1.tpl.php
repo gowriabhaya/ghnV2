@@ -26,11 +26,12 @@
       global $user,$base_url,$theme_path;
       $uid = $user->uid;
 // find out whether there is any matching available for this need nid
-      $ret = ghn_need_matching($uid,$output);
-      if (count($ret) > 0) {
-         print '<a class="match-link" href="'.$base_url.'/match/need/'.$uid.'/'.$output.'"><img src="'.$base_url.'/'.$theme_path.'/images/checkMark.png"></a>'; 
+      $match = ghn_need_matching($uid,$output);
+      if (count($match) > 0) {
+         $ret = '<a class="match-link" href="'.$base_url.'/match/need/'.$uid.'/'.$output.'"><img src="'.$base_url.'/'.$theme_path.'/images/checkMark.png"></a>'; 
       }
       else {
-         print '<img src="'.$base_url.'/'.$theme_path.'/images/xMark.png">'; 
+         $ret = '<img src="'.$base_url.'/'.$theme_path.'/images/xMark.png">'; 
       }
+      print $ret;
 ?>

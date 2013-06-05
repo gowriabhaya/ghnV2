@@ -1,4 +1,4 @@
 name = GHN 
 description = "custom functions."
+package = Custom
 core = 7.x
-files[] = remember_me.module
