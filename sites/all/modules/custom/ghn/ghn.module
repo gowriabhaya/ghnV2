@@ -115,7 +115,7 @@ $tmp = var_export($form,TRUE);
                     array_push($form['#submit'],'ghn_user_submit');
                     break;
                case "profile2_edit_affiliations_form":
-                    array_push($form['#submit'],'ghn_user_submit');
+                    array_push($form['#submit'],'ghn_affiliation_submit');
                     break;
          }
 }
@@ -137,6 +137,13 @@ if ($keys == 'type') {
           }
       }
     }
+}
+/**
+ * redirecting affiliation form submission 
+ **/
+function ghn_affiliation_submit(&$form,&$form_state) {
+         global $user;
+         $form_state['redirect'] = 'affiliations-profile';
 }
 /**
  * redirecting user login form submission 
@@ -365,6 +372,21 @@ function _ghn_user_dashboard($uid) {
     $row[] = '<div class="label">Number of Matches to date: </div>';
     $row[] = '<div class="dashboard-count"> '.$matches.'</div>';
     $rows[] = array('data' => $row,'class'=>array('dash-row'));
+// get all the CVD hospital registry 
+    $cvdhosp = 0;
+    $results = db_query("SELECT count(a.entity_id) As numb FROM {field_data_field_hosp_admin_approval} a LEFT JOIN {field_data_field_hosp_cvd_registry} d ON d.entity_id = a.entity_id LEFT JOIN {node} n ON n.nid = a.entity_id WHERE n.status = :status AND a.field_hosp_admin_approval_value = :approv AND d.field_hosp_cvd_registry_value = :regt",array(':status'=>1,':approv'=>1,':regt'=>1)); 
+    foreach ($results AS $result) {
+            $cvdhosp = $result->numb;
+    }
+    $row = array();
+    $row[] = '<div class="label">Number of CVD Hospital Registry: </div>';
+    if ($cvdhosp != 0) {
+       $row[] = '<div class="dashboard-count"> '.$cvdhosp.' '.l("View List",$base_url."/cvd-registry").'</div>';
+    }
+    else {
+       $row[] = '<div class="dashboard-count"> '.$cvdhosp.'</div>';
+    }
+    $rows[] = array('data' => $row,'class'=>array('dash-row'));
 // get all the Medical Missions currently available for this memeber's country
     $matches = 0;
     $matches = _ghn_current_medical_missions($iso2);
@@ -461,11 +483,8 @@ function ghn_followed($uid) {
           foreach ($results AS $result) {
                   $followeds[]= $result;
           }
-    $row = array();
-    $rows = array();
     if (count($followeds) > 0) {
-      $i = 0;
-      $row = array();
+      $output .= '<ul>';
       $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
       foreach ($followeds as $followed) {
           $hover = '';
@@ -488,18 +507,9 @@ function ghn_followed($uid) {
           $hover = $name.' has started following you on '.date("j \of M, Y",$followed->timestamp);
 
           $ulink = '<a title="'.$hover.'" href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
-          if ($i <= 2) {
-             $row[$i++] = $ulink;
-          }
-          else {
-               $rows[] = array('data' => $row,'class'=>array('follower-row'));
-               $row = array();
-               $i = 0;
-               $row[$i++] = $pic;
-          }
+          $output .= '<li>'.$ulink.'</li>';
       }
-      $rows[] = array('data' => $row,'class'=>array('follower-row'));
-      $output .= theme('table',array('rows'=>$rows));
+      $output .= '</ul>';
     }
     else {
        $output .= '<div class="empty-text">You have no followers currently</div>';
@@ -512,55 +522,41 @@ function ghn_followed($uid) {
 function ghn_followers($uid) {
     global $user,$base_url,$theme_path;
     $output = '';
-    //$output = '<h3>Members you are following</h3>';
+    $output = '<h3>Following</h3>';
     $followers = array();
 // get all the users this user is following
          $results = db_query("SELECT content_id AS fuid,timestamp FROM {flag_content} WHERE uid = $uid and content_type = 'user' ");
           foreach ($results AS $result) {
                   $followers[]= $result;
           }
-    $row = array();
-    $rows = array();
-    $i = 3; 
     if (count($followers) > 0) {
-      $i = 0;
-      $row = array();
-      $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
-      foreach ($followers as $follower) {
-          $hover = '';
-          $name = '';
-          $account = user_load($follower->fuid);
-          if ($account->picture)
-             $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'thumbnail'));
-          else
-              $pic = theme('image',array('path' => $default_uri, 'style_name' => 'thumbnail'));
+       $output .= '<ul>';
+       $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
+       foreach ($followers as $follower) {
+               $hover = '';
+               $name = '';
+               $account = user_load($follower->fuid);
+               if ($account->picture)
+                  $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'thumbnail'));
+               else
+                   $pic = theme('image',array('path' => $default_uri, 'style_name' => 'thumbnail'));
 // get user name
-          $results = db_query("SELECT a.field_address_name_line AS name FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $follower->fuid LIMIT 1");
-          foreach ($results AS $result) {
-                  $name = $result->name;
-          } 
-          if (empty($name)) {
-             $name = $account->name;
-          }
-          $hover = 'You started following '.$name.' on '.date("j \of M, Y",$follower->timestamp);
-          if ($i <= 2) {
-             $ulink = '<a title="'.$hover.'" href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
-             $row[$i++] = $ulink;
-          }
-          else {
-               $rows[] = array('data' => $row,'class'=>array('follower-row'));
-               $row = array();
-               $i = 0;
+               $results = db_query("SELECT a.field_address_name_line AS name FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $follower->fuid LIMIT 1");
+               foreach ($results AS $result) {
+                       $name = $result->name;
+               } 
+               if (empty($name)) {
+                  $name = $account->name;
+               }
+               $hover = 'You started following '.$name.' on '.date("j \of M, Y",$follower->timestamp);
                $ulink = '<a title="'.$hover.'" href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
-               $row[$i++] = $pic;
+               $output .= '<li>'.$ulink.'</li>';
           }
+          $output .= '</ul>';
       }
-    $rows[] = array('data' => $row,'class'=>array('follower-row'));
-    $output .= theme('table',array('rows'=>$rows));
-    }
-    else {
-    $output .= '<div class="empty-text">You are not following anyone currently</div>';
-    }
+      else {
+           $output .= '<div class="empty-text">You are not following anyone currently</div>';
+      }
     return $output;
 }
 /** 
@@ -569,13 +565,10 @@ function ghn_followers($uid) {
 function ghn_latest_visitors($uid) {
     global $user,$base_url,$theme_path;
     $output = '';
-    $visitors = user_visits_latest($uid, 5);
-    $rows = array();
-    $i = 3; 
+    $output = '<h3>Latest Visitors</h3>';
+    $visitors = user_visits_latest($uid, 4);
     if (is_array($visitors)) {
-      $i = 0;
-      $j = 0;
-      $row = array();
+      $output .= '<ul>';
       $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
       foreach ($visitors as $visitor) {
               $account = user_load($visitor->vuid);
@@ -586,29 +579,15 @@ function ghn_latest_visitors($uid) {
 // build info for hover information
               $hover = '';
 // get user name
-              $results = db_query("SELECT a.field_address_name_line AS name FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $visitor->vuid LIMIT 1");
-              foreach ($results AS $result) {
-                      $name = $result->name;
-              }
-              if (empty($name)) {
-                 $name = $account->name;
-              }
+              $name = _ghn_member_name($visitor->vuid);
               $hover = $name;
-              if ($i <= 2) {
-                 $ulink = '<a title="'.$hover.'" href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
-                 $row[$i++] = $ulink;
-              }
-              else {
-                   $rows[] = array('data' => $row,'class'=>array('visitor-row'));
-                   $row = array();
-                   $i = 0;
-                   $ulink = '<a title="'.$hover.'" href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
-                   $row[$i++] = $pic;
-              }
+              $ulink = '<a title="'.$hover.'" href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
+              $output .= '<li>'.$ulink.'</li>';
          }
     }
-    $rows[] = array('data' => $row,'class'=>array('visitor-row'));
-    $output = theme('table',array('rows'=>$rows));
+    else {
+         $output = 'No member had visited your dashboard recently';
+    }
     return $output;
 }
 /**
@@ -889,6 +868,7 @@ function _ghn_node_iso2($nid) {
          $type = $node->type; 
 // look in the table appropriate for a node type to get the iso2
          $ret = '';
+         $iso2 = '';
          switch ($type) {
                 case 'need_post':
                      $results = db_query('SELECT field_post_country_iso2 AS iso2 FROM {field_data_field_post_country} WHERE entity_id = :nid AND bundle = :type',array(':nid'=>$nid,':type'=>'need_post'));
@@ -898,6 +878,18 @@ function _ghn_node_iso2($nid) {
                      break;
                 case 'resource_post':
                      $results = db_query('SELECT field_post_country_iso2 AS iso2 FROM {field_data_field_post_country} WHERE entity_id = :nid AND bundle = :type',array(':nid'=>$nid,':type'=>'resource_post'));
+                     foreach ($results AS $result) {
+                             $iso2 = $result->iso2;
+                     }
+                     break;
+                case 'medical_mission':
+                     $results = db_query('SELECT field_mm_host_country_iso2 AS iso2 FROM {field_data_field_mm_host_country} WHERE entity_id = :nid',array(':nid'=>$nid));
+                     foreach ($results AS $result) {
+                             $iso2 = $result->iso2;
+                     }
+                     break;
+                case 'hospital':
+                     $results = db_query('SELECT field_phosp_country_iso2 AS iso2 FROM {field_data_field_phosp_country} WHERE entity_id = :nid',array(':nid'=>$nid));
                      foreach ($results AS $result) {
                              $iso2 = $result->iso2;
                      }
