@@ -1,0 +1,262 @@
+/* reset  */
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+
+.clear{ clear:both; height:0; overflow:hidden; }
+
+/* remember to define focus styles! */
+:focus {
+	outline: 0;
+}
+
+/* remember to highlight inserts somehow! */
+ins {
+	text-decoration: none;
+}
+del {
+	text-decoration: line-through;
+}
+
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+
+.border1{ border-bottom:#e0ded2 1px solid; padding-bottom:10px;  }
+.devider1{ height:2px; clear:both; margin:0; padding:0; border-bottom:#d4d5d9 1px solid; border-top:#d4d5d9 1px solid; width:100%; }
+
+
+.h1{  font-size:26px; color:#24292d; background:url(../images/headdingUnderline.jpg) bottom left repeat-x; display:inline-block; clear:both; padding-right:30px; font-weight:normal;  }
+h2.h1{ font-size:20px; font-weight:normal; color:#2d2d2e; padding-right:12px; padding-bottom:5px;  }
+.h12{ text-align:center; height:2px;  border-bottom:#d4d5d9 1px solid; border-top:#d4d5d9 1px solid; position:relative; padding:0; margin:20px 0 40px ; font-weight:normal;  }
+.h12 span{ background:url(../images/bodyBack.jpg) repeat; position:relative; text-align:center; padding:10px; top:-20px;  }
+.h13{  font-size:19px; color:#24292d; background:url(../images/headdingUnderline.jpg) bottom left repeat-x;  clear:both;  font-weight:normal; padding-bottom:5px;  }
+.h14{ font-weight:normal; font-size:22px; color:#24292d; text-align:center;  }
+.box{ box-shadow:0 0 5px rgba(0,0,0,0.3);  border-radius:4px; background:url(../images/box-Back.png) 0 0 repeat-x;  }
+.landingBox{  height:387px;  }
+
+
+/*  Inputs  */
+textarea,
+  input[type=email],
+  input[type=number],
+  input[type=password],
+  input[type=tel],
+  input[type=text],
+  input[type=url], 
+  input[type=file] {
+  display: inline-block;
+  height: 30px;
+  line-height:30px;
+  margin: 0;
+  padding: 0 8px;
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  border-top: 1px solid #c0c0c0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  margin-bottom:15px;
+  width:99%;
+   width: 88%\9;
+   outline:none;
+  }
+   textarea{ resize:none; min-width:95%; min-height:40px; padding:8px; }
+  textarea:hover,
+  input[type=email]:hover,
+  input[type=number]:hover,
+  input[type=password]:hover,
+  input[type=tel]:hover,
+  input[type=text]:hover,
+  input[type=url]:hover,
+  input[type=file]:hover {
+  border: 1px solid #bad8e5;
+  border-top: 1px solid #bad8e5;
+  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  
+  -webkit-transition: all 0.218s;
+  -moz-transition: all 0.218s;
+  -ms-transition: all 0.218s;
+  -o-transition: all 0.218s;
+  transition: all 0.218s;
+  
+  }
+  
+  .inline textarea{  min-width:39%; }
+  
+  textarea:focus,
+  input[type=email]:focus,
+  input[type=number]:focus,
+  input[type=password]:focus,
+  input[type=tel]:focus,
+  input[type=text]:focus,
+  input[type=url]:focus,
+  input[type=file]:focus {
+  outline: none;
+  border: 1px solid #42b7ed;
+  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+  }
+  input[type=email][disabled=disabled],
+  input[type=number][disabled=disabled],
+  input[type=password][disabled=disabled],
+  input[type=tel][disabled=disabled],
+  input[type=text][disabled=disabled],
+  input[type=url][disabled=disabled],
+  input[type=file][disabled=disabled] {
+  border: 1px solid #e5e5e5;
+  background: #f1f1f1;
+  }
+
+
+
+/* Dummy */
+textarea.inner,
+  input[type=email].inner,
+  input[type=number].inner,
+  input[type=password].inner,
+  input[type=tel].inner,
+  input[type=text].inner,
+  input[type=url].inner, 
+  input[type=file].inner {
+  display: inline-block;
+  height: 35px;
+  line-height:35px;
+  margin: 0;
+  padding: 0 8px;
+  background: #e9e9e9;
+  border: 1px solid #e5e4e4;
+  border-top: 1px solid #d0d0d0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  margin-bottom:15px;
+  width:99%;
+   width: 88%\9;
+   outline:none;
+   color:#666;
+   font-size:15px;
+   box-shadow: inset 1px 2px 3px rgba(0,0,0,0.1);
+  }
+
+
+
+
+
+
+/* Buttons */
+
+ a.ghn-Button, .ghn-Button, .ghn-Button:visited {
+	background: #f1f1f1 url(../images/alert-overlay.png) repeat-x; 
+	display: inline-block; 
+	padding: 0 10px; 
+	height:30px;	
+	line-height:26px;	
+	color: #666; 
+	text-decoration: none;
+	-moz-border-radius: 2px; 
+	-webkit-border-radius: 2px;
+	border-radius: 2px;	
+	
+	-webkit-transition: all 0.218s;
+  -moz-transition: all 0.218s;
+  -ms-transition: all 0.218s;
+  -o-transition: all 0.218s;
+  transition: all 0.218s;
+  
+	
+	box-shadow: inset 0 1px 1px rgba(255,255,255,0.7), inset 0 -6px 12px #ccc, 0 1px 7px rgba(0,0,0,0.2);
+  
+   -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+	
+	text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+	
+	 border: 1px solid #dcdcdc;
+	border-bottom: 1px solid rgba(0,0,0,0.25);
+	position: relative;
+	cursor: pointer;
+	font-size: 11px;
+   font-weight: bold;
+   margin:0 3px 0 3px;
+   text-transform:uppercase;
+}
+	
+	.ghn-Button:hover							{ background-color: #f8f8f8; color: #333;  border: 1px solid #c6c6c6; }
+	.ghn-Button:active							{ /* top: 1px; */ background: #f1f1f1 url(../images/alert-overlay-2.png) repeat-x;  }
+	.small.ghn-Button, .small.ghn-Button:visited 			{ font-size: 11px; padding: ; }
+	.ghn-Button, .ghn-Button:visited{ font-size: 11px; font-weight: bold;  }	
+	
+	
+	
+	.green.ghn-Button, .green.ghn-Button:visited		{ background-color: #8dc800;  border:#549300 1px solid; border-bottom: 1px solid rgba(0,0,0,0.25);
+															box-shadow: inset 0 1px 1px rgba(255,255,255,0.7), inset 0 -6px 12px #7ab500, 0 1px 7px rgba(0,0,0,0.2);}															
+	.green.ghn-Button:hover						{ background-color: #83bd00; border:#4c8205 1px solid;  }
+	
+	.blue.ghn-Button, .blue.ghn-Button:visited		{ background-color: #48babf; border:#06a79f 1px solid; border-bottom: 1px solid rgba(0,0,0,0.25);
+														box-shadow: inset 0 1px 1px rgba(255,255,255,0.7), inset 0 -6px 12px #47b9be, 0 1px 7px rgba(0,0,0,0.2);}	
+	.blue.ghn-Button:hover							{ background-color: #29a0a5; }
+	
+	.red.ghn-Button, .red.ghn-Button:visited			{ background-color: #d60000; border:#a00404 1px solid; border-bottom: 1px solid rgba(0,0,0,0.25);  
+														box-shadow: inset 0 1px 1px rgba(255,255,255,0.7), inset 0 -6px 12px #d30000, 0 1px 7px rgba(0,0,0,0.2);}
+	.red.ghn-Button:hover							{ background-color: #aa0303; }
+	
+	
+	.pink.ghn-Button, .pink.ghn-Button:visited		{ background-color: #ec0d62; border:#e11362 1px solid; border-bottom: 1px solid rgba(0,0,0,0.25); }
+	.pink.ghn-Button:hover							{ background-color: #c80952; }
+	.orange.ghn-Button, .orange.ghn-Button:visited		{ background-color: #f78931; border:#e9802c 1px solid; border-bottom: 1px solid rgba(0,0,0,0.25); }
+	.orange.ghn-Button:hover							{ background-color: #e07b2b; }
+	.yellow.ghn-Button, .yellow.ghn-Button:visited		{ background-color: #ffb515; border:#e3b423 1px solid; border-bottom: 1px solid rgba(0,0,0,0.25); }
+	.yellow.ghn-Button:hover							{ background-color: #fc9200; }
+  	
+	.green.ghn-Button, .blue.ghn-Button, .red.ghn-Button, .pink.ghn-Button, .orange.ghn-Button, .yellow.ghn-Button, .merun.ghn-Button{ color:#fff; }
+	
+	.merun.ghn-Button, .merun.ghn-Button:visited		{ background-color: #be4f3c; border:#b34432 1px solid; border-bottom: 1px solid rgba(0,0,0,0.25); }
+	.merun.ghn-Button:hover	{ background-color: #bc4d3a; }
+	.ghn-Button.medium{ height:36px; line-height:26px; font-size:13px; font-weight:bold; text-transform:capitalize; padding:0 15px;  }
+	.ghn-Button.big{ height:45px; line-height:36px; font-size:16px; font-weight:bold; text-transform:capitalize; padding:0 20px;  }
+
+
