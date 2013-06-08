@@ -1,0 +1,47 @@
+/*
+1008px grid system ~ Core CSS.
+12 Columns ~ Margin left: 10px ~ Margin right: 10px
+*/
+
+.grid_1 {width: 64px; position:relative; margin:0 10px;}
+.grid_2 {width: 148px; position:relative; margin:0 10px;}
+.grid_3 {width: 232px; position:relative; padding:20px 0; margin:0 10px;}
+.grid_4 {width: 316px; position:relative; padding:20px 0; margin:0 10px;}
+.grid_5 {width: 400px; position:relative; padding:20px 0; margin:0 10px;}
+.grid_6 {width: 484px; position:relative; padding:20px 0; margin:0 10px;}
+.grid_7 {width: 568px; position:relative; padding:20px 0; margin:0 10px;}
+.grid_8 {width: 652px; position:relative; padding:20px 0; margin:0 10px;}
+.grid_9 {width: 736px; position:relative; padding:20px 0; margin:0 10px;}
+.grid_10 {width: 820px; position:relative; padding:20px 0; margin:0 10px;}
+.grid_11 {width: 904px; position:relative; padding:20px 0; margin:0 10px;}
+.grid_12 {width: 988px; position:relative; margin:0 10px;}
+
+/* 100% Width */
+.grid_13{ width:100%; }
+
+.column {margin: 0 10px 0 10px;
+         overflow: hidden;
+         float: left;
+         display: inline;}
+.row {width: 1008px;
+         margin: 0 auto;
+         /*overflow: hidden; */}
+.row .row { width: auto; display:block; margin:0 auto /*margin: 0 -10px 0 -10px;
+        
+         display: inline-block; */}
+		 
+.ML0{ margin-left:0; }
+.MR0{ margin-right:0; }
+.ML10{ margin-left:10px; }
+.MR10{ margin-right:10px; }
+.ML20{ margin-left:20px; }
+.MR20{ margin-right:20px; }
+
+.MT0{ margin-top:0; }
+.MB0{ margin-bottom:0; }
+.MT10{ margin-top:10px; }
+.MB10{ margin-bottom:10px; }
+.MT20{ margin-top:20px; }
+.MB20{ margin-bottom:20px; }
+
+
