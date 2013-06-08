@@ -567,26 +567,36 @@ function ghn_latest_visitors($uid) {
     $output = '';
     $output = '<h3>Latest Visitors</h3>';
     $visitors = user_visits_latest($uid, 4);
-    if (is_array($visitors)) {
+    if (count($visitors) > 0) {
       $output .= '<ul>';
       $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
       foreach ($visitors as $visitor) {
-              $account = user_load($visitor->vuid);
-              if ($account->picture)
-                 $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'thumbnail'));
-              else
-                 $pic = theme('image',array('path' => $default_uri, 'style_name' => 'thumbnail'));
+// user_visits_latest does not check user status, I need to filter it here UMM
+              $status = 0;
+              $results = db_query("SELECT status FROM {users} WHERE uid = :uid",array(':uid'=>$visitor->vuid));
+              foreach ($results AS $result) {
+                      $result->status==1 ? $status = 1: $status = 0;
+              }
+              if ($status) {
+                 $account = user_load($visitor->vuid);
+              //if ((!$account->picture)&&($account->picture))
+                 if ($account->picture)
+                    $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'thumbnail'));
+                 else
+                    $pic = theme('image',array('path' => $default_uri, 'style_name' => 'thumbnail'));
 // build info for hover information
-              $hover = '';
+                 $hover = '';
 // get user name
-              $name = _ghn_member_name($visitor->vuid);
-              $hover = $name;
-              $ulink = '<a title="'.$hover.'" href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
-              $output .= '<li>'.$ulink.'</li>';
+                 $name = _ghn_member_name($visitor->vuid);
+                 $hover = $name;
+                 $ulink = '<a title="'.$hover.'" href="'.$base_url.'/dashboard/'.$visitor->vuid.'">'.$pic.'</a>';
+                 $output .= '<li>'.$ulink.'</li>';
+              }
          }
+         $output .= '</ul>';
     }
     else {
-         $output = 'No member had visited your dashboard recently';
+         $output .= 'No member had visited your dashboard recently';
     }
     return $output;
 }
@@ -838,13 +848,16 @@ $tmp = var_export($fields,TRUE);
 function _ghn_member_name($uid) {
          if (!is_numeric($uid)) return '';
 // get user name
-         $results = db_query("SELECT realname AS name FROM {realname} WHERE uid = $uid LIMIT 1");
+// unfortunately realname table does not update when the contact form changes
+// names
+         //$results = db_query("SELECT realname AS name FROM {realname} WHERE uid = $uid LIMIT 1");
+         $results = db_query("SELECT field_contact_fname_value AS fname,field_contact_lname_value AS lname FROM {field_data_field_contact_fname} f LEFT JOIN {field_data_field_contact_lname} l ON l.entity_id = f.entity_id LEFT JOIN {profile} p ON p.pid = f.entity_id WHERE uid = $uid AND type = 'general' LIMIT 1");
          foreach ($results AS $result) {
-                 $name = $result->name;
+                 $name = strtoupper($result->fname.' '.$result->lname);
          }
          if (empty($name)) {
             $account = user_load($uid);
-            $name = $account->name;
+            $name = strtoupper($account->name);
          }
          return $name;
 }
