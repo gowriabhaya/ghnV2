@@ -99,6 +99,9 @@
             }
             else {
                  $menu = theme('nice_menus', array('id' => 0, 'direction' => 'down', 'depth' => 1, 'menu_name' => 'menu-logged-in-main-menu', 'menu' => NULL));
+// nasty fix to have the dashboard to point to logged in user's dashboard
+                 $tmp = $menu['content'];
+                 $menu['content'] = str_replace('/user','/dashboard/1',$tmp);
             }
             print $menu['content'];
     ?>
@@ -145,7 +148,13 @@
   <div id="columns" class="columns clearfix">
     <!-- Messages and Help -->
     <?php print render($page['help']); ?>
-    <?php print $messages; ?>
+    <?php
+          $newmsg = '';
+          $newmsg = _ghn_status_message($messages,"The changes have been saved.");
+          $newmsg = _ghn_status_message($newmsg,"This post has been added to your bookmarks");
+           print $newmsg; 
+    ?>
+    <?php //print $messages; ?>
 
     <!-- region: Secondary Content -->
     <?php print render($page['secondary_content']); ?>

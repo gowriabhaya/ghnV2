@@ -23,15 +23,21 @@
  */
 ?>
 <?php 
-      global $user,$base_url,$theme_path;
+     global $user,$base_url,$theme_path;
       $uid = $user->uid;
+      $matches = array();
 // find out whether there is any matching available for this need nid
-      $match = ghn_need_matching($uid,$output);
-      if (count($match) > 0) {
-         $ret = '<a class="match-link" href="'.$base_url.'/match/need/'.$uid.'/'.$output.'"><img src="'.$base_url.'/'.$theme_path.'/images/checkMark.png"></a>'; 
+      $matches = ghn_resource_matching($uid,$output);
+      $status = 0;
+      foreach ($matches AS $match) {
+              $matchpos = strpos($match,"Matched");
+              $matchpos > 0 ? $status = 1 : $status =  0;
+      }
+      if ($status) {
+         $ret = '<a class="match-link" href="'.$base_url.'/match/resource/'.$uid.'/'.$output.'"><img src="'.$base_url.'/'.$theme_path.'/images/checkMark.png"></a>';
       }
       else {
-         $ret = '<img src="'.$base_url.'/'.$theme_path.'/images/xMark.png">'; 
+         $ret = '<img src="'.$base_url.'/'.$theme_path.'/images/xMark.png">';
       }
       print $ret;
 ?>

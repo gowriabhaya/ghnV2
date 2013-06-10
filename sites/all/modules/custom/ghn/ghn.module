@@ -14,9 +14,19 @@ function ghn_form_alter(&$form,&$form_state,$form_id) {
 $form['body']['und'][0]['format']['guidelines']['#access'] = FALSE;
 $form['body']['und'][0]['format']['help']['#access'] =FALSE;
 */
+//drupal_set_message($form_id);
          switch($form_id) {
                case "user_register_form":
                     //krumo($form['submit']);
+/*
+$tmp = var_export($form['actions']['submit'],TRUE);
+//drupal_set_message($tmp);
+print '<pre>';
+print $tmp;
+print '</pre>';
+*/
+                    $form['captcha']['#description'] = '<strong>CAPTCHA</strong>';
+                    $form['actions']['submit']['#value'] = 'JOIN GHN';
                     break;
                case "mailchimp_lists_user_subscribe_form_newletter":
 //krumo($form['submit']);
@@ -32,6 +42,7 @@ unset($form['mailchimp_lists']['mailchimp_newletter']['mergevars']['LNAME']);
                          $form['field_clinical_services_choices']['und']['#disabled'] = TRUE;
                          $form['field_patient_type']['und']['#disabled'] = TRUE;
                       endif;
+                      //array_push($form['#submit'],'ghn_node_submit');  
                case "need_post_node_form":
                       if (is_numeric(arg(1))):
                          $form['field_post_service']['und']['#disabled'] = TRUE;
@@ -54,7 +65,7 @@ unset($form['mailchimp_lists']['mailchimp_newletter']['mergevars']['LNAME']);
                       endif;
 $tmp = var_export($form,TRUE);
 //drupal_set_message($existingnode);
-                      array_push($form['#submit'],'ghn_post_submit');  
+                      //array_push($form['#submit'],'ghn_need_submit');  
                       break;
                case "resource_post_node_form":
                       global $user;
@@ -101,18 +112,17 @@ $tmp = var_export($form,TRUE);
                          $form['field_post_country']['und']['#disabled'] = TRUE;
                          $form['field_affiliations']['und']['#disabled'] = TRUE;
                       endif;
-                    $original = array_shift($form['actions']['submit']['#submit']);
-                    $form['actions']['submit']['#submit'][]='ghn_node_submit';
-                    $form['actions']['submit']['#submit'][]=$original;
+                      //array_push($form['#submit'],'ghn_resource_submit');
                     break;
                case "user_login":
                     //array_push($form['#submit'],'ghn_user_submit');
                     break;
                case "user_profile_form":
-                    array_push($form['#submit'],'ghn_user_submit');
+                    array_push($form['#submit'],'ghn_profile_submit');
                     break;
                case "profile2_edit_general_form":
-                    array_push($form['#submit'],'ghn_user_submit');
+                    array_push($form['#submit'],'ghn_general_profile_submit');
+                    //$form['submit']['#submit'] = 'ghn_user_submit';
                     break;
                case "profile2_edit_affiliations_form":
                     array_push($form['#submit'],'ghn_affiliation_submit');
@@ -123,9 +133,10 @@ $tmp = var_export($form,TRUE);
  * redirecting node form submission 
  **/
 function ghn_node_submit(&$form,&$form_state) {
-   global $user;
+         global $user;
+         //drupal_set_message("Your Medical Mission Updated");
+         $form_state['redirect'] = 'node/add/medical-mission';
    //$tmp = var_export($form_state['redirect'], TRUE);
-   //drupal_set_message($tmp);
    foreach ($form_state AS $keys => $value) {
 if ($keys == 'type') {
 }
@@ -139,17 +150,36 @@ if ($keys == 'type') {
     }
 }
 /**
+ * redirecting CAP form submission 
+ **/
+function ghn_cap_submit(&$form,&$form_state) {
+         global $user;
+         $uid = $user->uid;
+         drupal_set_message("Your CAP application submitted ");
+         $form_state['redirect'] = 'dashboard/'.$uid;
+}
+/**
  * redirecting affiliation form submission 
  **/
 function ghn_affiliation_submit(&$form,&$form_state) {
          global $user;
+         drupal_set_message("Your Affiliations Updated");
          $form_state['redirect'] = 'affiliations-profile';
 }
 /**
  * redirecting user login form submission 
  **/
-function ghn_user_submit(&$form,&$form_state) {
+function ghn_profile_submit(&$form,&$form_state) {
          global $user;
+         drupal_set_message("Your Membership Information Updated");
+         $form_state['redirect'] = 'dashboard/'.$user->uid;
+}
+/**
+ * redirecting user login form submission 
+ **/
+function ghn_general_profile_submit(&$form,&$form_state) {
+         global $user;
+         drupal_set_message("Your Contact Information Updated");
          $form_state['redirect'] = 'dashboard/'.$user->uid;
 }
 /**
@@ -195,6 +225,7 @@ function ghn_menu() {
         'type' => MENU_CALLBACK,
     );
     $items['match/%/%/%'] = array(
+        'title' => '',
         'page callback' => '_ghn_match_page',
         'page arguments' => array(1,2,3),
         'access callback' => TRUE,
@@ -226,38 +257,6 @@ function _profile2_affiliations_form() {
     module_load_include('inc', 'profile2_page', 'profile2_page');
     $profile2 = profile2_by_uid_load($user->uid, 'affiliations');
     $entity_form = entity_ui_get_form('profile2', $profile2, 'edit');
-    return $entity_form;    
-}
-function _profile2_detail_form() {
-    global $user;
-    $uid = $user->uid;
-    module_load_include('inc', 'profile2_page', 'profile2_page');
-    $results = db_query("SELECT field_choose_membership_type_registration_type AS memtype FROM {field_data_field_choose_membership_type} m LEFT JOIN {profile} p ON m.entity_id = p.pid WHERE p.uid = :uid",array(':uid'=>$uid));
-    foreach ($results as $result) {
-            $mtype = $result->memtype;
-    }
-    switch ($mtype) {
-           case "individual": // individual role
-                $profile2 = profile2_by_uid_load($user->uid, 'individual');
-                $entity_form = entity_ui_get_form('profile2', $profile2, 'edit');
-                break;
-           case "hospital":
-                $profile2 = profile2_by_uid_load($user->uid, 'hospital');
-                $entity_form = entity_ui_get_form('profile2', $profile2, 'edit');
-                break;
-           case "organization":
-                $profile2 = profile2_by_uid_load($user->uid, 'organization');
-                $entity_form = entity_ui_get_form('profile2', $profile2, 'edit');
-                break;
-           case "government":
-                $profile2 = profile2_by_uid_load($user->uid, 'government');
-                $entity_form = entity_ui_get_form('profile2', $profile2, 'edit');
-                break;
-           default:
-                $entity_form = "No Detail Profile";
-                break;
-                
-    }
     return $entity_form;    
 }
 /**
@@ -304,7 +303,7 @@ function _ghn_user_dashboard($uid) {
        $row[] = '<div class="label">Location : </div>';
        $country = country_load($iso2);
        $name = $country->official_name;
-       $flag = _ghn_country_flag($iso2);
+       $flag = _ghn_country_flag($iso2.';'.$name);
        $row[] = '<div class="dashboard-country">'.$name.' '.$flag.'</div>';
  
     }
@@ -356,6 +355,11 @@ function _ghn_user_dashboard($uid) {
     $row[] = '<div class="dashboard-count">'.$memcount.'</div>';
     $rows[] = array('data'=>$row,'class'=>array('dash-row'));
     $row = array();
+    $row[] = '<div class="label">Your Bookmarks: </div>';
+// Bookmarks 
+    $row[] = '<div class="dashboard-count"> '.l("view list","bookmarks").'</div>';
+    $rows[] = array('data'=>$row,'class'=>array('dash-row'));
+    $row = array();
     $row[] = '<div class="label">Number of Members Followed: </div>';
 // count of members following you
 // count of members you are following
@@ -399,9 +403,12 @@ function _ghn_user_dashboard($uid) {
        $row[] = '<div class="dashboard-count"> '.$matches.'</div>';
     }
     $rows[] = array('data' => $row,'class'=>array('dash-row'));
+// Conferences 
+    $row = array();
+    $row[] = '<div class="label">Upcoming Conferences: </div>';
+    $row[] = '<div class="dashboard-count"> '.l("View List",$base_url."/conference-list").'</div>';
+    $rows[] = array('data' => $row,'class'=>array('dash-row'));
     $ret .= theme('table',array('rows'=>$rows));
-    // how many matches
-    
     return $ret;
 }
 /** 
@@ -476,7 +483,7 @@ function _ghn_post_form_options($service) {
 function ghn_followed($uid) {
     global $user,$base_url,$theme_path;
     $output = '';
-    $output = '<h3>Followed By</h3>';
+    $output = '<h2 class="pane-title block-title">Followed By</h2>';
     $followeds = array();
 // get all the users this user is following
          $results = db_query("SELECT uid AS fuid,timestamp FROM {flag_content} WHERE content_id = $uid AND content_type = 'user'");
@@ -522,7 +529,7 @@ function ghn_followed($uid) {
 function ghn_followers($uid) {
     global $user,$base_url,$theme_path;
     $output = '';
-    $output = '<h3>Following</h3>';
+    //$output = '<h2>Following</h2>';
     $followers = array();
 // get all the users this user is following
          $results = db_query("SELECT content_id AS fuid,timestamp FROM {flag_content} WHERE uid = $uid and content_type = 'user' ");
@@ -565,7 +572,7 @@ function ghn_followers($uid) {
 function ghn_latest_visitors($uid) {
     global $user,$base_url,$theme_path;
     $output = '';
-    $output = '<h3>Latest Visitors</h3>';
+    //$output = '<h3>Latest Visitors</h3>';
     $visitors = user_visits_latest($uid, 4);
     if (count($visitors) > 0) {
       $output .= '<ul>';
@@ -601,9 +608,27 @@ function ghn_latest_visitors($uid) {
     return $output;
 }
 /**
- * GHN request and need post submit
+ * GHN need post submit
  **/
-function ghn_post_submit(&$form,&$form_state) {
+function ghn_need_submit(&$form,&$form_state) {
+         global $user,$node;
+         //$form_state['redirect'] = 'dashboard/'.$user->uid;
+/*
+         $tmp = var_export($node,TRUE);    
+         $title = $form_state['input']['title'];
+         $service  = $form_state['input']['field_clinical_services']['und'];
+         $choice = $form_state['input']['choices'];
+//$tmp = var_export($_POST,TRUE);    
+print '<pre>';
+print $tmp;
+print '</pre>';
+*/
+         $tmp = var_export($form_state['redirect'],TRUE);    
+}
+/**
+ * GHN request post submit
+ **/
+function ghn_resource_submit(&$form,&$form_state) {
          global $user,$node;
          //$form_state['redirect'] = 'dashboard/'.$user->uid;
 /*
@@ -625,6 +650,9 @@ function ghn_need_matching($uid,$nid) {
 // get the needs posts
          $need = array();
          $subresults = array();
+$node = node_load($nid);
+$tmp = var_export($node,TRUE);
+//drupal_set_message($tmp);
          $results = db_query("SELECT n.nid,f.field_post_service_value AS service FROM {node} n LEFT JOIN {field_data_field_post_service} f ON f.entity_id = n.nid  WHERE n.type = 'need_post' AND n.uid = $uid AND n.nid = $nid"); 
          foreach ($results AS $result) {
                  switch ($result->service) {
@@ -648,13 +676,14 @@ function ghn_need_matching($uid,$nid) {
                          $need[$result->service][$result->nid] = $subresult->opt;
                   }
          }
+
 // get the resource posts
          $resource = array();
          $results = db_query("SELECT n.uid,n.nid,n.title,f.field_post_service_value AS service FROM {node} n LEFT JOIN {field_data_field_post_service} f ON f.entity_id = n.nid  WHERE n.type = 'resource_post' AND n.uid != $uid"); 
          foreach ($results AS $result) {
                  switch ($result->service) {
                         case "Clinical Services":
-                             $subresults = db_query("SELECT field_patient_type_value AS opt FROM {field_data_field_patient_type} WHERE entity_id = $result->nid"); 
+                             $subresults = db_query("SELECT field_clinical_services_choices_value AS opt FROM {field_data_field_clinical_services_choices} WHERE entity_id = $result->nid"); 
                              break;
                         case "Educational Activities":
                              $subresults = db_query("SELECT field_education_choices_value AS opt FROM {field_data_field_education_choices} WHERE entity_id = $result->nid"); 
@@ -680,6 +709,8 @@ function ghn_need_matching($uid,$nid) {
          //drupal_set_message($tmp);
 // start matching 
          $ret = array();
+//print_r($need);
+//print_r($resource);
          foreach ($need AS $index => $nvalue) {
 /*
 $tmp = var_export($resource,TRUE);
@@ -690,13 +721,15 @@ print '</pre>';
 //drupal_set_message($tmp);
                  if (!empty($resource[$index])) {
                     foreach ($nvalue AS $nnid => $nopt) {
+//print_r($nvalue);
                             foreach ($resource[$index] AS $rnid => $ropt) {
                                     $rropt = explode(';',$ropt);
                                     if (!empty($rropt[2])&&($nopt == $rropt[2])) {
                                        $ret[] = $index.';'.$rnid.';'.$rropt[0].';'.$rropt[1].';Matched';
+//print (" HELLO ".$rropt[2].' '.$nopt.' '.$index);
                                     }
                                     else {
-                                       $ret[] = $index.';'.$rnid.';'.$rropt[0].';'.$rropt[1].';No match';
+                                         $ret[] = $index.';'.$rnid.';'.$rropt[0].';'.$rropt[1].';No match';
                                     }
                             }
                      }
@@ -882,33 +915,45 @@ function _ghn_node_iso2($nid) {
 // look in the table appropriate for a node type to get the iso2
          $ret = '';
          $iso2 = '';
+         $country = '';
          switch ($type) {
                 case 'need_post':
-                     $results = db_query('SELECT field_post_country_iso2 AS iso2 FROM {field_data_field_post_country} WHERE entity_id = :nid AND bundle = :type',array(':nid'=>$nid,':type'=>'need_post'));
+                     $results = db_query('SELECT name AS country,field_post_country_iso2 AS iso2 FROM {field_data_field_post_country} f LEFT JOIN {countries_country} c ON c.iso2 = f.field_post_country_iso2 WHERE entity_id = :nid AND bundle = :type',array(':nid'=>$nid,':type'=>'need_post'));
                      foreach ($results AS $result) {
                              $iso2 = $result->iso2;
+                             $country = $result->country;
                      }
                      break;
                 case 'resource_post':
-                     $results = db_query('SELECT field_post_country_iso2 AS iso2 FROM {field_data_field_post_country} WHERE entity_id = :nid AND bundle = :type',array(':nid'=>$nid,':type'=>'resource_post'));
+                     $results = db_query('SELECT name AS country,field_post_country_iso2 AS iso2 FROM {field_data_field_post_country} f LEFT JOIN {countries_country} c ON c.iso2 = f.field_post_country_iso2 WHERE entity_id = :nid AND bundle = :type',array(':nid'=>$nid,':type'=>'resource_post'));
                      foreach ($results AS $result) {
                              $iso2 = $result->iso2;
+                             $country = $result->country;
                      }
                      break;
                 case 'medical_mission':
-                     $results = db_query('SELECT field_mm_host_country_iso2 AS iso2 FROM {field_data_field_mm_host_country} WHERE entity_id = :nid',array(':nid'=>$nid));
+                     $results = db_query('SELECT name AS country,field_mm_host_country_iso2 AS iso2 FROM {field_data_field_mm_host_country} f LEFT JOIN {countries_country} c ON c.iso2 = f.field_mm_host_country_iso2 WHERE entity_id = :nid',array(':nid'=>$nid));
                      foreach ($results AS $result) {
                              $iso2 = $result->iso2;
+                             $country = $result->country;
+                     }
+                     break;
+                case 'conference_announcement':
+                     $results = db_query('SELECT name AS country,field_conf_country_iso2 AS iso2 FROM {field_data_field_conf_country} f LEFT JOIN {countries_country} c ON c.iso2 = f.field_conf_country_iso2 WHERE entity_id = :nid',array(':nid'=>$nid));
+                     foreach ($results AS $result) {
+                             $iso2 = $result->iso2;
+                             $country = $result->country;
                      }
                      break;
                 case 'hospital':
-                     $results = db_query('SELECT field_phosp_country_iso2 AS iso2 FROM {field_data_field_phosp_country} WHERE entity_id = :nid',array(':nid'=>$nid));
+                     $results = db_query('SELECT name AS country,field_phosp_country_iso2 AS iso2 FROM {field_data_field_phosp_country} f LEFT JOIN {countries_country} c ON c.iso2 = f.field_phosp_country_iso2 WHERE entity_id = :nid',array(':nid'=>$nid));
                      foreach ($results AS $result) {
                              $iso2 = $result->iso2;
+                             $country = $result->country;
                      }
                      break;
          }
-         return $iso2;
+         return $iso2.';'.$country;
 }
 /** Utility funciton to get flag image for a country with iso2
  **/
@@ -916,9 +961,26 @@ function _ghn_country_flag($iso2) {
          global $base_url;
          $ret = '';
          if (module_exists('countryicons')) {
+            $tmp = explode(';',$iso2);
+            $iso2 = $tmp[0];
+            $country = $tmp[1];
             $path = drupal_get_path('module','countryicons');
-            $ret = '<img src="'.$base_url.'/'.$path.'/iconsets/shiny/'.strtolower($iso2).'.png">';
+            $ret = '<img title="'.$country.'" src="'.$base_url.'/'.$path.'/iconsets/shiny/'.strtolower($iso2).'.png">';
           }
           return $ret;
 }
-
+/**
+ * Cleaning up the status message
+ **/
+function _ghn_status_message($msg,$submsg) {
+          $start = 0;
+          $start = strpos($msg,$submsg,0);
+          $length = strlen($submsg);
+          if ($start != 0) {
+             $newmsg = substr_replace($msg,'',$start,$length);
+          }
+          else {
+               $newmsg = $msg;
+          }
+          return $newmsg;
+}
