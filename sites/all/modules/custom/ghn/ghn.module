@@ -383,7 +383,7 @@ function _ghn_user_dashboard($uid) {
             $cvdhosp = $result->numb;
     }
     $row = array();
-    $row[] = '<div class="label">Number of CVD Hospital Registry: </div>';
+    $row[] = '<div class="label">Number of CVD Hospitals in LMICs: </div>';
     if ($cvdhosp != 0) {
        $row[] = '<div class="dashboard-count"> '.$cvdhosp.' '.l("View List",$base_url."/cvd-registry").'</div>';
     }
@@ -393,11 +393,12 @@ function _ghn_user_dashboard($uid) {
     $rows[] = array('data' => $row,'class'=>array('dash-row'));
 // get all the Medical Missions currently available for this memeber's country
     $matches = 0;
-    $matches = _ghn_current_medical_missions($iso2);
+    //$matches = _ghn_current_medical_missions($iso2);
+    $matches = _ghn_current_medical_missions();
     $row = array();
-    $row[] = '<div class="label">Number of Medical Missions in '.$name.': </div>';
+    $row[] = '<div class="label">Number of Current Medical Missions: </div>';
     if ($matches != 0) {
-       $row[] = '<div class="dashboard-count"> '.$matches.' '.l("View List",$base_url."/medical-missions/".$iso2).'</div>';
+       $row[] = '<div class="dashboard-count"> '.$matches.' '.l("View List",$base_url."/medical-missions").'</div>';
     }
     else {
        $row[] = '<div class="dashboard-count"> '.$matches.'</div>';
@@ -414,11 +415,16 @@ function _ghn_user_dashboard($uid) {
 /** 
  * function to get all matches for a given uid
  **/
-function _ghn_current_medical_missions($country) {
+function _ghn_current_medical_missions($country = NULL) {
       $ret = 0;
       $today = date("m-d-Y",time());
+      if ($country) {
 // find all medical missions with host country = $country
-      $results = db_query("SELECT count(n.nid) AS ret FROM {node} n LEFT JOIN {field_data_field_mm_host_country} c ON c.entity_id = n.nid LEFT JOIN {field_data_field_event_time} t ON t.entity_id = n.nid WHERE n.status = 1 AND c.field_mm_host_country_iso2 = '$country' AND t.field_event_time_value2 > '$today'");
+         $results = db_query("SELECT count(n.nid) AS ret FROM {node} n LEFT JOIN {field_data_field_mm_host_country} c ON c.entity_id = n.nid LEFT JOIN {field_data_field_event_time} t ON t.entity_id = n.nid WHERE n.status = 1 AND c.field_mm_host_country_iso2 = '$country' AND t.field_event_time_value2 > '$today'");
+      }
+      else {
+         $results = db_query("SELECT count(n.nid) AS ret FROM {node} n LEFT JOIN {field_data_field_mm_host_country} c ON c.entity_id = n.nid LEFT JOIN {field_data_field_event_time} t ON t.entity_id = n.nid AND n.type = 'medical_mission' WHERE n.status = 1 AND t.field_event_time_value2 > '$today'");
+      }
       foreach ($results AS $result) {
               $ret = $result->ret;
       }
