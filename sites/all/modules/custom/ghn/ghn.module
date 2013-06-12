@@ -17,13 +17,17 @@ $form['body']['und'][0]['format']['help']['#access'] =FALSE;
 */
 //drupal_set_message($form_id);
          switch($form_id) {
-               case "comment_node_need_post_form":
+               case "contact_personal_form":
+                    unset($form['name']);
+                    unset($form['mail']);
 /*
 $tmp = var_export($form,TRUE);
 print '<pre>';
 print $tmp;
 print '</pre>';
 */
+                    break;
+               case "comment_node_need_post_form":
                     unset($form['subject']);
                     unset($form['author']['_author']);
                     $form['comment_body']['und'][0]['#title'] = 'YOUR COMMENT';
@@ -590,13 +594,7 @@ function ghn_followed($uid) {
 // build info for hover information
           $hover = '';
 // get user name
-          $results = db_query("SELECT a.field_address_name_line AS name FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $followed->fuid LIMIT 1");
-          foreach ($results AS $result) {
-                  $name = $result->name;
-          } 
-          if (empty($name)) {
-             $name = $account->name;
-          }
+          $name = _ghn_member_name($followed->fuid);
           $hover = $name.' has started following you on '.date("j \of M, Y",$followed->timestamp);
 
           $ulink = '<a title="'.$hover.'" href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
@@ -634,13 +632,7 @@ function ghn_followers($uid) {
                else
                    $pic = theme('image',array('path' => $default_uri, 'style_name' => 'thumbnail'));
 // get user name
-               $results = db_query("SELECT a.field_address_name_line AS name FROM {field_data_field_address} a LEFT JOIN {profile} p ON p.pid = a.entity_id WHERE p.uid = $follower->fuid LIMIT 1");
-               foreach ($results AS $result) {
-                       $name = $result->name;
-               } 
-               if (empty($name)) {
-                  $name = $account->name;
-               }
+               $name = _ghn_member_name($follower->fuid);
                $hover = 'You started following '.$name.' on '.date("j \of M, Y",$follower->timestamp);
                $ulink = '<a title="'.$hover.'" href="'.$base_url.'/dashboard/'.$account->uid.'">'.$pic.'</a>';
                $output .= '<li>'.$ulink.'</li>';

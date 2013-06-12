@@ -34,10 +34,10 @@
               $matchpos > 0 ? $status = 1 : $status =  0;
       }
       if ($status) {
-         $ret = '<a class="match-link" href="'.$base_url.'/match/need/'.$uid.'/'.$output.'"><img src="'.$base_url.'/'.$theme_path.'/images/checkMark.png"></a>';
+         $ret = '<a title="Match Found" class="match-link" href="'.$base_url.'/match/need/'.$uid.'/'.$output.'"><img src="'.$base_url.'/'.$theme_path.'/images/checkMark.png"></a>';
       }
       else {
-         $ret = '<img src="'.$base_url.'/'.$theme_path.'/images/xMark.png">';
+         $ret = '<img title="No Match Yet" src="'.$base_url.'/'.$theme_path.'/images/xMark.png">';
       }
       print $ret;
 ?>
