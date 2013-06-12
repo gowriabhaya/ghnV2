@@ -498,7 +498,7 @@ div.left-link {
 	display: block;
 	font-size: 0;
 	line-height: 0;
-	visibility: hidden;
+	/*visibility: hidden;*/
 	width: 0;
 	height: 0;
 }

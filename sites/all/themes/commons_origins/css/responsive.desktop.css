@@ -190,7 +190,7 @@ display: inline-block;
 	.region-three-25-50-25-third .field-name-body li img{ width:42px; height:44px; background:#fff; padding:2px; border-radius:2px; box-shadow:0 0 4px rgba(0,0,0,0.4); }
 
 	/* not-logged-in */
-	body.logged-in #main-content-header{ display:none; }
+	/*body.logged-in #main-content-header{ display:none; }*/
 	body.not-logged-in #main-content-header ul{ margin-top:0; }
 	body.logged-in .panel-col-first .pane-title.block-title{ display:none; }
 	body.not-logged-in.front .panel-col-first h2.pane-title.block-title{ margin-bottom:20px;}

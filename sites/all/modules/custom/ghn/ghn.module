@@ -87,6 +87,7 @@ print '</pre>';
                       endif;
                       //array_push($form['#submit'],'ghn_hospital_node_submit');  
                case "medical_mission_node_form":
+/*
                       if (is_numeric(arg(1))):
                          $form['field_host_town']['und']['#disabled'] = TRUE;
                          $form['field_host_country']['und']['#disabled'] = TRUE;
@@ -94,6 +95,7 @@ print '</pre>';
                          $form['field_clinical_services_choices']['und']['#disabled'] = TRUE;
                          $form['field_patient_type']['und']['#disabled'] = TRUE;
                       endif;
+*/
                       //array_push($form['#submit'],'ghn_node_submit');  
                case "need_post_node_form":
                       if (is_numeric(arg(1))):
