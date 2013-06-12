@@ -17,6 +17,35 @@ $form['body']['und'][0]['format']['help']['#access'] =FALSE;
 */
 //drupal_set_message($form_id);
          switch($form_id) {
+               case "comment_node_need_post_form":
+/*
+$tmp = var_export($form,TRUE);
+print '<pre>';
+print $tmp;
+print '</pre>';
+*/
+                    unset($form['subject']);
+                    unset($form['author']['_author']);
+                    $form['comment_body']['und'][0]['#title'] = 'YOUR COMMENT';
+                    break;
+               case "comment_node_resource_post_form":
+                    $tmp = var_export($form['comment_body']['und'][0]['#title'],TRUE);
+                    unset($form['subject']);
+                    unset($form['author']['_author']);
+                    $form['comment_body']['und'][0]['#title'] = 'YOUR COMMENT';
+                    break;
+               case "comment_node_conference_announcement_form":
+                    $tmp = var_export($form['comment_body']['und'][0]['#title'],TRUE);
+                    unset($form['subject']);
+                    unset($form['author']['_author']);
+                    $form['comment_body']['und'][0]['#title'] = 'YOUR COMMENT';
+                    break;
+               case "comment_node_forum_setup_form":
+                    $tmp = var_export($form['comment_body']['und'][0]['#title'],TRUE);
+                    unset($form['subject']);
+                    unset($form['author']['_author']);
+                    $form['comment_body']['und'][0]['#title'] = 'YOUR COMMENT';
+                    break;
                case "user_register_form":
                     //krumo($form['submit']);
                     //$form['captcha']['#description'] = '';
