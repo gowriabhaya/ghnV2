@@ -9,6 +9,7 @@ function ghn_menu_alter(&$items) {
  * Form alter 
  **/
 function ghn_form_alter(&$form,&$form_state,$form_id) {
+         global $user;
          $form['options']['status']['#value'] = 1;
 /*
 $form['body']['und'][0]['format']['guidelines']['#access'] = FALSE;
@@ -18,14 +19,15 @@ $form['body']['und'][0]['format']['help']['#access'] =FALSE;
          switch($form_id) {
                case "user_register_form":
                     //krumo($form['submit']);
-/*
-$tmp = var_export($form['actions']['submit'],TRUE);
-//drupal_set_message($tmp);
-print '<pre>';
-print $tmp;
-print '</pre>';
-*/
-                    $form['captcha']['#description'] = '<strong>CAPTCHA</strong>';
+                    //$form['captcha']['#description'] = '';
+                    $form['t-and-c'] = array(
+                         '#type' =>
+                         'checkbox', 
+                         '#required' => TRUE,
+                         '#weight' => 100,
+                         '#title' => l(t('Accept Terms & Conditions of Use.'),'ghn-page/terms-conditions'),
+
+);
                     $form['actions']['submit']['#value'] = 'JOIN GHN';
                     break;
                case "mailchimp_lists_user_subscribe_form_newletter":
@@ -34,6 +36,23 @@ $form['submit']['#value'] = 'Join';
 unset($form['mailchimp_lists']['mailchimp_newletter']['mergevars']['FNAME']);
 unset($form['mailchimp_lists']['mailchimp_newletter']['mergevars']['LNAME']);
                     break;
+               case "hospital_node_form":
+                    if (!array_key_exists('3',$user->roles)) {
+                       $form['field_hosp_admin_approval']['und']['#disabled'] = TRUE;
+                    }                    
+                    if (is_numeric(arg(1))):
+                       $form['field_hosp_cvd_registry']['und']['#disabled'] = TRUE;
+/*
+$tmp = var_export($form,TRUE);
+//drupal_set_message($tmp);
+$tmp = var_export($user->roles,TRUE);
+drupal_set_message($tmp);
+print '<pre>';
+print $tmp;
+print '</pre>';
+*/
+                      endif;
+                      //array_push($form['#submit'],'ghn_hospital_node_submit');  
                case "medical_mission_node_form":
                       if (is_numeric(arg(1))):
                          $form['field_host_town']['und']['#disabled'] = TRUE;
@@ -115,7 +134,7 @@ $tmp = var_export($form,TRUE);
                       //array_push($form['#submit'],'ghn_resource_submit');
                     break;
                case "user_login":
-                    //array_push($form['#submit'],'ghn_user_submit');
+                    array_push($form['#submit'],'ghn_user_login_submit');
                     break;
                case "user_profile_form":
                     array_push($form['#submit'],'ghn_profile_submit');
@@ -128,6 +147,38 @@ $tmp = var_export($form,TRUE);
                     array_push($form['#submit'],'ghn_affiliation_submit');
                     break;
          }
+}
+/**
+ * redirecting user pages 
+ * making an entry in redirect table for first time user 
+ **/
+function ghn_user_login_submit(&$form,&$form_state) {
+         global $user;
+         $uid = $user->uid;
+// check whether this user has already a redirection
+         $results = db_query('SELECT rid FROM {redirect} WHERE uid = :uid LIMIT 1',array(':uid'=>$uid));
+         $entry = 0;
+         foreach ($results AS $result) {
+// add an entry if there is no redirection in db table by calling redirect_save
+                 if ($result->rid != 0)
+                    $entry = $result->rid;
+         }
+         if ($entry == 0) {
+             $tmp = array();
+             $tmp['rid'] = '';
+             $tmp['uid'] = $uid;
+             $tmp['type'] = 'redirect';
+             $tmp['hash'] = '';
+             $tmp['source'] = 'user/'.$uid;
+             $tmp['source_options'] = array();
+             $tmp['redirect'] = 'dashboard/'.$uid;
+             $tmp['redirect_options'] = array();
+             $tmp['language'] = 'und';
+             $tmp['status_code'] = 0;
+             $tmp['override'] = false;
+             $redirect = (object)$tmp;
+             redirect_save($redirect);
+          }
 }
 /**
  * redirecting node form submission 
@@ -271,10 +322,10 @@ function _ghn_user_dashboard($uid) {
     // get user name
     $name = _ghn_member_name($uid);
     if ($user->uid != $uid) {
-       $ret .= '<h3>You are visiting <br /> Dashboard of '.strtoupper($name).'</h3>';
+       $ret .= '<h2 class="pane-title">You are visiting <br /> Dashboard of <em>'.strtoupper($name).'</h2>';
     }
     else {
-       $ret .= '<h3>Dashboard of '.strtoupper($name).'</h3>';
+       $ret .= '<h2 class="pane-title">Dashboard of <em>'.strtoupper($name).'</em></h2>';
     }
     // get user contact link (only for visitor)
     // get user follow link (only for visitor)
