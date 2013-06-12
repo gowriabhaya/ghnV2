@@ -11,7 +11,7 @@ body{ background: url(../images/bodyBack.jpg) repeat; }
 .not-logged-in .howtouse .text {
      margin:0 5px 15px 24px; font-size:13px; color:#5d5d5d;
 }
-h2.pane-title, h2.pane-title.block-title { font-size:23px; color:#24292d; border-bottom:#e31016 3px solid; display:inline-block; clear:both; padding-right:30px; font-weight:normal; padding-bottom:0px; }
+h2.pane-title, h2.pane-title.block-title { font-size:20px; color:#24292d; border-bottom:#e31016 3px solid; display:inline-block; clear:both; padding-right:20px; font-weight:normal; padding-bottom:0px; margin-bottom:10px;}
 .not-logged-in .video {
     background: #f1f1f1 url(../images/alert-overlay.png) repeat-x; 
 	display: inline-block; 
@@ -293,7 +293,7 @@ div.left-link {
 /*      dashboardLeft  dashboardMid  dashboardRight     */
 .dashboardLeft .profilePic{ background:url(../images/profileThumbBG.png) center top no-repeat; width:121px; height:159px; padding:0; margin:0 0 20px; position:relative; overflow:hidden; }
 .dashboardLeft .profilePic img{ width:115px; height:120px;  margin: 3px auto 10px auto; border-radius:2px 2px 0 0; margin-bottom:6px; display:block;   }
-.dashboardLeft .profilePic, .dashboardLeft .profilePic label{ font-size:12px; text-align:center; color:#7c7c7c;   }
+.dashboardLeft .profilePic, .dashboardLeft .profilePic label{ font-size:12px; text-align:center; color:#7c7c7c; text-transform:capitalize; font-weight:normal;   }
 
 .dashboardLeft .profileMenu{ margin:0; padding:0; background:#f6f6f6; border:#d4d4d4 1px solid; position:relative; top:-20px; width:230px;}
 .dashboardLeft .profileMenu ul.leftMenu{ list-style:none; margin:5px 0; padding:0; }

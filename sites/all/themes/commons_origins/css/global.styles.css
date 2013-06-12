@@ -573,11 +573,14 @@ var {
  */
 #page-title {
   margin: 0 0 10px;
-  font-weight: 300;
+  font-weight: normal;
 }
+/*
 .page-node #page-title {
   margin-bottom: 0;
 }
+*/
+body.node-type-medical-mission .page-node #page-title{ margin-bottom:10px; font-weight:normal; font-size:20px; }
 
 #page-top {
 /*
@@ -2149,15 +2152,17 @@ ul.action-links {
 
 .panel-display {
   min-width: 100%;
-  margin-right: -10px;
+  /*margin-right: -10px;
   margin-left: -10px;
+  */
 }
+.panel-2col-stacked .panel-col-top, .panel-2col-stacked .panel-col-bottom{ width:100%; }
 .panel-display .region {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  padding-right: 10px;
-  padding-left: 10px;
+  padding-right:0px;
+  padding-left:0px;
 }
 
 .commons-pod-comments {
@@ -5157,7 +5162,7 @@ h2.h1, body.page-dashboard .region-three-25-50-25-third h3, body.page-dashboard 
 .block-content footer{ display:none; }
 
 body.not-logged-in div.region-three-25-50-25-third{ display:none; }
-body.not-logged-in div.region-three-25-50-25-second{ width:75%; }
+body.not-logged-in div.region-three-25-50-25-second{ width:73%; margin-left:2%; margin-right:0; }
 
 
 .pcp-percent-bar-wrapper{
@@ -5186,12 +5191,12 @@ body.page-dashboard .region-three-25-50-25-third h2.pane-title.block-title{ marg
 /* Dashboard Center */
 .profileInfo{ width:469px; margin:0 auto; position:relative; margin: 10px auto 20px auto; }
 .profileInfo .profileInfoTop{ width:469px; height:17px; min-height:17px; max-height:17px; background:url(../images/profileInfoTop.png) center bottom no-repeat; margin:0; clear:both;}
-.profileInfo .profileInfoMid{ position:relative; width:469px;  margin:0; background:url(../images/profileInfoMid2.png) -2px 0 repeat-y; padding: 0; clear:both;}
+.profileInfo .profileInfoMid{ position:relative; width:469px;  margin:0; background:url(../images/profileInfoMid2.png) -2px -25px repeat-y; padding: 0; clear:both;}
 .profileInfo .profileInfoBot{ width:469px; height:17px; min-height:17px; max-height:17px; background:url(../images/profileInfoBot.png) center top no-repeat;  margin:0; clear:both;}
 
-.profileInfo .profileInfoMid table{ width:89%; margin:0 0 0 45px; border:none; background:none; }
-.profileInfo .profileInfoMid table td, .profileInfo .profileInfoMid table tr, .profileInfoMid table tbody  { border:none; background:none; }
-.profileInfo .profileInfoMid table td{ padding:10px 0; }
+body.page-dashboard .profileInfoMid table{ width:90%; margin:0 0 0 35px; border:none; background:none; }
+	body.page-dashboard .profileInfoMid table td, .profileInfo .profileInfoMid table tr, .profileInfoMid table tbody  { border:none; background:none; }
+	body.page-dashboard .profileInfoMid table td{ padding:10px; }
 /*
 .profileInfo .profileInfoMid ul{  position:relative; margin:0 10px; padding:20px 0 10px 0; clear:both; font-size:13px; }
 .profileInfo .profileInfoMid ul:after{ margin-bottom:20px; }
@@ -5226,9 +5231,10 @@ form#masquerade-block-1 .container-inline{
 
 form#masquerade-block-1 .container-inline .form-item.form-type-textfield{ width:195px; display:inline; float:left; margin:0; padding:0;  }
 
-form#masquerade-block-1 .container-inline input[type=text]{  width:190px; border:none; background:none; outline:none;  box-shadow:none; float:left; }
+form#masquerade-block-1 .container-inline input[type=text]{  width:190px; border:none; background:none; outline:none;  box-shadow:none; float:left; margin-bottom:0;}
 form#masquerade-block-1 .container-inline input[type=text]:hover, .searchHolder input[type=text]:focus{outline:none;  box-shadow:none }
-form#masquerade-block-1 .container-inline input[type=submit]#edit-submit{ float:right; content:'';  background:url(../images/iconSearch.png) center center no-repeat; background-color:none; display:inline-block; float:right; border:none; border-left:#ccc 1px solid; width:28px; height:30px; cursor:pointer; margin-right:0; color:transparent; text-shadow:none; box-shadow:none; margin-top:0; }
+form#masquerade-block-1 .container-inline input[type=submit]#edit-submit{ float:right; content:'';  background:url(../images/iconSearch.png) center center no-repeat; background-color:none; display:inline-block; float:right; border:none; border-left:#ccc 1px solid; width:28px; height:30px; cursor:pointer; margin-right:0; color:transparent; text-shadow:none; box-shadow:none; margin-top:0; margin:0; }
+.region-three-25-50-25-third .pane-masquerade-masquerade.contextual-links-region li{ float:none; }
 
 
 
@@ -5299,11 +5305,13 @@ form#masquerade-block-1 .container-inline input[type=submit]#edit-submit{ float:
  
  .pane-home-page-slide-show h2.pane-title.block-title{ display:none; }
  .pane-home-page-slide-show .block-inner{ margin:0; padding:0; }
- .view-home-page-slide-show{ width:978px; margin:0 0 10px 0; }
- .views-slideshow-cycle-main-frame{ max-height:250px; min-height:250px; max-width:978px; min-width:978px }
+ .view-home-page-slide-show{ width:968px; margin:0 0 10px 0; box-shadow:0 0 7px rgba(0,0,0,0.2); border-radius:2px; }
+ .views-slideshow-cycle-main-frame{ max-height:250px; min-height:250px; max-width:968px; min-width:968px }
  .views-slideshow-cycle-main-frame .views-slideshow-cycle-main-frame-row-item{ position:relative;  }
- .views-slideshow-cycle-main-frame .views-field-field-slideshow-image, .views-slideshow-cycle-main-frame .views-field-field-slideshow-image img{ width:978px; min-width:978px; height:250px; min-height:250px; }
- .views-slideshow-cycle-main-frame .views-field-field-slideshow-caption{ width:958px; min-width:958px; position:absolute; display:block; z-index:3; padding:10px; left:0; bottom:10px; background:rgba(0,0,0,0.4); color:#fff; text-shadow:0 0 5px rgba(0,0,0,0.6); font-size:20px; font-weight:normal; }
+ .views-slideshow-cycle-main-frame .views-field-field-slideshow-image, .views-slideshow-cycle-main-frame .views-field-field-slideshow-image img{ width:968px; min-width:968px; height:250px; min-height:250px; border-radius:2px; }
+ .views-slideshow-cycle-main-frame .views-field-field-slideshow-caption{ width:300px; min-width:300px; position:absolute; display:block; z-index:3; padding:10px; left:0; bottom:30px; background:rgba(0,0,0,0.4); color:#fff; text-shadow:0 0 5px rgba(0,0,0,0.6); font-size:20px; font-weight:normal; border-radius:0 0 2px 2px; }
+ 
+ .views-slideshow-cycle-main-frame .views-row{ border:none; }
  
  
  .field-name-body table, .field-name-body table tbody, .field-name-body table tr, .field-name-body table td{ background:none; border:none; padding:0; margin:0 10px 10px 0; }
@@ -5360,7 +5368,7 @@ table.forum-table, table.forum-table tr, table.forum-table td, table.forum-table
 th.views-field-title, th.views-field-last-updated{ font-size:12px; font-style:normal; }
 .views-table th, .views-table tr, .views-table td{ background:none; }
 .view-medical-mission .views-field-title{ font-weight:bold; font-style:normal; color:#f86f5c; font-size:12px; }
-
+.views-table h3{ margin:0; }
 .pane-node-comment-form h2.pane-title.block-title{ font-size:18px; }
 
 
@@ -5377,4 +5385,17 @@ body.page-user #tasks{ display:block; }
 .view-id-faq  ul li a{ color:#2783b9; }
 .views-row{ border-bottom:#ccc 1px dotted; }
  
+ 
+ /* div.forum-post */
+ div.forum-post{ border:#999 1px dashed; }
+ .forum-post-info{ border:none; border-bottom:#999 1px dashed; background:none; padding:10px; }
+ .forum-post-info .forum-posted-on{ font-size:11px; font-style:italic }
+ div.forum-post .forum-post-wrapper{ background:none; }
+ div.forum-post .forum-post-footer{ border-top:#999 1px dashed; }
+ div.forum-post .forum-post-panel-sub{ width:20%; margin:10px; }
+ div.forum-post .forum-post-panel-sub .author-pane{ margin:0 auto; }
+ div.forum-post .forum-post-panel-sub .username{ font-weight:bold; display:block; margin-bottom:5px; line-height:18px; }
+ div.forum-post .forum-post-panel-main{ border-left: #ccc 1px dashed; padding:10px; background:none; width:70%; margin:0; float:left; }
+ 
+ body.page-user .user-profile.profile{ background:url(../images/midback2.png) repeat; border:none; border-radius:2px; padding:20px; box-shadow: 0 0 6px rgba(0,0,0,0.2);  } 
  
