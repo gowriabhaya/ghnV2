@@ -211,7 +211,7 @@ div.left-link {
 /* page level elements */
 #page-title {
        font-size: 1.5em !important;
-       font-weight: bold !important;;
+       font-weight: normal !important;;
        color: #000;
 }
 /* profile page */
@@ -498,7 +498,7 @@ div.left-link {
 	display: block;
 	font-size: 0;
 	line-height: 0;
-	/*visibility: hidden;*/
+	visibility: hidden;
 	width: 0;
 	height: 0;
 }
@@ -588,6 +588,10 @@ $("*").filter(function()
 }).remove();
 
 </script>
+
+http://www.youtube.com/watch?v=SH6oCLtoRpU
+
+
 */
 
 

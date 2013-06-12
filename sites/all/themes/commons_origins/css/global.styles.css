@@ -1188,6 +1188,7 @@ h1.node-title a:hover {
   margin-bottom: 25px;
   font-size: 2.2em;
 }
+ h3.comment-title { font-size:15px; }
 #comments h2.comment-title:before {
   content: "";
   background: url('../images/icons-se7682cf316.png') 0 -30px no-repeat;
@@ -1215,7 +1216,7 @@ h1.node-title a:hover {
 
 .comment {
   padding-left: 68px;
-  border-bottom: 1px solid #eeeeee;
+  border-bottom: 1px dashed #999;
   padding-bottom: 20px;
   position: relative;
 }
@@ -5249,9 +5250,14 @@ form#masquerade-block-1 .container-inline input[type=submit]#edit-submit{ float:
 #footer ul.menu{ margin:0; padding:0; }
 #footer ul li.leaf{ background:none; list-style:none; margin-left:0; }
 
-#footer section#block-menu-menu-footer-links, #footer section#block-mailchimp-lists-newletter, #footer section#block-menu-menu-social-links{ width:24%; float:left; margin-right:1%; display:inline-block; }
+#footer section#block-menu-menu-footer-links, #footer section#block-mailchimp-lists-visitor-signup, #footer section#block-menu-menu-social-links{ width:24%; float:left; margin-right:1%; display:inline-block; }
  #footer section#block-menu-menu-social-links{  margin:0; float:right; }
- #footer section#block-mailchimp-lists-newletter{ width:30%; }
+ #footer section#block-mailchimp-lists-visitor-signup, #footer section.block-mailchimp-lists{ width:50%; float:left; display:inline-block }
+ 
+ #footer section#block-mailchimp-lists-visitor-signup .form-type-textfield{ display: inline-block; float: left; width: 45%; }
+ #footer section#block-mailchimp-lists-visitor-signup .form-type-textfield input[type=text]{ margin-bottom:0; }
+ #footer section#block-mailchimp-lists-visitor-signup .form-item.form-type-item .description{ display:inline-block; }
+ 
  
  
  #footer #block-menu-menu-social-links li{ height:35px; }
@@ -5261,7 +5267,7 @@ form#masquerade-block-1 .container-inline input[type=submit]#edit-submit{ float:
 
 #footer #edit-mailchimp-lists-mailchimp-newletter-title{ margin:0;}
 
- #footer section#block-mailchimp-lists-newletter .form-item-mailchimp-lists-mailchimp-newletter-mergevars-EMAIL{ display:inline-block; float:left; width:200px; margin-right:5px; }
+ #footer section#block-mailchimp-lists-visitor-signup .form-item-mailchimp-lists-mailchimp-newletter-mergevars-EMAIL{ display:inline-block; float:left; width:200px; margin-right:5px; }
  input[type=submit], input[type=button]{
  	background: #48babf url(../images/alert-overlay.png) repeat-x; 
 	display: inline-block; 
@@ -5299,7 +5305,7 @@ form#masquerade-block-1 .container-inline input[type=submit]#edit-submit{ float:
    text-transform:uppercase;
    background-color: #48babf; border:#06a79f 1px solid; border-bottom: 1px solid rgba(0,0,0,0.25);
 														box-shadow: inset 0 1px 1px rgba(255,255,255,0.7), inset 0 -6px 12px #47b9be, 0 1px 7px rgba(0,0,0,0.2);
-														color:#fff; margin-top:22px;
+														color:#fff; margin-top:20px;
  }
  input[type=submit]:hover, input[type=button]:hover{background-color: #29a0a5; }
  

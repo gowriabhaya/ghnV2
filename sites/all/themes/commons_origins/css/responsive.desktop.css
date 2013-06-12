@@ -41,7 +41,7 @@ body.front  .panel-col-top.panel-panel section .block-inner{ padding:0; margin-b
 
 body.front .panel-2col-stacked .panel-col-first{ width:580px; }
 body.front .panel-2col-stacked .panel-col-last{ width:400px; float:right; }
-body.front .panel-2col-stacked .panel-col-last .field-items { background:url(../images/joinBack.png) center top no-repeat; border:none; box-shadow:none; padding-bottom:30px; min-height:440px; }
+body.front .panel-2col-stacked .panel-col-last .field-items { background:url(../images/joinBack.png) center top no-repeat; border:none; box-shadow:none; padding:70px 40px 0px 40px; min-height:396px; }
 body.front .user-info-from-cookie-processed { margin:0 25px; padding-top:60px; background:none; border:none; box-shadow:none; font-size:12px;  }
 body.front .panel-2col-stacked .panel-col-last h2.pane-title.block-title{ display:none; }
 body.front .panel-2col-stacked .panel-col-last .block-content .footer{ display:none; }
@@ -52,14 +52,17 @@ body.front .panel-2col-stacked .panel-col-last .block-content .form-item-legal-a
 body.front .panel-2col-stacked .panel-col-last .block-content .form-item-legal-accept a{ color:#0d969b; }
 body.front .panel-2col-stacked .panel-col-last fieldset{ margin:5px 0 10px 0; padding:0; } 
 body.front .panel-2col-stacked .panel-col-last .fieldset-description{ margin:20px 0 0 0; }
-body.front .panel-2col-stacked .panel-col-last .form-item-captcha-response{ margin-top:0; }
+body.front .panel-2col-stacked .panel-col-last .captcha{ margin:20px 0; }
 
-body.front .panel-2col-stacked .panel-col-last .captcha.form-wrapper .fieldset-wrapper img{
+body.front .panel-2col-stacked .panel-col-last .captcha img{
 border: #ccc 1px dashed;
 padding: 5px;
-width: 140px;
-margin: 5px 0;
+width: 160px;
+margin:0;
 }
+
+body.front .panel-2col-stacked .panel-col-last .form-item-t-and-c{ font-size:12px; margin:0 0 20px 0; }
+body.front .panel-2col-stacked .panel-col-last .form-item-t-and-c .option{ font-size:12px; }
 
 body.front .panel-2col-stacked .panel-col-last input[type=text]{
 display: inline-block;
@@ -190,7 +193,7 @@ display: inline-block;
 	.region-three-25-50-25-third .field-name-body li img{ width:42px; height:44px; background:#fff; padding:2px; border-radius:2px; box-shadow:0 0 4px rgba(0,0,0,0.4); }
 
 	/* not-logged-in */
-	/*body.logged-in #main-content-header{ display:none; }*/
+	body.logged-in #main-content-header{ display:none; }
 	body.not-logged-in #main-content-header ul{ margin-top:0; }
 	body.logged-in .panel-col-first .pane-title.block-title{ display:none; }
 	body.not-logged-in.front .panel-col-first h2.pane-title.block-title{ margin-bottom:20px;}
@@ -209,9 +212,32 @@ display: inline-block;
 	body.page-ghn-search .content-inner #main-content .views-exposed-widgets .views-exposed-widget label{ color:#333; display:block; font-weight:bold; }
 	body.page-ghn-search .content-inner #main-content .views-exposed-widgets .views-widget{ float:none; }
 	
+	body.logged-in .panel-col-bottom.panel-panel{ display:none; }
+	
+	#edit-field-corp-phone-und-0 select{ margin-right:5px;}
 	
 	
 	/* Hidden Fields  */
 	.hide-class, .redirect-list, #edit-comment-body-und-0-format{ display:none; }
+	
+	/* Light Box */
+	.lightbox2-alt-layout-data #bottomNavClose, .lightbox2-alt-layout #bottomNavClose{ margin-top:0; }
+	#imageData #bottomNav{ margin-bottom:46px; height:43px }
+	
+	user-profile.profile h3{ margin:0 0 10px 0; }
+	
+	.user-profile.profile section{width:350px;  }
+	.user-profile.profile dt{ margin-bottom:0; }
+	
+	/* calender 
+	.view-id-calendar{ background:url(../images/midback2.png) repeat; border:none; border-radius:2px; padding:0; box-shadow: 0 0 6px rgba(0,0,0,0.2); } */
+	body.page-calendar .content-inner{ margin-left:250px; padding:20px; background:url(../images/midback2.png) repeat; border:none; border-radius:2px; padding:0; box-shadow: 0 0 6px rgba(0,0,0,0.2);  }
+	body.page-calendar .content-inner #content{ padding:20px; }
+	body.page-calendar .view .date-nav-wrapper .date-heading{ text-align:left; }
+	body.page-calendar .view .date-nav-wrapper .date-prev,
+	body.page-calendar .view .date-nav-wrapper .date-next{ background:none; padding:0; }
+	body.page-calendar .view .date-nav-wrapper .date-prev{ right:63px; }
+	body.page-calendar .view .date-nav-wrapper .date-prev a,
+	body.page-calendar .view .date-nav-wrapper .date-next a{ line-height:24px; height:24px; font-size:11px; color:#fff; padding:3px 10px; }
 	
 	
