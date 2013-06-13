@@ -5,7 +5,7 @@ html{ background:url(../images/bodyTopLine.jpg) 0 0 repeat-x; height:100%; min-h
 body{ background: url(../images/bodyBack.jpg) repeat; }
 
 /* landing page */
-.not-logged-in .howtouse h2 {
+.not-logged-in .howtouse h2, .not-logged-in .howtouse a {
     background:url(../images/bullets1.png) 0 5px no-repeat; padding-left:25px; font-size:13px; color:#5d5d5d; margin:0 0 5px 0 ; text-decoration:underline; font-size:14px; line-height:20px; text-transform:capitalize; font-weight:bold;
 }
 .not-logged-in .howtouse .text {
@@ -295,7 +295,7 @@ div.left-link {
 .dashboardLeft .profilePic img{ width:115px; height:120px;  margin: 3px auto 10px auto; border-radius:2px 2px 0 0; margin-bottom:6px; display:block;   }
 .dashboardLeft .profilePic, .dashboardLeft .profilePic label{ font-size:12px; text-align:center; color:#7c7c7c; text-transform:capitalize; font-weight:normal;   }
 
-.dashboardLeft .profileMenu{ margin:0; padding:0; background:#f6f6f6; border:#d4d4d4 1px solid; position:relative; top:-20px; width:230px;}
+.dashboardLeft .profileMenu{ margin:0; padding:0; background:#f6f6f6; border:#d4d4d4 1px solid; position:relative; top:0; width:230px;}
 .dashboardLeft .profileMenu ul.leftMenu{ list-style:none; margin:5px 0; padding:0; }
 .dashboardLeft .profileMenu ul.leftMenu li{ text-shadow:0 1px 1px #fff; min-height:45px; vertical-align:middle; font-size:13px; margin:0; padding:0; }
 .dashboardLeft .profileMenu ul.leftMenu li a{ display:block; color:#7c7c7c; text-decoration:none; padding-left:60px; vertical-align:middle; line-height:45px; border-top:#fff 1px solid; border-bottom:#dedede 1px solid; }
@@ -326,6 +326,12 @@ div.left-link {
 .dashboardLeft .profileMenu ul.leftMenu ul li.last{ background: url(../images/iconsProfile-Submenu.png) -344px -18px no-repeat;}
 .dashboardLeft .profileMenu ul.leftMenu ul li a{ border:none; height: 35px; line-height: 35px; padding-left: 49px; font-size:12px;}
 .dashboardLeft .profileMenu ul.leftMenu ul li.active a{ color:#24292d; font-weight:bold;}
+
+.dashboardLeft .profileMenu ul.leftMenu li .YourProfile, .dashboardLeft .profileMenu ul.leftMenu li .YourProfile:hover,
+.dashboardLeft .profileMenu ul.leftMenu li .PostNeed, .dashboardLeft .profileMenu ul.leftMenu li .PostNeed:hover,
+.dashboardLeft .profileMenu ul.leftMenu li .CaseStudies, .dashboardLeft .profileMenu ul.leftMenu li .CaseStudies:hover{ cursor:default; text-decoration:none; color:#7c7c7c; }
+
+
 
 
 /* resets */

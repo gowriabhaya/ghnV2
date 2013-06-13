@@ -5138,7 +5138,7 @@ pre,
 table,
 address,
 fieldset {
-	margin-bottom: 20px;
+	margin-bottom: 20px; font-weight:normal;
 }
 
 .h1, body.page-dashboard .region-three-25-50-25-third h3,  body.page-dashboard .region-three-25-50-25-third h2.pane-title.block-title{  font-size:26px; color:#24292d; border-bottom:#e31016 3px solid;  display:inline-block; clear:both; padding-right:30px; font-weight:normal;  }
@@ -5255,8 +5255,10 @@ form#masquerade-block-1 .container-inline input[type=submit]#edit-submit{ float:
  #footer section#block-mailchimp-lists-visitor-signup, #footer section.block-mailchimp-lists{ width:50%; float:left; display:inline-block }
  
  #footer section#block-mailchimp-lists-visitor-signup .form-type-textfield{ display: inline-block; float: left; width: 45%; }
- #footer section#block-mailchimp-lists-visitor-signup .form-type-textfield input[type=text]{ margin-bottom:0; }
+ #footer section#block-mailchimp-lists-visitor-signup .form-type-textfield input[type=text]{ margin-bottom:0; padding:3px 5px; line-height:26px; height:26px; width:95% }
  #footer section#block-mailchimp-lists-visitor-signup .form-item.form-type-item .description{ display:inline-block; }
+ #footer section#block-mailchimp-lists-visitor-signup input[type=submit]{ height:26px; line-height:25px; margin-top:21px; }
+
  
  
  
@@ -5382,6 +5384,9 @@ body.not-logged-in #tasks{ display:none; }
 body.page-user-register #tasks,
 body.page-user-password #tasks,
 body.page-user #tasks{ display:block; }
+
+
+
 
 /* pane-faq */
 
