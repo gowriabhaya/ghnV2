@@ -811,7 +811,6 @@ print '</pre>';
                                     $rropt = explode(';',$ropt);
                                     if (!empty($rropt[2])&&($nopt == $rropt[2])) {
                                        $ret[] = $index.';'.$rnid.';'.$rropt[0].';'.$rropt[1].';Matched';
-//print (" HELLO ".$rropt[2].' '.$nopt.' '.$index);
                                     }
                                     else {
                                          $ret[] = $index.';'.$rnid.';'.$rropt[0].';'.$rropt[1].';No match';
@@ -936,16 +935,18 @@ $tmp = var_export($fields,TRUE);
                    $pic = theme('image_style',array('path' => $user->picture->uri, 'style_name' => 'thumbnail'));
                 else
                    $pic = theme('image',array('path' => $default_uri, 'style_name' => 'thumbnail'));
+                $pic = '<a href="'.$base_url.'/dashboard/'.$fields[2].'">'.$pic.'</a>';
 // user name
                 $name = _ghn_member_name($fields[2]);
+                $name_link = l(strtolower($name),$base_url.'/dashboard/'.$fields[2]);
 // the matching need/resource posting
-                $title = l($fields[3],$base_url.'/node/'.$fields[1]);
+                $title = l(strtolower($fields[3]),$base_url.'/node/'.$fields[1]);
 // contact link
                 $links = '<div class="contact-link">'.l('Contact ',$base_url.'/user/'.$fields[2].'/contact',array('attributes'=>array('class'=>'link'))).'</div><br />';
 // follow link
                 $links .= flag_create_link('follow',$fields[2]);
                 $row[] =$pic;
-                $ret = '<div class="match-name">'.$name.'</div><br />';
+                $ret = '<div class="match-name">'.$name_link.'</div><br />';
                 $row[] = $ret;
                 $ret = '<div class="match-title">'.$title.'</div><br />';
                 $row[] = $ret;
@@ -956,7 +957,7 @@ $tmp = var_export($fields,TRUE);
              endif;
      }
      $node = node_load($nid);
-     $ret = "<h3>Match for your ".ucfirst($type)." posting : ".$node->title.'</h3>';
+     $ret = "<h3>Match for your ".ucfirst($type)." posting : <br /><em>".$node->title.'</em></h3>';
      $ret .= theme('table',array('rows'=>$rows));
      return $ret;
 }

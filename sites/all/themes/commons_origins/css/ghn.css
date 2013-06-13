@@ -265,6 +265,10 @@ div.left-link {
       padding: 5px;
       background-color:#000000;
 }
+.match-name a,
+.match-title a {
+      text-transform: capitalize;
+}
 .match-links a {
       font-weight: 500;
       color: #ffffff;
@@ -278,12 +282,6 @@ div.left-link {
       font-weight: 500;
       color: #ffffff;
 }
-
-
-
-
-
-
 /* New -------------------------------------------------------------------------------------------------------------------*/
 
 
