@@ -90,7 +90,7 @@ print '</pre>';
 /*
                       if (is_numeric(arg(1))):
                          $form['field_host_town']['und']['#disabled'] = TRUE;
-                         $form['field_host_country']['und']['#disabled'] = TRUE;
+                         //$form['field_host_country']['und']['#disabled'] = TRUE;
                          $form['field_mm_type_of_mission']['und']['#disabled'] = TRUE;
                          $form['field_clinical_services_choices']['und']['#disabled'] = TRUE;
                          $form['field_patient_type']['und']['#disabled'] = TRUE;
@@ -100,7 +100,7 @@ print '</pre>';
                case "need_post_node_form":
                       if (is_numeric(arg(1))):
                          $form['field_post_service']['und']['#disabled'] = TRUE;
-                         $form['field_post_country']['und']['#disabled'] = TRUE;
+                         //$form['field_post_country']['und']['#disabled'] = TRUE;
                          $form['field_patient_type']['und']['#disabled'] = TRUE;
                          $form['field_clinical_services_choices']['und']['#disabled'] = TRUE;
                          $form['field_equipment_choices']['und']['#disabled'] = TRUE;
@@ -115,7 +115,6 @@ print '</pre>';
                          $form['field_pharmacist_choices']['und']['#disabled'] = TRUE;
                          $form['field_perfusionists_choices']['und']['#disabled'] = TRUE;
                          $form['field_non_medical_choices']['und']['#disabled'] = TRUE;
-                         $form['field_post_country']['und']['#disabled'] = TRUE;
                       endif;
 $tmp = var_export($form,TRUE);
 //drupal_set_message($existingnode);
@@ -148,7 +147,7 @@ $tmp = var_export($form,TRUE);
                                  $default[$option] = TRUE;
                          }
                          $form['field_post_service']['und']['#disabled'] = TRUE;
-                         $form['field_post_country']['und']['#disabled'] = TRUE;
+                         //$form['field_post_country']['und']['#disabled'] = TRUE;
                          $form['field_patient_type']['und']['#disabled'] = TRUE;
                          $form['field_clinical_services_choices']['und']['#disabled'] = TRUE;
                          $form['field_equipment_choices']['und']['#disabled'] = TRUE;
