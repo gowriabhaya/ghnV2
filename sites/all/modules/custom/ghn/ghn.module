@@ -357,10 +357,10 @@ function _ghn_user_dashboard($uid) {
     // get user name
     $name = _ghn_member_name($uid);
     if ($user->uid != $uid) {
-       $ret .= '<h2 class="pane-title">You are visiting <br /> Dashboard of <em>'.strtoupper($name).'</h2>';
+       $ret .= '<h2 class="h14">You are visiting <br /> Dashboard of <em>'.strtoupper($name).'</h2>';
     }
     else {
-       $ret .= '<h2 class="pane-title">Dashboard of <em>'.strtoupper($name).'</em></h2>';
+       $ret .= '<h2 class="h14">Dashboard of <em>'.strtoupper($name).'</em></h2>';
     }
     // get user contact link (only for visitor)
     // get user follow link (only for visitor)
@@ -495,7 +495,13 @@ function _ghn_user_dashboard($uid) {
     $row[] = '<div class="label">Upcoming Conferences: </div>';
     $row[] = '<div class="dashboard-count"> '.l("View List",$base_url."/conference-list").'</div>';
     $rows[] = array('data' => $row,'class'=>array('dash-row'));
+    $ret .= '<div class="profileInfo">';
+    $ret .= '<div class="profileInfoTop"></div>';
+    $ret .= '<div class="profileInfoMid"><br>';
     $ret .= theme('table',array('rows'=>$rows));
+    $ret .= '<br></div>';
+    $ret .= '<div class="profileInfoBot"></div>';
+    $ret .= '</div>';
     return $ret;
 }
 /** 
