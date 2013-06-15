@@ -194,9 +194,6 @@ function ghn_user_login_submit(&$form,&$form_state) {
          $entry = 0;
          foreach ($results AS $result) {
 // add an entry if there is no redirection in db table by calling redirect_save
-drupal_set_message(" rid in user_login_submit ".$result->uid);
-$tmp = var_export($result,TRUE);
-drupal_set_message(" result in user_login_submit ".$tmp);
                  if ($result->rid != 0)
                     $entry = $result->rid;
          }
@@ -1072,4 +1069,47 @@ function _ghn_status_message($msg,$submsg) {
                $newmsg = $msg;
           }
           return $newmsg;
+}
+/**
+ * Cron to set up redirect user/* to dashboard/* in redirect table
+ **/
+function ghn_cron() {
+         $crontime = time();
+         $crontime = $crontime - 172800;
+//drupal_set_message(" cronttime ".$crontime);
+// get all uids
+         $uids = array();
+         $results = db_query("SELECT uid FROM {users} WHERE created >= :crontime",array(':crontime'=>$crontime));
+         foreach ($results AS $result) {
+                 $uids[] = $result->uid;
+         }
+         foreach ($uids AS $index => $uid) {
+// check whether this user has already a redirection
+                 $results = db_query('SELECT rid FROM {redirect} WHERE uid = :uid LIMIT 1',array(':uid'=>$uid));
+                 $entry = 0;
+                 foreach ($results AS $result) {
+// add an entry if there is no redirection in db table by calling redirect_save
+//drupal_set_message(" rid in user_login_submit ".$result->uid);
+//$tmp = var_export($result,TRUE);
+//drupal_set_message(" result in user_login_submit ".$tmp);
+                         if ($result->rid != 0)
+                            $entry = $result->rid;
+                   }
+                   if ($entry == 0) {
+                      $tmp = array();
+                      $tmp['rid'] = '';
+                      $tmp['uid'] = $uid;
+                      $tmp['type'] = 'redirect';
+                      $tmp['hash'] = '';
+                      $tmp['source'] = 'user/'.$uid;
+                      $tmp['source_options'] = array();
+                      $tmp['redirect'] = 'dashboard/'.$uid;
+                      $tmp['redirect_options'] = array();
+                      $tmp['language'] = 'und';
+                      $tmp['status_code'] = 0;
+                      $tmp['override'] = false;
+                      $redirect = (object)$tmp;
+                      redirect_save($redirect);
+                   }      
+           }
 }
