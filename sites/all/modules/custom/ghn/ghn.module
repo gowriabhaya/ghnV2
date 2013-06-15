@@ -213,6 +213,7 @@ function ghn_user_login_submit(&$form,&$form_state) {
              $redirect = (object)$tmp;
              redirect_save($redirect);
           }
+          $form_state['redirect'] = 'dashboard/'.$uid;
 }
 /**
  * redirecting node form submission 
