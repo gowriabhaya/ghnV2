@@ -194,6 +194,9 @@ function ghn_user_login_submit(&$form,&$form_state) {
          $entry = 0;
          foreach ($results AS $result) {
 // add an entry if there is no redirection in db table by calling redirect_save
+drupal_set_message(" rid in user_login_submit ".$result->uid);
+$tmp = var_export($result,TRUE);
+drupal_set_message(" result in user_login_submit ".$tmp);
                  if ($result->rid != 0)
                     $entry = $result->rid;
          }
