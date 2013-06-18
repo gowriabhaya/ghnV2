@@ -93,16 +93,10 @@
   <header<?php print $header_attributes; ?>>
     <?php
            global $user,$base_url;
-           if ($user->uid == 0) {
             // id, direction, depth should have the values you want them to have.
-              $menu = theme('nice_menus', array('id' => 0, 'direction' => 'down', 'depth' => 1, 'menu_name' => 'main-menu', 'menu' => NULL));
-            }
-            else {
-                 $menu = theme('nice_menus', array('id' => 0, 'direction' => 'down', 'depth' => 1, 'menu_name' => 'menu-logged-in-main-menu', 'menu' => NULL));
-// nasty fix to have the dashboard to point to logged in user's dashboard
-                 $tmp = $menu['content'];
-                 $menu['content'] = str_replace('/user','/dashboard/'.$user->uid,$tmp);
-            }
+            $menu = theme('nice_menus', array('id' => 0, 'direction' => 'down', 'depth' => 1, 'menu_name' => 'main-menu', 'menu' => NULL));
+            $tmp = $menu['content'];
+            $menu['content'] = str_replace('/user','/dashboard/'.$user->uid,$tmp);
             print $menu['content'];
     ?>
     <?php if ($site_logo || $site_name || $site_slogan): ?>
