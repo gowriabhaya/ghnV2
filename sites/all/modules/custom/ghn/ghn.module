@@ -17,6 +17,9 @@ $form['body']['und'][0]['format']['help']['#access'] =FALSE;
 */
 //drupal_set_message($form_id);
          switch($form_id) {
+               case "panel_application_node_form":
+                    $form['actions']['submit']['#value'] = 'Submit for Review';
+                    break;
                case "contact_personal_form":
                     //unset($form['name']);
                     $form['mail']['#required'] = false;
@@ -347,10 +350,10 @@ function _ghn_user_dashboard($uid) {
     // get user name
     $name = _ghn_member_name($uid);
     if ($user->uid != $uid) {
-       $ret .= '<h2 class="h14">You are visiting <br /> Dashboard of <em>'.strtoupper($name).'</h2>';
+       $ret .= '<h2 class="h14">You are viewing <br /> Profile of <em>'.strtoupper($name).'</h2>';
     }
     else {
-       $ret .= '<h2 class="h14">Dashboard of <em>'.strtoupper($name).'</em></h2>';
+       $ret .= '<h2 class="h14">Profile of <em>'.strtoupper($name).'</em></h2>';
     }
     // get user contact link (only for visitor)
     // get user follow link (only for visitor)
