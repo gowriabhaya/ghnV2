@@ -291,4 +291,5 @@ h1,h2,h3,h4,h5{ text-transform:capitalize; font-weight:normal; }
 	body.page-calendar .view .date-nav-wrapper .date-prev a,
 	body.page-calendar .view .date-nav-wrapper .date-next a{ line-height:24px; height:24px; font-size:11px; color:#fff; padding:3px 10px; }
 	
+	.video1{ height:167px; width:298px; padding:1px; background:#fff; margin-bottom:15px; }
 	
