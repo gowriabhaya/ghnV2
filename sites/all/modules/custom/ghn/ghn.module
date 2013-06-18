@@ -86,17 +86,6 @@ print '</pre>';
 */
                       endif;
                       //array_push($form['#submit'],'ghn_hospital_node_submit');  
-               case "medical_mission_node_form":
-/*
-                      if (is_numeric(arg(1))):
-                         $form['field_host_town']['und']['#disabled'] = TRUE;
-                         //$form['field_host_country']['und']['#disabled'] = TRUE;
-                         $form['field_mm_type_of_mission']['und']['#disabled'] = TRUE;
-                         $form['field_clinical_services_choices']['und']['#disabled'] = TRUE;
-                         $form['field_patient_type']['und']['#disabled'] = TRUE;
-                      endif;
-*/
-                      //array_push($form['#submit'],'ghn_node_submit');  
                case "need_post_node_form":
                       if (is_numeric(arg(1))):
                          $form['field_post_service']['und']['#disabled'] = TRUE;
@@ -505,7 +494,7 @@ function _ghn_user_dashboard($uid) {
     return $ret;
 }
 /** 
- * function to get all matches for a given uid
+ * function to get all medical missions for a given country 
  **/
 function _ghn_current_medical_missions($country = NULL) {
       $ret = 0;
@@ -590,7 +579,7 @@ function ghn_followed($uid) {
           }
     if (count($followeds) > 0) {
       $output .= '<ul>';
-      $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
+      $default_uri = $base_url.'/'.$theme_path.'/images/default-user.jpg';
       foreach ($followeds as $followed) {
           $hover = '';
           $name = '';
