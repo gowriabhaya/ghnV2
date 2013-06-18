@@ -619,7 +619,7 @@ function ghn_followers($uid) {
           }
     if (count($followers) > 0) {
        $output .= '<ul>';
-       $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
+       $default_uri = $base_url.'/'.$theme_path.'/images/default-user.jpg';
        foreach ($followers as $follower) {
                $hover = '';
                $name = '';
@@ -651,7 +651,7 @@ function ghn_latest_visitors($uid) {
     $visitors = user_visits_latest($uid, 4);
     if (count($visitors) > 0) {
       $output .= '<ul>';
-      $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
+      $default_uri = $base_url.'/'.$theme_path.'/images/default-user.jpg';
       foreach ($visitors as $visitor) {
 // user_visits_latest does not check user status, I need to filter it here UMM
               $status = 0;
@@ -920,11 +920,12 @@ $tmp = var_export($fields,TRUE);
              if ($fields[4] == "Matched"):
 // display user picture
                 $user = user_load($fields[2]);
-                $default_uri = $base_url.'/'.$theme_path.'/images/picture-default.jpg';
+                $default_uri = $base_url.'/'.$theme_path.'/images/default_user.jpg';
                 if ($user->picture)
                    $pic = theme('image_style',array('path' => $user->picture->uri, 'style_name' => 'thumbnail'));
-                else
+                else {
                    $pic = theme('image',array('path' => $default_uri, 'style_name' => 'thumbnail'));
+                }
                 $pic = '<a href="'.$base_url.'/dashboard/'.$fields[2].'">'.$pic.'</a>';
 // user name
                 $name = _ghn_member_name($fields[2]);
