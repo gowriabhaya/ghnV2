@@ -597,5 +597,9 @@ http://www.youtube.com/watch?v=SH6oCLtoRpU
 
 
 */
-
+/* contact form */
+.contact-form .form-item-name,
+.contact-form .form-item-mail {
+       display: none;
+}
 

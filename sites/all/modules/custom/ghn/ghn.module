@@ -18,10 +18,11 @@ $form['body']['und'][0]['format']['help']['#access'] =FALSE;
 //drupal_set_message($form_id);
          switch($form_id) {
                case "contact_personal_form":
-                    unset($form['name']);
-                    unset($form['mail']);
+                    //unset($form['name']);
+                    $form['mail']['#required'] = false;
+                    //unset($form['mail']);
 /*
-$tmp = var_export($form,TRUE);
+$tmp = var_export($form['mail'],TRUE);
 print '<pre>';
 print $tmp;
 print '</pre>';
@@ -920,7 +921,7 @@ $tmp = var_export($fields,TRUE);
              if ($fields[4] == "Matched"):
 // display user picture
                 $user = user_load($fields[2]);
-                $default_uri = $base_url.'/'.$theme_path.'/images/default_user.jpg';
+                $default_uri = $base_url.'/'.$theme_path.'/images/default-user.jpg';
                 if ($user->picture)
                    $pic = theme('image_style',array('path' => $user->picture->uri, 'style_name' => 'thumbnail'));
                 else {
