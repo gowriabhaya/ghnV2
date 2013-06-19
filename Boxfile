@@ -1,5 +1,6 @@
 web1: #component type & number
   name: drupal            #component settings
+  php_upload_max_filesize: "512M"
   shared_writable_dirs:
     - sites/default/files
   php_extensions:
@@ -21,5 +22,5 @@ web1: #component type & number
     # move pagoda config file
     - "mv pagoda/settings.php sites/default/settings.php"
     
-db1: #component type & number 
+  db1: #component type & number 
   name: drupal            #component settings
