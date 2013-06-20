@@ -89,6 +89,11 @@
  */
 ?>
 <div class="header-color-row-one">
+<!-- UserVoice JavaScript SDK (only needed once on a page) -->
+<script>(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/GnONaCs9HM816zmfKjLtA.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})()</script>
+
+<!-- A link to launch the Classic Widget -->
+<a class="feedback-link" href="javascript:void(0)" data-uv-lightbox="classic_widget" data-uv-mode="feedback" data-uv-primary-color="#008c7e" data-uv-link-color="#007dbf" data-uv-forum-id="208879">Share Your Thougts &amp; Ideas</a>
 
   <header<?php print $header_attributes; ?>>
     <?php

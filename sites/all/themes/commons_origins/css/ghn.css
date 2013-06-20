@@ -602,4 +602,11 @@ http://www.youtube.com/watch?v=SH6oCLtoRpU
 .contact-form .form-item-mail {
        display: none;
 }
-
+/* feedback link */
+a.feedback-link {
+       width: 100%;
+       float: right;
+       text-align: right !important;
+       font-size: 110%;
+       padding-right: 10px;
+}
