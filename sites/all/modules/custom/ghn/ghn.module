@@ -350,10 +350,15 @@ function _ghn_user_dashboard($uid) {
     // get user name
     $name = _ghn_member_name($uid);
     if ($user->uid != $uid) {
-       $ret .= '<h2 class="h14">You are viewing <br /> Profile of <em>'.strtoupper($name).'</h2>';
+       $account = user_load($uid);
+       if ($account->picture)
+          $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'activity_avatar'));
+       else
+          $pic = theme('image',array('path' => $default_uri, 'style_name' => 'activity_avatar'));
+       $ret .= '<div class="h14">You are viewing <br /> Profile of <em>'.strtoupper($name).' '.$pic.'</div>';
     }
     else {
-       $ret .= '<h2 class="h14">Profile of <em>'.strtoupper($name).'</em></h2>';
+       $ret .= '<div class="h14">Profile of <em>'.strtoupper($name).'</em></div>';
     }
     // get user contact link (only for visitor)
     // get user follow link (only for visitor)
