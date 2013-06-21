@@ -3,7 +3,6 @@ sites/*/files/*.jpg
 sites/*/files/*.png
 sites/*/files/*.JPG
 sites/*/files/field
-sites/*/files/styles
 sites/*/files/ctool
 sites/*/files/custom_search
 sites/*/private
