@@ -99,7 +99,7 @@
     <?php
            global $user,$base_url;
             // id, direction, depth should have the values you want them to have.
-            $menu = theme('nice_menus', array('id' => 0, 'direction' => 'down', 'depth' => 1, 'menu_name' => 'main-menu', 'menu' => NULL));
+            $menu = theme('nice_menus', array('id' => 0, 'direction' => 'down', 'depth' => 3, 'menu_name' => 'main-menu', 'menu' => NULL));
             $tmp = $menu['content'];
             $menu['content'] = str_replace('/user','/dashboard/'.$user->uid,$tmp);
             print $menu['content'];

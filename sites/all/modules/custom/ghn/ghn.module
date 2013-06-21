@@ -343,7 +343,7 @@ function _profile2_affiliations_form() {
  **/
 function _ghn_user_dashboard($uid) {
     $ret = '';
-    global $base_url,$user;
+    global $base_url,$user,$theme_path;
     $row = array();
     $rows = array(); 
     // get Affiliations 
@@ -353,8 +353,10 @@ function _ghn_user_dashboard($uid) {
        $account = user_load($uid);
        if ($account->picture)
           $pic = theme('image_style',array('path' => $account->picture->uri, 'style_name' => 'activity_avatar'));
-       else
+       else {
+          $default_uri = $base_url.'/'.$theme_path.'/images/default-user.jpg';
           $pic = theme('image',array('path' => $default_uri, 'style_name' => 'activity_avatar'));
+       }
        $ret .= '<div class="h14">You are viewing <br /> Profile of <em>'.strtoupper($name).' '.$pic.'</div>';
     }
     else {

@@ -23,6 +23,7 @@
 /*
  * Smartphone sizes and down
  */
+ /*
 @media only screen and (max-width: 480px) {
   body.toolbar {
     padding-top: 0 !important;
@@ -39,6 +40,7 @@
    * "Float Region blocks" is an extension for floating blocks in regions, see
    * your themes appearance settings, under the Extensions tab.
    */
+   /*
   .region[class*="float-blocks"] .block {
     float: none;
     width: 100%;
@@ -77,7 +79,7 @@
     height: 1px;
     overflow: hidden;
     clip: rect(1px 1px 1px 1px);
-    /* IE6, IE7 */
+   
     clip: rect(1px, 1px, 1px, 1px);
   }
 
@@ -115,6 +117,7 @@
 /*
  * Tablet sizes and down
  */
+  /*
 @media only screen and (max-width: 768px) {
   .quicktabs-style-commons-pills ul.quicktabs-tabs li a {
     font: 0/30px a;
@@ -135,6 +138,7 @@
 /*
  * Tablet sizes and up
  */
+  /*
 @media only screen and (min-width: 768px) {
   body.front.not-logged-in #content {
   }
@@ -155,6 +159,7 @@
  * Desktops/laptops and up
  */
 /* @media only screen and (min-width: 1025px) {} */
+ /*
 @media only screen and (max-width: 935px) {
   #name-and-slogan {
     display: none;
@@ -198,8 +203,11 @@
     display: none;
   }
 }
+/*/
+ /*
 @media only screen and (max-width: 430px) {
   #name-and-slogan {
     display: none;
   }
 }
+*/
