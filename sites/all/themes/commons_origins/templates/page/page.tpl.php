@@ -101,7 +101,7 @@
             // id, direction, depth should have the values you want them to have.
             $menu = theme('nice_menus', array('id' => 0, 'direction' => 'down', 'depth' => 3, 'menu_name' => 'main-menu', 'menu' => NULL));
             $tmp = $menu['content'];
-            $menu['content'] = str_replace('/user','/dashboard/'.$user->uid,$tmp);
+            $menu['content'] = str_replace('"/"','/dashboard/'.$user->uid,$tmp);
             print $menu['content'];
     ?>
     <?php if ($site_logo || $site_name || $site_slogan): ?>
