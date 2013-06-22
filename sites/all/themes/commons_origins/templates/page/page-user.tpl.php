@@ -88,6 +88,12 @@
  * @see adaptivetheme_process_page()
  */
 ?>
+<!--[if lt IE 9]> 
+    <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;'> 
+        <a href="http://www.microsoft.com/india/windows/ie/IE9.aspx? ocid=ie6_countdown_bannercode" TARGET="_blank"> 
+        <img src="http://storage.ie6countdown.com/assets/100/images/banners/warning_bar_0000_us.jpg" border="0" height="42" width="820" 
+    alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today." /></a></div> 
+ <![endif]-->
 <div class="header-color-row-one">
 
   <header<?php print $header_attributes; ?>>

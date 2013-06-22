@@ -5329,9 +5329,9 @@ form#masquerade-block-1 .container-inline input[type=submit]#edit-submit{ float:
  .pane-home-page-slide-show h2.pane-title.block-title{ display:none; }
  .pane-home-page-slide-show .block-inner{ margin:0; padding:0; }
  .view-home-page-slide-show{ width:968px; margin:0 0 10px 0; box-shadow:0 0 7px rgba(0,0,0,0.2); border-radius:2px; }
- .views-slideshow-cycle-main-frame{ max-height:250px; min-height:250px; max-width:968px; min-width:968px }
+ .views-slideshow-cycle-main-frame{ max-height:350px; min-height:350px; max-width:968px; min-width:968px }
  .views-slideshow-cycle-main-frame .views-slideshow-cycle-main-frame-row-item{ position:relative;  }
- .views-slideshow-cycle-main-frame .views-field-field-slideshow-image, .views-slideshow-cycle-main-frame .views-field-field-slideshow-image img{ width:968px; min-width:968px; height:250px; min-height:250px; border-radius:2px; }
+ .views-slideshow-cycle-main-frame .views-field-field-slideshow-image, .views-slideshow-cycle-main-frame .views-field-field-slideshow-image img{ width:968px; min-width:968px; height:250px; min-height:350px; height:350px; border-radius:2px; }
  .views-slideshow-cycle-main-frame .views-field-field-slideshow-caption{ width:300px; min-width:300px; position:absolute; display:block; z-index:3; padding:10px; left:0; bottom:30px; background:rgba(0,0,0,0.4); color:#fff; text-shadow:0 0 5px rgba(0,0,0,0.6); font-size:20px; font-weight:normal; border-radius:0 0 2px 2px; }
  
  .views-slideshow-cycle-main-frame .views-row{ border:none; }
@@ -5430,3 +5430,6 @@ body.page-user #tasks{ display:block; }
  .view-calendar .calendar.monthview a.conference_announcement{ color:#fff; }
  .view-calendar .calendar.monthview a.medical_mission{ color:#FF0;}
  
+ 
+.feedback-link{ position:absolute; left:0; top: 40px; background: #FDF8B7; box-shadow:2px 2px 3px #cccc ; padding: 4px 6px; color: #333; text-decoration: none; border-right: 4px solid #FF7979; z-index: 2;}
+ .feedback-link:hover{ border:none; }

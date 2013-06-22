@@ -6,10 +6,12 @@ body{ background: url(../images/bodyBack.jpg) repeat; width:100%; min-width:988p
 
 /* landing page */
 .not-logged-in .howtouse h2, .not-logged-in .howtouse a {
-    background:url(../images/bullets1.png) 0 5px no-repeat; padding-left:25px; font-size:13px; color:#5d5d5d; margin:0 0 5px 0 ; text-decoration:underline; font-size:14px; line-height:20px; text-transform:capitalize; font-weight:bold;
+    background:url(../images/bullets1.png) 0 5px no-repeat; padding-left:25px; font-size:13px; color:#5d5d5d; margin:0 0 5px 0 ; text-decoration:underline; 
+    font-size: 12px; line-height:20px; text-transform:capitalize; font-weight:bold;
 }
 .not-logged-in .howtouse .text {
-     margin:0 5px 15px 24px; font-size:13px; color:#5d5d5d;
+     margin: 0 0 10px 24px; 
+     font-size: 12px; color:#5d5d5d;
 }
 h2.pane-title, h2.pane-title.block-title { font-size:20px; color:#24292d; border-bottom:#e31016 3px solid; display:inline-block; clear:both; padding-right:20px; font-weight:normal; padding-bottom:0px; margin-bottom:10px;}
 .not-logged-in .video {
@@ -65,8 +67,8 @@ h2.pane-title, h2.pane-title.block-title { font-size:20px; color:#24292d; border
 /* nicemenu Custom CSS */
 #nice-menu-0 li{ background:url(../images/menuBack.png) 0 0 repeat-x; border:none;  border-top:#d4d4d4 1px solid; border-bottom:#d4d4d4 1px solid; height:38px; line-height:38px; font-size:13px; font-weight:bold; float:left; margin:0; padding:0;	}
 
-#nice-menu-0 li a{ color:#919191; text-decoration:none; display:block; border-left:#fff 1px solid; border-right:#d4d4d4 1px solid; padding:0 15px; box-shadow: 0 0 5px rgba(101,190,194,0.2); outline:none;}
-#nice-menu-0 li a.active, #nice-menu-0 li a:hover{ color:#404041;  }
+#nice-menu-0 li a{ color:#333; text-decoration:none; display:block; border-left:#fff 1px solid; border-right:#d4d4d4 1px solid; padding:0 15px; box-shadow: 0 0 5px rgba(101,190,194,0.2); outline:none;}
+#nice-menu-0 li a.active, #nice-menu-0 li a:hover{ color:#ce162b;  }
 
 #nice-menu-0 li.active-trail a{ color:#404041; }
 #nice-menu-0 li.active-trail li a{ color:#919191; }
@@ -79,10 +81,11 @@ h2.pane-title, h2.pane-title.block-title { font-size:20px; color:#24292d; border
 #nice-menu-0 li.first{ border-radius:5px 0 0 5px; }
 #nice-menu-0 li.last{  border-radius:0 5px 5px 0; }
 
-#nice-menu-0 ul{ top:2.9em; left:-1px; background:#fff; box-shadow:2px 2px 3px rgba(0,0,0,0.1); border:#ccc 1px solid; border-radius: 4px;  padding:6px 0; }
+#nice-menu-0 ul{ z-index:40; top:2.9em; left:-1px; background:#fff; box-shadow:2px 2px 3px rgba(0,0,0,0.1); border:#ccc 1px solid; border-radius: 4px;  padding:6px 0; }
 #nice-menu-0 ul li, #nice-menu-0 ul li a, #nice-menu-0 ul li.first a, #nice-menu-0 ul li.last a{ background:none; border: none; box-shadow:none; font-size:12px; font-weight:normal; }
 #nice-menu-0 ul li { height:27px; line-height:27px; width:auto;  }
 
+#nice-menu-0 ul ul{ left:143px; top:0; }
 
 
  /* Header region, embedded in the #header
@@ -298,11 +301,11 @@ div.left-link {
 .dashboardLeft .profileMenu{ margin:0; padding:0; background:#f6f6f6; border:#d4d4d4 1px solid; position:relative; top:0; width:230px;}
 .dashboardLeft .profileMenu ul.leftMenu{ list-style:none; margin:5px 0; padding:0; }
 .dashboardLeft .profileMenu ul.leftMenu li{ text-shadow:0 1px 1px #fff; min-height:45px; vertical-align:middle; font-size:13px; margin:0; padding:0; }
-.dashboardLeft .profileMenu ul.leftMenu li a{ display:block; color:#7c7c7c; text-decoration:none; padding-left:60px; vertical-align:middle; line-height:45px; border-top:#fff 1px solid; border-bottom:#dedede 1px solid; }
+.dashboardLeft .profileMenu ul.leftMenu li a{ display:block; color:#555; text-decoration:none; padding-left:60px; vertical-align:middle; line-height:45px; border-top:#fff 1px solid; border-bottom:#dedede 1px solid; }
 .dashboardLeft .profileMenu ul.leftMenu li.first a{ border-top:none; }
 .dashboardLeft .profileMenu ul.leftMenu li.last a{ border-bottom:none; }
-.dashboardLeft .profileMenu ul.leftMenu li.active a{ color:#24292d; font-weight:bold; }
-.dashboardLeft .profileMenu ul.leftMenu li a:hover{ color:#24292d;}
+.dashboardLeft .profileMenu ul.leftMenu li.active a{ color:#000; font-weight:bold; }
+.dashboardLeft .profileMenu ul.leftMenu li a:hover{ color:#000;}
 
 .dashboardLeft .profileMenu ul.leftMenu li .MyDashboard{ background:url(../images/iconsProfile.png) -400px -26px no-repeat }
 .dashboardLeft .profileMenu ul.leftMenu li .YourMembership{ background:url(../images/iconsProfile.png) -400px -85px no-repeat }
@@ -310,7 +313,7 @@ div.left-link {
 .dashboardLeft .profileMenu ul.leftMenu li .CaseStudies{ background:url(../images/iconsProfile.png) -400px -203px no-repeat }
 .dashboardLeft .profileMenu ul.leftMenu li .PostNeed{ background:url(../images/iconsProfile.png) -400px -262px no-repeat }
 .dashboardLeft .profileMenu ul.leftMenu li .PostResource{ background:url(../images/iconsProfile.png) -400px -325px no-repeat }
-.dashboardLeft .profileMenu ul.leftMenu li .Calendar{ background:url(../images/iconsProfile.png) -400px -384px no-repeat }
+.dashboardLeft .profileMenu ul.leftMenu li .Calendar{ background:url(../images/iconsProfile.png) -400px -384px no-repeat; font-weight:bold; color:#000; }
 
 .dashboardLeft .profileMenu ul.leftMenu li.active .MyDashboard{ background:url(../images/iconsProfile.png) -40px -26px no-repeat }
 .dashboardLeft .profileMenu ul.leftMenu li.active .YourMembership{ background:url(../images/iconsProfile.png) -40px -85px no-repeat }
@@ -329,7 +332,7 @@ div.left-link {
 
 .dashboardLeft .profileMenu ul.leftMenu li .YourProfile, .dashboardLeft .profileMenu ul.leftMenu li .YourProfile:hover,
 .dashboardLeft .profileMenu ul.leftMenu li .PostNeed, .dashboardLeft .profileMenu ul.leftMenu li .PostNeed:hover,
-.dashboardLeft .profileMenu ul.leftMenu li .CaseStudies, .dashboardLeft .profileMenu ul.leftMenu li .CaseStudies:hover{ cursor:default; text-decoration:none; color:#7c7c7c; }
+.dashboardLeft .profileMenu ul.leftMenu li .CaseStudies, .dashboardLeft .profileMenu ul.leftMenu li .CaseStudies:hover{ cursor:default; text-decoration:none; color:#000; font-weight:bold; }
 
 
 
