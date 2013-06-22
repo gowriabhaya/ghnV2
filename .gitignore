@@ -2,6 +2,9 @@
 sites/*/files/*.jpg
 sites/*/files/*.png
 sites/*/files/*.JPG
+sites/*/files/pictures
+sites/*/files/styles
+sites/*/files/field
 sites/*/files/field
 sites/*/files/ctool
 sites/*/files/custom_search
