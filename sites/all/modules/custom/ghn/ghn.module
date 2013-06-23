@@ -698,7 +698,6 @@ function ghn_latest_visitors($uid) {
  **/
 function ghn_need_submit(&$form,&$form_state) {
          global $user,$node;
-         //$form_state['redirect'] = 'dashboard/'.$user->uid;
 /*
          $tmp = var_export($node,TRUE);    
          $title = $form_state['input']['title'];
@@ -708,8 +707,10 @@ function ghn_need_submit(&$form,&$form_state) {
 print '<pre>';
 print $tmp;
 print '</pre>';
-*/
          $tmp = var_export($form_state['redirect'],TRUE);    
+         //$form_state['redirect'] = 'dashboard/'.$user->uid;
+*/
+
 }
 /**
  * GHN request post submit
@@ -1114,4 +1115,58 @@ function ghn_cron() {
                       redirect_save($redirect);
                    }      
            }
+}
+/**
+ * This is where match notification mails get sent
+ **/
+function _ghn_match_sendmail($nid,$matches,$type) {
+         $fromnode = node_load($nid);
+         $fromtitle = $fromnode->title;
+         $type == "Need" ? $othertype = "Resource" : $othertype = "Need";
+// now comes matching, check whether this has been matched
+          foreach ($matches AS $match) {
+              $tmp = explode(';',$match);
+              $tonid = $tmp[1];
+              $totitle = $tmp[3];
+              $touid = $tmp[2];
+// receipent subject
+              $subject = "Match found for your ".$type." posting";
+// receipent to address
+              $touser = user_load($touid);
+              $tomail = $touser->mail;
+// receipent message
+              $tonode = node_load($tonid);
+              $message = "Your ".$type." posting ".$tonode->title." posted on ".$tonode->created." has been matched with a ".$othertype." posting ".$fromtitle." posted on ".$fromnode->created.". You can follow up with this match by following this link ";
+              _ghn_simple_mail($subject, $message,$tomail); 
+            }
+}
+/**
+ * Sending matching notification mail
+ **/
+function _ghn_simple_mail($message_subject, $message_body,$to_email) {
+  $my_email = 'info@globalheartnetwork.com';
+  // These value can remain empty.
+  $my_module = '';
+  $my_mail_token = '';
+  $from = variable_get('system_mail', $my_email);
+  $message = array(
+    'id' => $my_module . '_' . $my_mail_token,
+    'to' => $to_email,
+    'subject' => $message_subject,
+    'body' => array($message_body),
+    'headers' => array(
+      'From' => $from,
+      'Sender' => $from,
+      'Return-Path' => $from,
+    ),
+  );
+  $system = drupal_mail_system($my_module, $my_mail_token);
+// The format function must be called before calling the mail function. 
+  $message = $system->format($message);
+  if ($system->mail($message)) {
+    //drupal_set_message('_custom_simple_mail SUCCESS');
+  }
+  else {
+    //drupal_set_message('_custom_simple_mail FAILURE');
+  }
 }
