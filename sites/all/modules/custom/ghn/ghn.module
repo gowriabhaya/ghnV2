@@ -814,9 +814,11 @@ print '</pre>';
                                     if (!empty($rropt[2])&&($nopt == $rropt[2])) {
                                        $ret[] = $index.';'.$rnid.';'.$rropt[0].';'.$rropt[1].';Matched';
                                     }
+/* no need to send unmatched entries
                                     else {
                                          $ret[] = $index.';'.$rnid.';'.$rropt[0].';'.$rropt[1].';No match';
                                     }
+*/
                             }
                      }
                  }
@@ -899,9 +901,11 @@ function ghn_resource_matching($uid,$nid) {
                                     if (!empty($nnopt[2])&&($ropt == $nnopt[2])) {
                                        $ret[] = $index.';'.$nnid.';'.$nnopt[0].';'.$nnopt[1].';Matched';
                                     }
+/* no need to send back unmatched resources
                                     else {
                                        $ret[] = $index.';'.$nnid.';'.$nnopt[0].';'.$nnopt[1].';No match';
                                     }
+*/
                             }
                      }
                  }
@@ -941,9 +945,11 @@ $tmp = var_export($fields,TRUE);
                 $pic = '<a href="'.$base_url.'/dashboard/'.$fields[2].'">'.$pic.'</a>';
 // user name
                 $name = _ghn_member_name($fields[2]);
-                $name_link = l(strtolower($name),$base_url.'/dashboard/'.$fields[2]);
+                $name = strtolower($name);
+                $name_link = l(ucwords($name),$base_url.'/dashboard/'.$fields[2]);
 // the matching need/resource posting
-                $title = l(strtolower($fields[3]),$base_url.'/node/'.$fields[1]);
+                $title = strtolower($fields[3]);
+                $title = l(ucwords($title),$base_url.'/node/'.$fields[1]);
 // contact link
                 $links = '<div class="contact-link">'.l('Contact ',$base_url.'/user/'.$fields[2].'/contact',array('attributes'=>array('class'=>'link'))).'</div><br />';
 // follow link
