@@ -1128,6 +1128,11 @@ function ghn_cron() {
 function _ghn_match_sendmail($nid,$matches,$type) {
          $fromnode = node_load($nid);
          $fromtitle = $fromnode->title;
+         $fromuid = $fromnode->uid;
+         $fromuser = user_load($fromuid);
+         $frommail = $fromuser->mail;
+         $fromdate = date("M j, Y H:i",$fromnode->created);
+         $followlink = l("Matched ".$type." posting",$base_url."/node/".$nid);
          $type == "Need" ? $othertype = "Resource" : $othertype = "Need";
 // now comes matching, check whether this has been matched
           foreach ($matches AS $match) {
@@ -1135,16 +1140,25 @@ function _ghn_match_sendmail($nid,$matches,$type) {
               $tonid = $tmp[1];
               $totitle = $tmp[3];
               $touid = $tmp[2];
-// receipent subject
-              $subject = "Match found for your ".$type." posting";
-// receipent to address
+// recepient subject
+              $subject = "Match found for your ".$othertype." posting";
+// recepient to address
               $touser = user_load($touid);
               $tomail = $touser->mail;
-// receipent message
+// recepient message
               $tonode = node_load($tonid);
-              $message = "Your ".$type." posting ".$tonode->title." posted on ".$tonode->created." has been matched with a ".$othertype." posting ".$fromtitle." posted on ".$fromnode->created.". You can follow up with this match by following this link ";
+              $todate = date("M j, Y H:i",$tonode->created);
+              $message = "Your ".$othertype." posting <em>".$tonode->title."</em> posted on ".$todate." has been matched with ".$othertype." posting ".$fromtitle." posted on ".$fromdate.". You can follow up with this match by following this link ".$followlink;
               _ghn_simple_mail($subject, $message,$tomail); 
             }
+// send one final email to the "tonode" author
+// follow link
+         $followlink = l("Matched ".$othertype." posting",$base_url."/match/".strtolower($type).'/'.$fromnode->uid.'/'.$nid);
+// recepient subject
+         $subject = "Match found for this ".$type." posting";
+// recepient message
+         $message = "Your ".$type." posting <em>".$fromnode->title."</em> posted on ".$fromdate." has been matched with ".$type." posting ".$totitle." posted on ".$todate.". You can follow up with this match by following this link ".$followlink;
+         _ghn_simple_mail($subject, $message,$frommail); 
 }
 /**
  * Sending matching notification mail
@@ -1154,7 +1168,8 @@ function _ghn_simple_mail($message_subject, $message_body,$to_email) {
   // These value can remain empty.
   $my_module = '';
   $my_mail_token = '';
-  $from = variable_get('system_mail', $my_email);
+  //$from = variable_get('system_mail', $my_email);
+  $from = $my_email;
   $message = array(
     'id' => $my_module . '_' . $my_mail_token,
     'to' => $to_email,
