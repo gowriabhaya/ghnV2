@@ -1126,6 +1126,7 @@ function ghn_cron() {
  * This is where match notification mails get sent
  **/
 function _ghn_match_sendmail($nid,$matches,$type) {
+         global $base_url;
          $fromnode = node_load($nid);
          $fromtitle = $fromnode->title;
          $fromuid = $fromnode->uid;
@@ -1135,7 +1136,9 @@ function _ghn_match_sendmail($nid,$matches,$type) {
          $followlink = l("Matched ".$type." posting",$base_url."/node/".$nid);
          $type == "Need" ? $othertype = "Resource" : $othertype = "Need";
 // now comes matching, check whether this has been matched
+          $numbmatch = 0;
           foreach ($matches AS $match) {
+              $numbmatch++;
               $tmp = explode(';',$match);
               $tonid = $tmp[1];
               $totitle = $tmp[3];
@@ -1157,7 +1160,7 @@ function _ghn_match_sendmail($nid,$matches,$type) {
 // recepient subject
          $subject = "Match found for this ".$type." posting";
 // recepient message
-         $message = "Your ".$type." posting <em>".$fromnode->title."</em> posted on ".$fromdate." has been matched with ".$type." posting ".$totitle." posted on ".$todate.". You can follow up with this match by following this link ".$followlink;
+         $message = "Your ".$type." posting <strong>".$fromnode->title."</strong> posted on ".$fromdate." has ".$numbmatch." matching Resources. You can follow up with this match by following this link ".$followlink;
          _ghn_simple_mail($subject, $message,$frommail); 
 }
 /**
