@@ -23,6 +23,7 @@
  */
 ?>
 <?php 
-      $name = _ghn_member_name($output); 
-      print l($name,"dashboard/".$output); 
+      $tmp = _ghn_member_name($output);
+      $name = strtolower($tmp);
+      print l(ucwords($name),"dashboard/".$output); 
 ?>

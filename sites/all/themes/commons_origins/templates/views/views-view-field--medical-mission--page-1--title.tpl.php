@@ -26,6 +26,7 @@
       $fields = explode('/',$output);
       $nid = $fields[0];
       $title = $fields[1];
+      $title = strtoupper($title);
 // find out whether there is any matching available for this need nid
       $iso2 = _ghn_node_iso2($nid);
       $flag = _ghn_country_flag($iso2);

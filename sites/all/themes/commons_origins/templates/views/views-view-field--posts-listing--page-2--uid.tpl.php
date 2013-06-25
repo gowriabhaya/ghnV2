@@ -24,11 +24,12 @@
 ?>
 <?php 
       global $user,$base_url;
-      $authorname = _ghn_member_name($output);
+      $tmp = _ghn_member_name($output);
+      $authorname = strtolower($tmp);
       if ($user->uid) {
-         print l($authorname,$base_url."/dashboard/".$output); 
+         print l(ucwords($authorname),$base_url."/dashboard/".$output); 
       }
       else {
-           print $authorname;
+           print ucwords($authorname);
       }
 ?>
