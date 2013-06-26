@@ -10,17 +10,17 @@
     <script>
 var berlin = new google.maps.LatLng(52.520816, 13.410186);
 
-var members = [
+var coords = [
   new google.maps.LatLng(30.0444196, 31.2357116),
   new google.maps.LatLng(51.5112139, -0.1198244),
   new google.maps.LatLng(32.7801399, -96.8004511),
 ];
-var memberinfo = [
+var info = [
   'Abdul',
   'Michael',
   'Sarah',
 ];
-var membermarkers = [ ];
+var markers = [ ];
 var map;
 var iterator = 0;
 function initialize() {
@@ -35,24 +35,24 @@ function initialize() {
 }
 
 function drop() {
-     for (var i = 0; i < members.length; i++) {
+     for (var i = 0; i < coords.length; i++) {
          setTimeout(function() {
          addMarker("member");
          }, i * 200);
       }
 }
 function addMarker(index) {
-   var contentString = memberinfo[iterator];
+   var contentString = info[iterator];
    var infowindow = new google.maps.InfoWindow({
       content: contentString
   });
   var marker = new google.maps.Marker({
-      position: members[iterator],
+      position: coords[iterator],
       map: map,
       draggable: false,
       animation: google.maps.Animation.DROP
    });
-   membermarkers.push(marker);
+   markers.push(marker);
    google.maps.event.addListener(marker, 'click', function() {
       infowindow.open(map,marker);
    });

@@ -5453,6 +5453,13 @@ body.page-user #tasks{ display:block; }
  #block-menu-menu-search ul.menu li.leaf.first{ list-style:none; border:none;  }
  #block-menu-menu-search ul.menu li a{ display:block; padding:5px; text-decoration:none; }
  #block-menu-menu-search ul.menu li  a.active-trail.active{ font-weight:bold; color:#e31016; }
+/* google map */
+#map-canvas, #map_canvas {
 
+  height: 100%;
+
+  min-height: 400px;
+
+}
  
  

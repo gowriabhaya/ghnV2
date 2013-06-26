@@ -1,0 +1,174 @@
+<?php
+/**
+ * @file
+ * Adaptivetheme implementation to display a single Drupal page.
+ *
+ * Available variables:
+ *
+ * Adaptivetheme supplied variables:
+ * - $site_logo: Themed logo - linked to front with alt attribute.
+ * - $site_name: Site name linked to the homepage.
+ * - $site_name_unlinked: Site name without any link.
+ * - $hide_site_name: Toggles the visibility of the site name.
+ * - $visibility: Holds the class .element-invisible or is empty.
+ * - $primary_navigation: Themed Main menu.
+ * - $secondary_navigation: Themed Secondary/user menu.
+ * - $primary_local_tasks: Split local tasks - primary.
+ * - $secondary_local_tasks: Split local tasks - secondary.
+ * - $tag: Prints the wrapper element for the main content.
+ * - $is_mobile: Bool, requires the Browscap module to return TRUE for mobile
+ *   devices. Use to test for a mobile context.
+ * - *_attributes: attributes for various site elements, usually holds id, class
+ *   or role attributes.
+ *
+ * General utility variables:
+ * - $base_path: The base URL path of the Drupal installation. At the very
+ *   least, this will always default to /.
+ * - $directory: The directory the template is located in, e.g. modules/system
+ *   or themes/bartik.
+ * - $is_front: TRUE if the current page is the front page.
+ * - $logged_in: TRUE if the user is registered and signed in.
+ * - $is_admin: TRUE if the user has permission to access administration pages.
+ *
+ * Site identity:
+ * - $front_page: The URL of the front page. Use this instead of $base_path,
+ *   when linking to the front page. This includes the language domain or
+ *   prefix.
+ * - $logo: The path to the logo image, as defined in theme configuration.
+ * - $site_slogan: The slogan of the site, empty when display has been disabled
+ *   in theme settings.
+ *
+ * Navigation:
+ * - $main_menu (array): An array containing the Main menu links for the
+ *   site, if they have been configured.
+ * - $secondary_menu (array): An array containing the Secondary menu links for
+ *   the site, if they have been configured.
+ * - $breadcrumb: The breadcrumb trail for the current page.
+ *
+ * Page content (in order of occurrence in the default page.tpl.php):
+ * - $title_prefix (array): An array containing additional output populated by
+ *   modules, intended to be displayed in front of the main title tag that
+ *   appears in the template.
+ * - $title: The page title, for use in the actual HTML content.
+ * - $title_suffix (array): An array containing additional output populated by
+ *   modules, intended to be displayed after the main title tag that appears in
+ *   the template.
+ * - $messages: HTML for status and error messages. Should be displayed
+ *   prominently.
+ * - $tabs (array): Tabs linking to any sub-pages beneath the current page
+ *   (e.g., the view and edit tabs when displaying a node).
+ * - $action_links (array): Actions local to the page, such as 'Add menu' on the
+ *   menu administration interface.
+ * - $feed_icons: A string of all feed icons for the current page.
+ * - $node: The node object, if there is an automatically-loaded node
+ *   associated with the page, and the node ID is the second argument
+ *   in the page's path (e.g. node/12345 and node/12345/revisions, but not
+ *   comment/reply/12345).
+ *
+ * Core Regions:
+ * - $page['help']: Dynamic help text, mostly for admin pages.
+ * - $page['highlighted']: Items for the highlighted content region.
+ * - $page['content']: The main content of the current page.
+ * - $page['sidebar_first']: Items for the first sidebar.
+ * - $page['sidebar_second']: Items for the second sidebar.
+ * - $page['header']: Items for the header region.
+ * - $page['footer']: Items for the footer region.
+ *
+ * Adaptivetheme Regions:
+ * - $page['leaderboard']: full width at the very top of the page
+ * - $page['menu_bar']: menu blocks placed here will be styled horizontal
+ * - $page['secondary_content']: full width just above the main columns
+ * - $page['content_aside']: like a main content bottom region
+ * - $page['tertiary_content']: full width just above the footer
+ *
+ * @see template_preprocess()
+ * @see template_preprocess_page()
+ * @see template_process()
+ * @see adaptivetheme_preprocess_page()
+ * @see adaptivetheme_process_page()
+ */
+?>
+<!--[if lt IE 9]> 
+    <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;'> 
+        <a href="http://www.microsoft.com/india/windows/ie/IE9.aspx? ocid=ie6_countdown_bannercode" TARGET="_blank"> 
+        <img src="http://storage.ie6countdown.com/assets/100/images/banners/warning_bar_0000_us.jpg" border="0" height="42" width="820" 
+    alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today." /></a></div> 
+ <![endif]-->
+<div class="header-color-row-one">
+<!-- UserVoice JavaScript SDK (only needed once on a page) -->
+<!-- moved this to the login block 
+<script>(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/GnONaCs9HM816zmfKjLtA.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})()</script>
+-->
+<!-- A link to launch the Classic Widget -->
+<!-- moved this to the login block 
+<a class="feedback-link" href="javascript:void(0)" data-uv-lightbox="classic_widget" data-uv-mode="feedback" data-uv-primary-color="#008c7e" data-uv-link-color="#007dbf" data-uv-forum-id="208879">Share Your Thougts &amp; Ideas</a>
+-->
+  <header<?php print $header_attributes; ?>>
+    <?php
+           global $user,$base_url;
+            // id, direction, depth should have the values you want them to have.
+            $menu = theme('nice_menus', array('id' => 0, 'direction' => 'down', 'depth' => 3, 'menu_name' => 'main-menu', 'menu' => NULL));
+            $tmp = $menu['content'];
+            if ($user->uid != 0) {
+               $menu['content'] = str_replace('"/"','/dashboard/'.$user->uid,$tmp);
+            }
+            print $menu['content'];
+    ?>
+    <?php if ($site_logo || $site_name || $site_slogan): ?>
+      <!-- start: Branding -->
+      <div<?php print $branding_attributes; ?>>
+
+        <?php if ($site_logo): ?>
+          <div id="logo">
+            <?php 
+                 global $user,$base_url;
+                 if ($user->uid != 0) {
+                    $tmp = $site_logo;
+                    $site_logo = str_replace('href="/"','href="'.$base_url.'/dashboard/'.$user->uid.'"',$tmp);
+                    print $site_logo; 
+                  }
+                  else {
+                       print $site_logo; 
+                  }
+            ?>
+          </div>
+        <?php endif; ?>
+
+        <?php if ($site_name || $site_slogan): ?>
+          <!-- start: Site name and Slogan hgroup -->
+          <hgroup<?php print $hgroup_attributes; ?>>
+
+            <?php if ($site_name): ?>
+              <h1<?php print $site_name_attributes; ?>><?php print $site_name; ?></h1>
+            <?php endif; ?>
+
+            <?php if ($site_slogan): ?>
+              <h2<?php print $site_slogan_attributes; ?>><?php print $site_slogan; ?></h2>
+            <?php endif; ?>
+
+          </hgroup><!-- /end #name-and-slogan -->
+        <?php endif; ?>
+
+      </div><!-- /end #branding -->
+    <?php endif; ?>
+
+    <!-- Navigation elements -->
+    <?php print render($page['menu_bar']); ?>
+
+    <!-- region: Header -->
+    <?php print render($page['header']); ?>
+  </header>
+</div>
+HELLO THERE
+      <div id="panel" style="margin-left: -52px">
+      <button id="drop" onclick="drop()">Drop Markers</button>
+     </div>
+    <div id="map-canvas"></div>
+  <!-- region: Footer -->
+  <?php if ($page['footer']): ?>
+    <footer<?php print $footer_attributes; ?>>
+      <?php print render($page['footer']); ?>
+    </footer>
+  <?php endif; ?>
+
+</div>

@@ -70,12 +70,12 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5kqo-DSnnbsnXGevSKe6dtR2wcEUDXac&sensor=false"></script>
     <script>
 var berlin = new google.maps.LatLng(52.520816, 13.410186);
-var members = [
+var coords = [
   new google.maps.LatLng(30.0444196, 31.2357116),
   new google.maps.LatLng(51.5112139, -0.1198244),
   new google.maps.LatLng(32.7801399, -96.8004511),
 ];
-var memberinfo = [
+var info = [
   'Abdul',
   'Michael',
   'Sarah',
@@ -90,31 +90,29 @@ function initialize() {
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     center: berlin
   };
-
   map = new google.maps.Map(document.getElementById('map-canvas'),
           mapOptions);
+  drop();
 }
-
 function drop() {
-  for (var i = 0; i < members.length; i++) {
+  for (var i = 0; i < coords.length; i++) {
     setTimeout(function() {
       addMarker();
     }, i * 200);
   }
 }
-
 function addMarker() {
-   var contentString = memberinfo[iterator];
+   var contentString = info[iterator];
    var infowindow = new google.maps.InfoWindow({
       content: contentString
   });
   var marker = new google.maps.Marker({
-      position: members[iterator],
+      position: coords[iterator],
       map: map, 
       draggable: false,
       animation: google.maps.Animation.DROP
    });
-   membermarkers.push(marker);
+   markers.push(marker);
    google.maps.event.addListener(marker, 'click', function() { 
       infowindow.open(map,marker);
    });

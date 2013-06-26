@@ -128,6 +128,11 @@ function commons_origins_menu_link_class(&$element)  {
  * Override or insert variables for the page templates.
  */
 function commons_origins_preprocess_page(&$variables, $hook) {
+/*
+ var_export($variables['theme_hook_suggestions']); 
+$tmp = var_export($hook,TRUE);
+drupal_set_message($tmp);
+*/
   if (module_exists('page_manager')) {
     $p = page_manager_get_current_page();
     if (isset($p['name']) && $p['name'] == 'node_view') {
