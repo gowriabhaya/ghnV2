@@ -1038,13 +1038,13 @@ img {
 }
 
 /* Ethan Marcotte - http://front.ie/l8rJaA */
-img,
+
 embed,
 object,
 video {
   max-width: 100%;
 }
-
+#map-canvas img{ width:auto; max-width:auto; min-width:auto; }
 /* Disable flexiblity for IE8 and below */
 .lt-ie9 img,
 .lt-ie9 object,
