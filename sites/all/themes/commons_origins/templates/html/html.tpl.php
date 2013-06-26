@@ -63,6 +63,65 @@
 <?php print $styles; ?>
 <?php print $scripts; ?>
 <?php print $polyfills; ?>
+    <link href="https:/developers.google.com/maps/documentation/javascript/examples/default.css" rel="stylesheet">
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5kqo-DSnnbsnXGevSKe6dtR2wcEUDXac&sensor=true">
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5kqo-DSnnbsnXGevSKe6dtR2wcEUDXac&sensor=false"></script>
+    <script>
+var berlin = new google.maps.LatLng(52.520816, 13.410186);
+var members = [
+  new google.maps.LatLng(30.0444196, 31.2357116),
+  new google.maps.LatLng(51.5112139, -0.1198244),
+  new google.maps.LatLng(32.7801399, -96.8004511),
+];
+var memberinfo = [
+  'Abdul',
+  'Michael',
+  'Sarah',
+];
+var markers = [ ];
+var map;
+var iterator = 0;
+
+function initialize() {
+  var mapOptions = {
+    zoom: 2,
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    center: berlin
+  };
+
+  map = new google.maps.Map(document.getElementById('map-canvas'),
+          mapOptions);
+}
+
+function drop() {
+  for (var i = 0; i < members.length; i++) {
+    setTimeout(function() {
+      addMarker();
+    }, i * 200);
+  }
+}
+
+function addMarker() {
+   var contentString = memberinfo[iterator];
+   var infowindow = new google.maps.InfoWindow({
+      content: contentString
+  });
+  var marker = new google.maps.Marker({
+      position: members[iterator],
+      map: map, 
+      draggable: false,
+      animation: google.maps.Animation.DROP
+   });
+   membermarkers.push(marker);
+   google.maps.event.addListener(marker, 'click', function() { 
+      infowindow.open(map,marker);
+   });
+   iterator++;
+}
+google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
 </head>
 <body class="<?php print $classes; ?>"<?php print $attributes; ?>>
   <div id="skip-link">
