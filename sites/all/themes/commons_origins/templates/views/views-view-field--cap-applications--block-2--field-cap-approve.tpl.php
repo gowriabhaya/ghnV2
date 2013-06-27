@@ -24,5 +24,16 @@
 ?>
 <?php 
      drupal_set_message("KEY ".$output);
+     switch ($output) {
+            case 1:
+                 print "Approved";
+                 break;
+            case 2:
+                 print "Not Approved";
+                 break;
+            case 3:
+                 print "Under Review";
+                 break;
+     }
      print $output; 
 ?>
