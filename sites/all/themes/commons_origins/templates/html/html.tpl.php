@@ -63,7 +63,9 @@
 <?php print $styles; ?>
 <?php print $scripts; ?>
 <?php print $polyfills; ?>
+<!--
     <link href="https:/developers.google.com/maps/documentation/javascript/examples/default.css" rel="stylesheet">
+-->
     <script type="text/javascript"
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5kqo-DSnnbsnXGevSKe6dtR2wcEUDXac&sensor=true">
     </script>
