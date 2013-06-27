@@ -37,6 +37,9 @@
             case 3:
                $output = $link.'(Under Review)';
                break;
+            default:
+               $output = $link.'(Under Review)';
+               break;
      }
      print $output; 
 ?>
