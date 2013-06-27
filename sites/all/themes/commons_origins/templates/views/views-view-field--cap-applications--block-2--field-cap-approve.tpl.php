@@ -23,7 +23,6 @@
  */
 ?>
 <?php 
-     drupal_set_message("KEY ".$output);
      switch ($output) {
             case 1:
                  print "Approved";
