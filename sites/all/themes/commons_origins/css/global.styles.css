@@ -5155,7 +5155,7 @@ fieldset {
 .h1, body.page-dashboard .region-three-25-50-25-third h3,  body.page-dashboard .region-three-25-50-25-third h2.pane-title.block-title{  font-size:26px; color:#24292d; border-bottom:#e31016 3px solid;  display:inline-block; clear:both; padding-right:30px; font-weight:normal;  }
 h2.h1, body.page-dashboard .region-three-25-50-25-third h3, body.page-dashboard .region-three-25-50-25-third h2.pane-title.block-title{ font-size:20px; line-height:30px; margin-top:0; font-weight:normal; color:#2d2d2e; padding-right:12px; padding-bottom:5px;  }
 .h12{ text-align:center; height:2px;  border-bottom:#d4d5d9 1px solid; border-top:#d4d5d9 1px solid; position:relative; padding:0; margin:20px 0 40px ; font-weight:normal;  }
-.h12 span{ background:url(../images/bodyBack.jpg) repeat; position:relative; text-align:center; padding:10px; top:-20px;  }
+.h12 span{ background:url(../images/bodyBack2.jpg) repeat; position:relative; text-align:center; padding:10px; top:-20px;  }
 .h13{  font-size:19px; color:#24292d; border-bottom:#e31016 3px solid;  clear:both;  font-weight:normal; padding-bottom:0px;  }
 .h14{ font-weight:normal; font-size:22px; color:#24292d; text-align:center; margin:0; line-height:16px; }
 .box{ box-shadow:0 0 5px rgba(0,0,0,0.3);  border-radius:4px; background:url(../images/box-Back.png) 0 0 repeat-x; border:#ccc 1px solid;  }
@@ -5455,8 +5455,38 @@ body.page-user #tasks{ display:block; }
  #block-menu-menu-search ul.menu li  a.active-trail.active{ font-weight:bold; color:#e31016; }
 
 
+body.front.not-logged-in .panel-2col-stacked .panel-col-last h2.pane-title.block-title{ display:none; }
+body.front.logged-in .panel-2col-stacked .panel-col-last h2.pane-title.block-title{ display:inline-block; }
+
 /* google map */
 #map-canvas, #map_canvas {	height: 100%; min-height: 400px;}
 .profileInfoMid table tr:first-child td a{ color:#47b9be; font-weight:bold; font-style:normal; font-size:14px; }
 .profileInfoMid table tr:first-child td span a{ color:#ce162b; font-weight:bold }
+
+
+#map-canvas, #map_canvas {
+  height: 100%;
+}
+
+@media print {
+  html, body {
+    height: auto;
+  }
+
+  #map-canvas, #map_canvas {
+    height: 650px;
+  }
+}
+
+#panel {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  margin-left: -180px;
+  z-index: 5;
+  background-color: #fff;
+  padding: 5px;
+  border: 1px solid #999;
+}
+
  

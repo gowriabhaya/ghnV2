@@ -43,7 +43,9 @@ body.front .panel-2col-stacked .panel-col-first{ width:580px; }
 body.front .panel-2col-stacked .panel-col-last{ width:400px; float:right; }
 body.front .panel-2col-stacked .panel-col-last .field-items { background:url(../images/joinBack.png) center top no-repeat; border:none; box-shadow:none; padding:70px 40px 0px 40px; min-height:396px; }
 body.front .user-info-from-cookie-processed { margin:0 25px; padding-top:60px; background:none; border:none; box-shadow:none; font-size:12px;  }
-body.front .panel-2col-stacked .panel-col-last h2.pane-title.block-title{ display:none; }
+body.front.not-logged-in .panel-2col-stacked .panel-col-last h2.pane-title.block-title{ display:none; }
+body.front.logged-in .panel-2col-stacked .panel-col-last h2.pane-title.block-title{ display:inline-block; }
+
 body.front .panel-2col-stacked .panel-col-last .block-content .footer{ display:none; }
 body.front .panel-2col-stacked .panel-col-last .block-content label{ font-size:14px; margin:5px 0 2px 0; color:#555; }
 

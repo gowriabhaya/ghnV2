@@ -1,8 +1,8 @@
 /* body background     */
 
-html{ background:url(../images/bodyTopLine.jpg) 0 0 repeat-x; height:100%; min-height:100%; padding-top: 4px; }
+html{ background:url(../images/bodyBack2.jpg) repeat; height:100%; min-height:100%; padding-top: 4px; border-top:3px solid #e31016 }
 
-body{ background: url(../images/bodyBack.jpg) repeat; width:100%; min-width:988px; }
+body{ background:none ; width:100%; min-width:988px; }
 
 /* landing page */
 .not-logged-in .howtouse h2, .not-logged-in .howtouse a {
@@ -81,11 +81,11 @@ h2.pane-title, h2.pane-title.block-title { font-size:20px; color:#24292d; border
 #nice-menu-0 li.first{ border-radius:5px 0 0 5px; }
 #nice-menu-0 li.last{  border-radius:0 5px 5px 0; }
 
-#nice-menu-0 ul{ z-index:40; top:2.9em; left:-1px; background:#fff; box-shadow:2px 2px 3px rgba(0,0,0,0.1); border:#ccc 1px solid; border-radius: 4px;  padding:6px 0; }
+#nice-menu-0 ul{ z-index:40; top:2.9em; left:-1px; background:#fff; box-shadow:2px 2px 3px rgba(0,0,0,0.1); border:#ccc 1px solid; border-radius: 4px;  padding:6px 0; width:230px; }
 #nice-menu-0 ul li, #nice-menu-0 ul li a, #nice-menu-0 ul li.first a, #nice-menu-0 ul li.last a{ background:none; border: none; box-shadow:none; font-size:12px; font-weight:normal; }
-#nice-menu-0 ul li { height:27px; line-height:27px; width:auto;  }
+#nice-menu-0 ul li { height:27px; line-height:27px; width:100%;  }
 
-#nice-menu-0 ul ul{ left:143px; top:0; }
+#nice-menu-0 ul ul{ left:220px; top:0; width:auto; }
 
 
  /* Header region, embedded in the #header
