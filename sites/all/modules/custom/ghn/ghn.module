@@ -17,6 +17,15 @@ $form['body']['und'][0]['format']['help']['#access'] =FALSE;
 */
 //drupal_set_message($form_id);
          switch($form_id) {
+               case "map_test_node_form":
+/*
+$tmp = var_export($form['field_maptest_location'],TRUE);
+print '<pre>';
+print $tmp;
+print '</pre>';
+*/
+                    //$form['field_maptest_location']['#disabled'] = TRUE; 
+                    break;
                case "panel_application_node_form":
                     $form['actions']['submit']['#value'] = 'Submit for Review';
                     break;
@@ -24,35 +33,25 @@ $form['body']['und'][0]['format']['help']['#access'] =FALSE;
                     //unset($form['name']);
                     $form['mail']['#required'] = false;
                     //unset($form['mail']);
-/*
-$tmp = var_export($form['mail'],TRUE);
-print '<pre>';
-print $tmp;
-print '</pre>';
-*/
                     break;
                case "comment_node_need_post_form":
                     unset($form['subject']);
                     unset($form['author']['_author']);
-                    $form['comment_body']['und'][0]['#title'] = 'YOUR COMMENT';
                     break;
                case "comment_node_resource_post_form":
                     $tmp = var_export($form['comment_body']['und'][0]['#title'],TRUE);
                     unset($form['subject']);
                     unset($form['author']['_author']);
-                    $form['comment_body']['und'][0]['#title'] = 'YOUR COMMENT';
                     break;
                case "comment_node_conference_announcement_form":
                     $tmp = var_export($form['comment_body']['und'][0]['#title'],TRUE);
                     unset($form['subject']);
                     unset($form['author']['_author']);
-                    $form['comment_body']['und'][0]['#title'] = 'YOUR COMMENT';
                     break;
                case "comment_node_forum_setup_form":
                     $tmp = var_export($form['comment_body']['und'][0]['#title'],TRUE);
                     unset($form['subject']);
                     unset($form['author']['_author']);
-                    $form['comment_body']['und'][0]['#title'] = 'YOUR COMMENT';
                     break;
                case "user_register_form":
                     //krumo($form['submit']);
@@ -265,6 +264,12 @@ function ghn_general_profile_submit(&$form,&$form_state) {
  * hook_menu
  **/
 function ghn_menu() {
+    $items['map-test'] = array(
+        'page callback' => 'ghn_map_test',
+        'page arguments' => array(),
+        'access callback' => TRUE,
+        'type' => MENU_CALLBACK,
+    );
     $items['main-profile'] = array(
         'page callback' => '_profile2_main_form',
         'page arguments' => array(),
@@ -836,7 +841,7 @@ function ghn_resource_matching($uid,$nid) {
          $need = array();
          $subresults = array();
          $nidservice = '';
-	 $results = db_query("SELECT n.nid,f.field_post_service_value AS service FROM {node} n LEFT JOIN {field_data_field_post_service} f ON f.entity_id = n.nid  WHERE type = 'resource_post' AND n.uid = $uid AND n.nid = $nid"); 
+	 $results = db_query("SELECT n.nid,f.field_post_service_value AS service FROM {node} n LEFT JOIN {field_data_field_post_service} f ON f.entity_id = n.nid  WHERE type = 'resource_post' AND n.uid = $uid AND n.nid = $nid");
          foreach ($results AS $result) {
                  $nidservice = $result->service;
                  switch ($result->service) {
@@ -1194,3 +1199,55 @@ function _ghn_simple_mail($message_subject, $message_body,$to_email) {
     //drupal_set_message('_custom_simple_mail FAILURE');
   }
 }
+/** 
+ * map test page
+ **/
+function ghn_map_test() {
+   return " I AM IN GHN MODULE GHN MAP TEST ";
+}
+/** 
+ * Called from Rules - after save maptest new content 
+ **/
+function ghn_map_lat_lang($nid,$node_type) {
+// get address value for a given node_type
+    $exist = 0;
+    switch ($node_type) {
+        case "medical_mission":
+           $results = db_query("SELECT field_host_town_value AS town,field_mm_host_country_iso2 AS country FROM {field_data_field_host_town} t LEFT JOIN {field_data_field_mm_host_country} c ON c.entity_id = t.entity_id WHERE c.entity_id = :nid",array(':nid'=>$nid));   
+// check to see whether this is a new or existing content
+           $temp = db_query("SELECT entity_id FROM {field_data_field_map_geo_location} WHERE entity_id = :nid",array(':nid'=>$nid));
+           foreach ($temp AS $row) {
+              if ($row->entity_id) $exist = 1;
+           }
+           break;
+        case "map_test":
+           $results = db_query("SELECT field_maptest_address_text_value AS address FROM {field_data_field_maptest_address_text} WHERE entity_id = :nid",array(':nid'=>$nid));   
+           break;
+    }
+          foreach ($results AS $result) {
+                 $geocode = geocoder('google',$result->town.','.$result->country);
+                 foreach ($geocode AS $key => $value) {
+                         if ($key == "coords") {
+                            $lat = $value[1];
+                            $lng = $value[0];
+                            $lat_sin = sin(deg2rad($lat));
+                            $lat_cos = cos(deg2rad($lat));
+                            $lng_rad = deg2rad($lng);
+// instert if it is a new content
+if ($exist == 0) {
+                            db_query("INSERT INTO {field_data_field_map_geo_location} (entity_type,bundle,deleted,entity_id,revision_id,language,delta,field_map_geo_location_lat,field_map_geo_location_lng,field_map_geo_location_lat_sin,field_map_geo_location_lat_cos,field_map_geo_location_lng_rad) VALUES ('node','$node_type',0,$nid,$nid,'und',0,$lat,$lng,$lat_sin,$lat_cos,$lng_rad)");
+                            db_query("INSERT INTO {field_revision_field_map_geo_location} (entity_type,bundle,deleted,entity_id,revision_id,language,delta,field_map_geo_location_lat,field_map_geo_location_lng,field_map_geo_location_lat_sin,field_map_geo_location_lat_cos,field_map_geo_location_lng_rad) VALUES ('node','$node_type',0,$nid,$nid,'und',0,$lat,$lng,$lat_sin,$lat_cos,$lng_rad)");
+}
+else {
+ // update the record - need to code this once i find more time for it.
+}
+                            break;
+                         }
+                   }
+          }
+         //drupal_set_message(" HELLO ".$temp.' GEOCODE: '.$temp1);
+         print '<pre>';
+         //print 'HOLLO '.$temp;
+         print '</pre>';
+
+} 
