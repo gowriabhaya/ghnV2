@@ -78,9 +78,9 @@ var coords = [
   new google.maps.LatLng(32.7801399, -96.8004511),
 ];
 var info = [
-  'Abdul',
-  'Michael',
-  'Sarah',
+  'GHN',
+  'GHN',
+  'GHN',
 ];
 var markers = [ ];
 var map;
