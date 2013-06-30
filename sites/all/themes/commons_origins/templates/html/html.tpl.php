@@ -66,10 +66,7 @@
 <!--
     <link href="https:/developers.google.com/maps/documentation/javascript/examples/default.css" rel="stylesheet">
 -->
-    <script type="text/javascript"
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5kqo-DSnnbsnXGevSKe6dtR2wcEUDXac&sensor=true">
-    </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5kqo-DSnnbsnXGevSKe6dtR2wcEUDXac&sensor=false"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVmGX8dbdk14RLAjqvuN2KbS3F0mQ3wKI&sensor=false"></script>
     <script>
 var berlin = new google.maps.LatLng(52.520816, 13.410186);
 var coords = [];
@@ -106,9 +103,7 @@ function initialize() {
   else {// code for IE6, IE5
      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
   }
-
   strURL = window.location.pathname;
-alert(strURL);
   comp = strURL.split('/');
   switch (comp[1]) {
      case 'conference-list':
@@ -123,7 +118,7 @@ alert(strURL);
      case 'ghn-posts':
           if (comp[2] == 'needs')
              pageType = "need_post";
-          else if (comp[2] == "resources"
+          else if (comp[2] == "resources")
              pageType = "resource_post";
           break;
      default:
