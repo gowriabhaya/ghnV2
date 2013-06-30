@@ -1300,14 +1300,58 @@ function _ghn_map_array($type="medical_mission") {
   $str = '';
 // get all the coordates from field_data_field_map_geo_location for given type
 // get all the title, town, country for all the nodes associated with the coordinates
-   $results = db_query("SELECT n.nid,n.title,t.field_host_town_value AS city,c.field_mm_host_country_iso2 AS country,l.field_map_geo_location_lng AS lng,l.field_map_geo_location_lat AS lat FROM {node} n LEFT JOIN {field_data_field_map_geo_location} l ON l.entity_id = n.nid LEFT JOIN {field_data_field_host_town} t ON t.entity_id = n.nid LEFT JOIN {field_data_field_mm_host_country} c ON c.entity_id = n.nid WHERE n.type = '$type' AND n.status = 1");
-   foreach ($results AS $result) {
-      $info = l($result->title,$base_url.'/node/'.$result->nid);
-      $loc = $result->city.', '.$result->country;
-      $lng = $result->lng;
-      $lat = $result->lat;
-      $str .= $info.'|'.$loc.'|'.$lng.'|'.$lat.';';
-   }
+   switch ($type) {
+      case "conference_announcement":
+         $results = db_query("SELECT n.nid,n.title,t.field_conf_city_value AS city,c.field_conf_country_iso2 AS country,l.field_map_geo_location_lng AS lng,l.field_map_geo_location_lat AS lat FROM {node} n LEFT JOIN {field_data_field_map_geo_location} l ON l.entity_id = n.nid LEFT JOIN {field_data_field_conf_city} t ON t.entity_id = n.nid LEFT JOIN {field_data_field_conf_country} c ON c.entity_id = n.nid WHERE n.type = '$type' AND n.status = 1");
+         foreach ($results AS $result) {
+            $info = l($result->title,$base_url.'/node/'.$result->nid);
+            $loc = $result->city.', '.$result->country;
+            $lng = $result->lng;
+            $lat = $result->lat;
+            $str .= $info.'|'.$loc.'|'.$lng.'|'.$lat.';';
+          }
+          break;
+      case "hospital":
+         $results = db_query("SELECT n.nid,n.title,t.field_map_city_value AS city,c.field_phosp_country_iso2 AS country,l.field_map_geo_location_lng AS lng,l.field_map_geo_location_lat AS lat FROM {node} n LEFT JOIN {field_data_field_map_geo_location} l ON l.entity_id = n.nid LEFT JOIN {field_data_field_map_city} t ON t.entity_id = n.nid LEFT JOIN {field_data_field_phosp_country} c ON c.entity_id = n.nid WHERE n.type = '$type' AND n.status = 1");
+         foreach ($results AS $result) {
+            $info = l($result->title,$base_url.'/node/'.$result->nid);
+            $loc = $result->city.', '.$result->country;
+            $lng = $result->lng;
+            $lat = $result->lat;
+            $str .= $info.'|'.$loc.'|'.$lng.'|'.$lat.';';
+          }
+          break;
+      case "medical_mission":
+         $results = db_query("SELECT n.nid,n.title,t.field_host_town_value AS city,c.field_mm_host_country_iso2 AS country,l.field_map_geo_location_lng AS lng,l.field_map_geo_location_lat AS lat FROM {node} n LEFT JOIN {field_data_field_map_geo_location} l ON l.entity_id = n.nid LEFT JOIN {field_data_field_host_town} t ON t.entity_id = n.nid LEFT JOIN {field_data_field_mm_host_country} c ON c.entity_id = n.nid WHERE n.type = '$type' AND n.status = 1");
+         foreach ($results AS $result) {
+            $info = l($result->title,$base_url.'/node/'.$result->nid);
+            $loc = $result->city.', '.$result->country;
+            $lng = $result->lng;
+            $lat = $result->lat;
+            $str .= $info.'|'.$loc.'|'.$lng.'|'.$lat.';';
+          }
+          break;
+      case "need_post":
+         $results = db_query("SELECT n.nid,n.title,t.field_map_city_value AS city,c.field_mm_post_country_iso2 AS country,l.field_map_geo_location_lng AS lng,l.field_map_geo_location_lat AS lat FROM {node} n LEFT JOIN {field_data_field_map_geo_location} l ON l.entity_id = n.nid LEFT JOIN {field_data_field_map_city} t ON t.entity_id = n.nid LEFT JOIN {field_data_field_post_country} c ON c.entity_id = n.nid WHERE n.type = '$type' AND n.status = 1");
+         foreach ($results AS $result) {
+            $info = l($result->title,$base_url.'/node/'.$result->nid);
+            $loc = $result->city.', '.$result->country;
+            $lng = $result->lng;
+            $lat = $result->lat;
+            $str .= $info.'|'.$loc.'|'.$lng.'|'.$lat.';';
+          }
+          break;
+      case "resource_post":
+         $results = db_query("SELECT n.nid,n.title,t.field_map_city_value AS city,c.field_post_country_iso2 AS country,l.field_map_geo_location_lng AS lng,l.field_map_geo_location_lat AS lat FROM {node} n LEFT JOIN {field_data_field_map_geo_location} l ON l.entity_id = n.nid LEFT JOIN {field_data_field_map_city} t ON t.entity_id = n.nid LEFT JOIN {field_data_field_post_country} c ON c.entity_id = n.nid WHERE n.type = '$type' AND n.status = 1");
+         foreach ($results AS $result) {
+            $info = l($result->title,$base_url.'/node/'.$result->nid);
+            $loc = $result->city.', '.$result->country;
+            $lng = $result->lng;
+            $lat = $result->lat;
+            $str .= $info.'|'.$loc.'|'.$lng.'|'.$lat.';';
+          }
+          break;
+    }
    //$str = " I AM IN _ghn_map_array";
    echo $str;
 }
