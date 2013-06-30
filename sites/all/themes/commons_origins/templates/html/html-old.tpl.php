@@ -72,9 +72,7 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5kqo-DSnnbsnXGevSKe6dtR2wcEUDXac&sensor=false"></script>
     <script>
 var berlin = new google.maps.LatLng(52.520816, 13.410186);
-var coords = [];
-var info = [];
-/*
+
 var coords = [
   new google.maps.LatLng(30.0444196, 31.2357116),
   new google.maps.LatLng(51.5112139, -0.1198244),
@@ -85,13 +83,10 @@ var info = [
   'GHN',
   'GHN',
 ];
-*/
 var markers = [ ];
 var map;
 var iterator = 0;
 function initialize() {
-  var pointers;
-  var point = [];
   var mapOptions = {
     zoom: 2,
     mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -107,48 +102,46 @@ function initialize() {
      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
   }
 
-  strURL = window.location.pathname;
-alert(strURL);
-  comp = strURL.split('/');
-  switch (comp[1]) {
-     case 'conference-list':
-          pageType = "conference_announcement";
-          break;
-     case 'cvd-registry':
-          pageType = "hospital";
-          break;
-     case 'medical-missions':
-          pageType = "medical_mission";
-          break;
-     case 'ghn-posts':
-          if (comp[2] == 'needs')
-             pageType = "need_post";
-          else if (comp[2] == "resources"
-             pageType = "resource_post";
-          break;
-     default:
-          pageType = comp[1];
-          break;
-  }
+  //strURL = window.location.href;
   //strURL = "http://dev.ghn.org/map-array/medical_mission";
-  strURL = "/map-array/"+pageType;
+  strURL = "/map-array";
   xmlhttp.open('POST', strURL, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.send();
   xmlhttp.onreadystatechange=function() {
      if (xmlhttp.readyState==4 && xmlhttp.status==200) {
         resp = xmlhttp.responseText;
-        //document.getElementById("map-coords").innerHTML = resp;
-        pointers = resp.split(';');
-        for (i=0; i < pointers.length; i++) {
-           point = pointers[i].split('|');   
-           coords[i] = new google.maps.LatLng(point[3],point[2]);
-           info[i] = point[0]+'('+point[1]+')';
-         }
-         //window.setTimeout(drop(coords,info),5000);
-         drop(coords,info);
-      }
+        coords = resp.split(';');
+        for (i=0; i < coords.length; i++) {
+           pointers[i] = coords[i].split('|');   
+        }
+     }
   }
+  drop();
+}
+function drop() {
+  for (var i = 0; i < coords.length; i++) {
+    setTimeout(function() {
+      addMarker();
+    }, i * 200);
+  }
+}
+function addMarker() {
+   var contentString = info[iterator];
+   var infowindow = new google.maps.InfoWindow({
+      content: contentString
+  });
+  var marker = new google.maps.Marker({
+      position: coords[iterator],
+      map: map, 
+      draggable: false,
+      animation: google.maps.Animation.DROP
+   });
+   markers.push(marker);
+   google.maps.event.addListener(marker, 'click', function() { 
+      infowindow.open(map,marker);
+   });
+   iterator++;
 }
 google.maps.event.addDomListener(window, 'load', initialize);
     </script>

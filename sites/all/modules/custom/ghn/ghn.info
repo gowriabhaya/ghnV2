@@ -2,3 +2,4 @@ name = GHN
 description = "custom functions."
 package = Custom
 core = 7.x
+//scripts[] = js/ghn.js

@@ -9,7 +9,7 @@
     </script>
     <script>
 var berlin = new google.maps.LatLng(52.520816, 13.410186);
-
+/*
 var coords = [
   new google.maps.LatLng(30.0444196, 31.2357116),
   new google.maps.LatLng(51.5112139, -0.1198244),
@@ -20,6 +20,9 @@ var info = [
   'Michael',
   'Sarah',
 ];
+*/
+var coords = [];
+var info = [];
 var markers = [ ];
 var map;
 var iterator = 0;
@@ -31,9 +34,18 @@ function initialize() {
   };
   map = new google.maps.Map(document.getElementById('map-canvas'),
           mapOptions);
+coords = [
+  new google.maps.LatLng(30.0444196, 31.2357116),
+  new google.maps.LatLng(51.5112139, -0.1198244),
+  new google.maps.LatLng(32.7801399, -96.8004511),
+];
+info = [
+  'Abdul',
+  'Michael',
+  'Sarah',
+];
   drop();
 }
-
 function drop() {
      for (var i = 0; i < coords.length; i++) {
          setTimeout(function() {

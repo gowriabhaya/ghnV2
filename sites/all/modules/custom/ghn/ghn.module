@@ -261,13 +261,21 @@ function ghn_general_profile_submit(&$form,&$form_state) {
          $form_state['redirect'] = 'dashboard/'.$user->uid;
 }
 /**
+ * Implements hook_init().
+ */
+function ghn_init() {
+  //drupal_add_library('system', 'drupal.ajax');
+}
+ 
+/**
  * hook_menu
  **/
 function ghn_menu() {
-    $items['map-test'] = array(
-        'page callback' => 'ghn_map_test',
-        'page arguments' => array(),
-        'access callback' => TRUE,
+    $items = array();
+    $items['map-array/%'] = array(
+        'page callback' => '_ghn_map_array',
+        'page arguments' => array(1),
+        'access callback' => TRUE, 
         'type' => MENU_CALLBACK,
     );
     $items['main-profile'] = array(
@@ -1212,8 +1220,40 @@ function ghn_map_lat_lang($nid,$node_type) {
 // get address value for a given node_type
     $exist = 0;
     switch ($node_type) {
+        case "conference_announcement":
+           $results = db_query("SELECT field_conf_city_value AS town,field_conf_country_iso2 AS country FROM {field_data_field_conf_city} t LEFT JOIN {field_data_field_conf_country} c ON c.entity_id = t.entity_id WHERE c.entity_id = :nid AND t.bundle = :type",array(':nid'=>$nid,':type'=>'conference_announcement'));   
+// check to see whether this is a new or existing content
+           $temp = db_query("SELECT entity_id FROM {field_data_field_map_geo_location} WHERE entity_id = :nid",array(':nid'=>$nid));
+           foreach ($temp AS $row) {
+              if ($row->entity_id) $exist = 1;
+           }
+           break;
+        case "hospital":
+           $results = db_query("SELECT field_map_city_value AS town,field_phosp_country_iso2 AS country FROM {field_data_field_map_city} t LEFT JOIN {field_data_field_phosp_country} c ON c.entity_id = t.entity_id WHERE c.entity_id = :nid AND t.bundle = :type",array(':nid'=>$nid,':type'=>'hospital'));   
+// check to see whether this is a new or existing content
+           $temp = db_query("SELECT entity_id FROM {field_data_field_map_geo_location} WHERE entity_id = :nid",array(':nid'=>$nid));
+           foreach ($temp AS $row) {
+              if ($row->entity_id) $exist = 1;
+           }
+           break;
         case "medical_mission":
-           $results = db_query("SELECT field_host_town_value AS town,field_mm_host_country_iso2 AS country FROM {field_data_field_host_town} t LEFT JOIN {field_data_field_mm_host_country} c ON c.entity_id = t.entity_id WHERE c.entity_id = :nid",array(':nid'=>$nid));   
+           $results = db_query("SELECT field_host_town_value AS town,field_mm_host_country_iso2 AS country FROM {field_data_field_host_town} t LEFT JOIN {field_data_field_mm_host_country} c ON c.entity_id = t.entity_id WHERE c.entity_id = :nid AND t.bundle = :type",array(':nid'=>$nid,':type'=>'medical_mission'));   
+// check to see whether this is a new or existing content
+           $temp = db_query("SELECT entity_id FROM {field_data_field_map_geo_location} WHERE entity_id = :nid",array(':nid'=>$nid));
+           foreach ($temp AS $row) {
+              if ($row->entity_id) $exist = 1;
+           }
+           break;
+        case "need_post":
+           $results = db_query("SELECT field_map_city_value AS town,field_post_country_iso2 AS country FROM {field_data_field_map_city} t LEFT JOIN {field_data_field_post_country} c ON c.entity_id = t.entity_id WHERE c.entity_id = :nid AND t.bundle = :type",array(':nid'=>$nid,':type'=>'need_post'));   
+// check to see whether this is a new or existing content
+           $temp = db_query("SELECT entity_id FROM {field_data_field_map_geo_location} WHERE entity_id = :nid",array(':nid'=>$nid));
+           foreach ($temp AS $row) {
+              if ($row->entity_id) $exist = 1;
+           }
+           break;
+        case "resource_post":
+           $results = db_query("SELECT field_map_city_value AS town,field_post_country_iso2 AS country FROM {field_data_field_map_city} t LEFT JOIN {field_data_field_post_country} c ON c.entity_id = t.entity_id WHERE c.entity_id = :nid AND t.bundle = :type",array(':nid'=>$nid,':type'=>'resource_post'));   
 // check to see whether this is a new or existing content
            $temp = db_query("SELECT entity_id FROM {field_data_field_map_geo_location} WHERE entity_id = :nid",array(':nid'=>$nid));
            foreach ($temp AS $row) {
@@ -1251,3 +1291,23 @@ else {
          print '</pre>';
 
 } 
+/**
+ *This function builds an array of coordiantes and marker hover info. It is called 
+ *from custom block node created for each of the top nav pages under Global Reach
+ **/
+function _ghn_map_array($type="medical_mission") {
+  global $base_url;
+  $str = '';
+// get all the coordates from field_data_field_map_geo_location for given type
+// get all the title, town, country for all the nodes associated with the coordinates
+   $results = db_query("SELECT n.nid,n.title,t.field_host_town_value AS city,c.field_mm_host_country_iso2 AS country,l.field_map_geo_location_lng AS lng,l.field_map_geo_location_lat AS lat FROM {node} n LEFT JOIN {field_data_field_map_geo_location} l ON l.entity_id = n.nid LEFT JOIN {field_data_field_host_town} t ON t.entity_id = n.nid LEFT JOIN {field_data_field_mm_host_country} c ON c.entity_id = n.nid WHERE n.type = '$type' AND n.status = 1");
+   foreach ($results AS $result) {
+      $info = l($result->title,$base_url.'/node/'.$result->nid);
+      $loc = $result->city.', '.$result->country;
+      $lng = $result->lng;
+      $lat = $result->lat;
+      $str .= $info.'|'.$loc.'|'.$lng.'|'.$lat.';';
+   }
+   //$str = " I AM IN _ghn_map_array";
+   echo $str;
+}

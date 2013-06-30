@@ -159,7 +159,6 @@
     <?php print render($page['header']); ?>
   </header>
 </div>
-HELLO THERE
       <div id="panel" style="margin-left: -52px">
       <button id="drop" onclick="drop()">Drop Markers</button>
      </div>
