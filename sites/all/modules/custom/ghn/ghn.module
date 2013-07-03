@@ -1265,7 +1265,8 @@ function ghn_map_lat_lang($nid,$node_type) {
            break;
     }
           foreach ($results AS $result) {
-                 $geocode = geocoder('google',$result->town.','.$result->country);
+             $geocode = geocoder('google',$result->town.','.$result->country);
+             if (count($geocode) > 0) {
                  foreach ($geocode AS $key => $value) {
                          if ($key == "coords") {
                             $lat = $value[1];
@@ -1274,16 +1275,17 @@ function ghn_map_lat_lang($nid,$node_type) {
                             $lat_cos = cos(deg2rad($lat));
                             $lng_rad = deg2rad($lng);
 // instert if it is a new content
-if ($exist == 0) {
+                         if ($exist == 0) {
                             db_query("INSERT INTO {field_data_field_map_geo_location} (entity_type,bundle,deleted,entity_id,revision_id,language,delta,field_map_geo_location_lat,field_map_geo_location_lng,field_map_geo_location_lat_sin,field_map_geo_location_lat_cos,field_map_geo_location_lng_rad) VALUES ('node','$node_type',0,$nid,$nid,'und',0,$lat,$lng,$lat_sin,$lat_cos,$lng_rad)");
                             db_query("INSERT INTO {field_revision_field_map_geo_location} (entity_type,bundle,deleted,entity_id,revision_id,language,delta,field_map_geo_location_lat,field_map_geo_location_lng,field_map_geo_location_lat_sin,field_map_geo_location_lat_cos,field_map_geo_location_lng_rad) VALUES ('node','$node_type',0,$nid,$nid,'und',0,$lat,$lng,$lat_sin,$lat_cos,$lng_rad)");
-}
-else {
+                         }
+                         else {
  // update the record - need to code this once i find more time for it.
-}
-                            break;
+                         }
+                         break;
                          }
                    }
+              }
           }
          //drupal_set_message(" HELLO ".$temp.' GEOCODE: '.$temp1);
          print '<pre>';
@@ -1304,51 +1306,61 @@ function _ghn_map_array($type="medical_mission") {
       case "conference_announcement":
          $results = db_query("SELECT n.nid,n.title,t.field_conf_city_value AS city,c.field_conf_country_iso2 AS country,l.field_map_geo_location_lng AS lng,l.field_map_geo_location_lat AS lat FROM {node} n LEFT JOIN {field_data_field_map_geo_location} l ON l.entity_id = n.nid LEFT JOIN {field_data_field_conf_city} t ON t.entity_id = n.nid LEFT JOIN {field_data_field_conf_country} c ON c.entity_id = n.nid WHERE n.type = '$type' AND n.status = 1");
          foreach ($results AS $result) {
-            $info = l($result->title,$base_url.'/node/'.$result->nid);
-            $loc = $result->city.', '.$result->country;
-            $lng = $result->lng;
-            $lat = $result->lat;
-            $str .= $info.'|'.$loc.'|'.$lng.'|'.$lat.';';
+            if (($result->lng) && ($result->lat)) {
+               $info = l($result->title,$base_url.'/node/'.$result->nid);
+               $loc = $result->city.', '.$result->country;
+               $lng = $result->lng;
+               $lat = $result->lat;
+               $str .= $info.'|'.$loc.'|'.$lng.'|'.$lat.';';
+            }
           }
           break;
       case "hospital":
          $results = db_query("SELECT n.nid,n.title,t.field_map_city_value AS city,c.field_phosp_country_iso2 AS country,l.field_map_geo_location_lng AS lng,l.field_map_geo_location_lat AS lat FROM {node} n LEFT JOIN {field_data_field_map_geo_location} l ON l.entity_id = n.nid LEFT JOIN {field_data_field_map_city} t ON t.entity_id = n.nid LEFT JOIN {field_data_field_phosp_country} c ON c.entity_id = n.nid WHERE n.type = '$type' AND n.status = 1");
          foreach ($results AS $result) {
-            $info = l($result->title,$base_url.'/node/'.$result->nid);
-            $loc = $result->city.', '.$result->country;
-            $lng = $result->lng;
-            $lat = $result->lat;
-            $str .= $info.'|'.$loc.'|'.$lng.'|'.$lat.';';
+            if (($result->lng) && ($result->lat)) {
+               $info = l($result->title,$base_url.'/node/'.$result->nid);
+               $loc = $result->city.', '.$result->country;
+               $lng = $result->lng;
+               $lat = $result->lat;
+               $str .= $info.'|'.$loc.'|'.$lng.'|'.$lat.';';
+            }
           }
           break;
       case "medical_mission":
          $results = db_query("SELECT n.nid,n.title,t.field_host_town_value AS city,c.field_mm_host_country_iso2 AS country,l.field_map_geo_location_lng AS lng,l.field_map_geo_location_lat AS lat FROM {node} n LEFT JOIN {field_data_field_map_geo_location} l ON l.entity_id = n.nid LEFT JOIN {field_data_field_host_town} t ON t.entity_id = n.nid LEFT JOIN {field_data_field_mm_host_country} c ON c.entity_id = n.nid WHERE n.type = '$type' AND n.status = 1");
          foreach ($results AS $result) {
-            $info = l($result->title,$base_url.'/node/'.$result->nid);
-            $loc = $result->city.', '.$result->country;
-            $lng = $result->lng;
-            $lat = $result->lat;
-            $str .= $info.'|'.$loc.'|'.$lng.'|'.$lat.';';
+            if (($result->lng) && ($result->lat)) {
+               $info = l($result->title,$base_url.'/node/'.$result->nid);
+               $loc = $result->city.', '.$result->country;
+               $lng = $result->lng;
+               $lat = $result->lat;
+               $str .= $info.'|'.$loc.'|'.$lng.'|'.$lat.';';
+             }
           }
           break;
       case "need_post":
-         $results = db_query("SELECT n.nid,n.title,t.field_map_city_value AS city,c.field_mm_post_country_iso2 AS country,l.field_map_geo_location_lng AS lng,l.field_map_geo_location_lat AS lat FROM {node} n LEFT JOIN {field_data_field_map_geo_location} l ON l.entity_id = n.nid LEFT JOIN {field_data_field_map_city} t ON t.entity_id = n.nid LEFT JOIN {field_data_field_post_country} c ON c.entity_id = n.nid WHERE n.type = '$type' AND n.status = 1");
+         $results = db_query("SELECT n.nid,n.title,t.field_map_city_value AS city,c.field_post_country_iso2 AS country,l.field_map_geo_location_lng AS lng,l.field_map_geo_location_lat AS lat FROM {node} n LEFT JOIN {field_data_field_map_geo_location} l ON l.entity_id = n.nid LEFT JOIN {field_data_field_map_city} t ON t.entity_id = n.nid LEFT JOIN {field_data_field_post_country} c ON c.entity_id = n.nid WHERE n.type = '$type' AND n.status = 1");
          foreach ($results AS $result) {
-            $info = l($result->title,$base_url.'/node/'.$result->nid);
-            $loc = $result->city.', '.$result->country;
-            $lng = $result->lng;
-            $lat = $result->lat;
-            $str .= $info.'|'.$loc.'|'.$lng.'|'.$lat.';';
+            if (($result->lng) && ($result->lat)) {
+               $info = l($result->title,$base_url.'/node/'.$result->nid);
+               $loc = $result->city.', '.$result->country;
+               $lng = $result->lng;
+               $lat = $result->lat;
+               $str .= $info.'|'.$loc.'|'.$lng.'|'.$lat.';';
+             }
           }
           break;
       case "resource_post":
          $results = db_query("SELECT n.nid,n.title,t.field_map_city_value AS city,c.field_post_country_iso2 AS country,l.field_map_geo_location_lng AS lng,l.field_map_geo_location_lat AS lat FROM {node} n LEFT JOIN {field_data_field_map_geo_location} l ON l.entity_id = n.nid LEFT JOIN {field_data_field_map_city} t ON t.entity_id = n.nid LEFT JOIN {field_data_field_post_country} c ON c.entity_id = n.nid WHERE n.type = '$type' AND n.status = 1");
          foreach ($results AS $result) {
-            $info = l($result->title,$base_url.'/node/'.$result->nid);
-            $loc = $result->city.', '.$result->country;
-            $lng = $result->lng;
-            $lat = $result->lat;
-            $str .= $info.'|'.$loc.'|'.$lng.'|'.$lat.';';
+            if (($result->lng) && ($result->lat)) {
+               $info = l($result->title,$base_url.'/node/'.$result->nid);
+               $loc = $result->city.', '.$result->country;
+               $lng = $result->lng;
+               $lat = $result->lat;
+               $str .= $info.'|'.$loc.'|'.$lng.'|'.$lat.';';
+             }
           }
           break;
     }
