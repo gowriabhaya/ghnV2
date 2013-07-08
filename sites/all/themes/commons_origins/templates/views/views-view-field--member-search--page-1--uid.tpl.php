@@ -24,8 +24,6 @@
 ?>
 <?php 
 // get all the affiliations of this user
-     drupal_set_message(" uid ".$output);
-     $output = 1277;
      $results = db_query("SELECT f.field_affiliations_value AS affiliation FROM {profile} p INNER JOIN {field_data_field_affiliations} f ON p.pid = f.entity_id WHERE p.uid = :uid AND p.type = :type",array(':uid'=>$output,':type'=>'affiliations'));
      $ret = '';
      foreach ($results AS $result) {
