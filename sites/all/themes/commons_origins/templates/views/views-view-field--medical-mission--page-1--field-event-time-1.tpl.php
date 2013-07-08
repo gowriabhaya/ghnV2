@@ -23,7 +23,8 @@
  */
 ?>
 <?php 
-      $currdate = date('m-d-Y',time());
-      ($currdate < $output) ? $output = '<h3>Active</h3>' : $output = '<h3>Expired</h3>';
+      $currdate = time();
+      $confdate = strtotime($output);
+      ($currdate < $confdate) ? $output = '<h3>Active</h3>' : $output = '<h3>Expired</h3>';
       print $output; 
 ?>
