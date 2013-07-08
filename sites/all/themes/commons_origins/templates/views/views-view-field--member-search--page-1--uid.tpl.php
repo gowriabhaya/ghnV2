@@ -31,7 +31,7 @@
         if ($result->pid) $pid = $result->pid;
      } 
      if ($pid != 0) {
-        $results = db_query("SELECT f.field_affiliations_value AS affiliation FROM  {field_data_field_affiliations} f WHERE f.entity_id = :pid",array(':pid'=>$pid));
+        $results = db_query("SELECT f.field_affiliations_value AS affiliation FROM  {field_data_field_affiliations} f WHERE f.entity_id = :pid AND f.bundle = :bundle AND f.entity_type = :type",array(':pid'=>$pid,':bundle'=>'affiliations',':type'=>'profile2'));
         foreach ($results AS $result) {
            $ret .= '<li>'.$result->affiliation.'</li>';
         }
