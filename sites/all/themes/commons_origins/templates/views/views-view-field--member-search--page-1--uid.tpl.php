@@ -24,10 +24,17 @@
 ?>
 <?php 
 // get all the affiliations of this user
-     $results = db_query("SELECT f.field_affiliations_value AS affiliation FROM {profile} p INNER JOIN {field_data_field_affiliations} f ON p.pid = f.entity_id WHERE p.uid = :uid AND p.type = :type",array(':uid'=>$output,':type'=>'affiliations'));
+     $results = db_query("SELECT pid FROM {profile} p WHERE p.uid = :uid AND p.type = :type LIMIT 1",array(':uid'=>$output,':type'=>'affiliations'));
+     $pid = 0;
      $ret = '';
      foreach ($results AS $result) {
-             $ret .= '<li>'.$result->affiliation.'</li>';
+        if ($result->pid) $pid = $result->pid;
+     } 
+     if ($pid != 0) {
+        $results = db_query("SELECT f.field_affiliations_value AS affiliation FROM  {field_data_field_affiliations} f WHERE f.entity_id = :pid",array(':pid'=>$pid));
+        foreach ($results AS $result) {
+           $ret .= '<li>'.$result->affiliation.'</li>';
+        }
      }
      if ($ret != '') $output = '<ul>'.$ret.'</ul>';
      else $output = 'No affiliation';
