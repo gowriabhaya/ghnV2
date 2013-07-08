@@ -23,7 +23,8 @@
  */
 ?>
 <?php 
-      $currdate = date('m-d-Y',time());
+      $currdate = time();
+      $confdate = strtotime($output);
       ($currdate < $output) ? $output = '(Status: active)' : $output = '(Status: Expired)';
       print $output; 
 ?>
