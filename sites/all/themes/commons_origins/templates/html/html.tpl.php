@@ -65,8 +65,9 @@
 <?php print $polyfills; ?>
 <!--
     <link href="https:/developers.google.com/maps/documentation/javascript/examples/default.css" rel="stylesheet">
--->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVmGX8dbdk14RLAjqvuN2KbS3F0mQ3wKI&sensor=false"></script>
+-->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-8hpce2_DgNeK4GJpEBn11ee6n1mhwv0&sensor=false"></script>
     <script>
 var berlin = new google.maps.LatLng(52.520816, 13.410186);
 var coords = [];
