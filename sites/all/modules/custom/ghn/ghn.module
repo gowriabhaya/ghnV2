@@ -1175,6 +1175,22 @@ function _ghn_match_sendmail($nid,$matches,$type) {
 // recepient message
          $message = "Your ".$type." posting <strong>".$fromnode->title."</strong> posted on ".$fromdate." has ".$numbmatch." matching Resources. Following link will help you to contact the members with matching ".$othertype.". ".$followlink;
          _ghn_simple_mail($subject, $message,$frommail); 
+// send one final email to the annabel 
+// follow link
+         $followlink = l("Matched ".$othertype." posting",$base_url."/match/".strtolower($type).'/'.$fromnode->uid.'/'.$nid);
+// recepient subject
+         $subject = "Match found for this ".$type." posting";
+// recepient message
+         $message = "Your ".$type." posting <strong>".$fromnode->title."</strong> posted on ".$fromdate." has ".$numbmatch." matching Resources. Following link will help you to contact the members with matching ".$othertype.". ".$followlink;
+         _ghn_simple_mail($subject, $message,'annabel@globalheartnetwork.net'); 
+// send one final email to the marco 
+// follow link
+         $followlink = l("Matched ".$othertype." posting",$base_url."/match/".strtolower($type).'/'.$fromnode->uid.'/'.$nid);
+// recepient subject
+         $subject = "Match found for this ".$type." posting";
+// recepient message
+         $message = "Your ".$type." posting <strong>".$fromnode->title."</strong> posted on ".$fromdate." has ".$numbmatch." matching Resources. Following link will help you to contact the members with matching ".$othertype.". ".$followlink;
+         _ghn_simple_mail($subject, $message,'marco@globalheartnetwork.net'); 
 }
 /**
  * Sending matching notification mail
