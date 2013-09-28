@@ -1,4 +1,13 @@
 # Ignore paths that contain user-generated content.
+sites/*/files/*.jpg
+sites/*/files/*.png
+sites/*/files/*.JPG
+sites/*/files/pictures
+sites/*/files/styles
+sites/*/files/field
+sites/*/files/field
+sites/*/files/ctool
+sites/*/files/custom_search
 sites/*/private
 sites/default/settings.php
 /cache
